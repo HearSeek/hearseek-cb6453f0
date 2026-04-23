@@ -103,8 +103,11 @@ const Index = () => {
             <p className="mt-4 text-muted-foreground">
               Personal voice notes, lectures, podcasts, WhatsApp clips. $15/month.
             </p>
-            <div className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary">
-              Explore the App <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            <div className="mt-8 flex items-center justify-between">
+              <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
+                Explore the App <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </span>
+              <span className="text-xs text-muted-foreground font-mono">app.hearseek.com</span>
             </div>
           </Link>
 
@@ -119,8 +122,11 @@ const Index = () => {
             <p className="mt-4 text-muted-foreground">
               On-prem deployment for media houses, broadcasters, and academic institutions.
             </p>
-            <div className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-accent">
-              See Enterprise <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            <div className="mt-8 flex items-center justify-between">
+              <span className="inline-flex items-center gap-2 text-sm font-semibold text-accent">
+                See Enterprise <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </span>
+              <span className="text-xs text-muted-foreground font-mono">media.hearseek.com</span>
             </div>
           </Link>
         </div>

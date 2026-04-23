@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Menu, AudioLines } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import logo from "@/assets/hearseek-logo.png";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -16,11 +17,11 @@ export const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/70 backdrop-blur-xl">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-waveform glow-primary">
-            <AudioLines className="h-4 w-4 text-primary-foreground" />
+        <Link to="/" className="flex items-center gap-2" aria-label="HearSeek home">
+          <img src={logo} alt="HearSeek" className="h-9 w-9 object-contain" />
+          <span className="font-display text-lg font-bold tracking-tight">
+            Hear<span className="text-gradient">Seek</span>
           </span>
-          <span>Hear<span className="text-gradient">Seek</span></span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
