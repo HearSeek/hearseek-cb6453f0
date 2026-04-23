@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Section } from "@/components/site/Section";
 import { VideoEmbed } from "@/components/site/VideoEmbed";
 import { FeatureCard } from "@/components/site/FeatureCard";
-import { Waveform } from "@/components/site/Waveform";
 import { toast } from "@/hooks/use-toast";
+import appScreens from "@/assets/hearseek-app-screens.jpeg";
 
 const AppPage = () => {
   const [email, setEmail] = useState("");
@@ -50,20 +50,13 @@ const AppPage = () => {
             </div>
           </div>
           <div className="relative">
-            <div className="mx-auto max-w-xs rounded-[2.5rem] border-4 border-border/80 bg-gradient-card p-3 shadow-elegant glow-primary">
-              <div className="rounded-[2rem] bg-background p-6 aspect-[9/19] flex flex-col">
-                <div className="text-xs text-muted-foreground">HearSeek</div>
-                <div className="mt-4 rounded-xl border border-border bg-secondary/40 p-3 text-sm">
-                  🔍 "Khudi"
-                </div>
-                <Waveform className="mt-4 h-10" bars={24} />
-                <div className="mt-4 space-y-2 text-xs">
-                  <div className="rounded-lg bg-secondary/40 p-2">Lecture 04 · 12:34</div>
-                  <div className="rounded-lg bg-secondary/40 p-2">Voice note · Mar 12</div>
-                  <div className="rounded-lg bg-secondary/40 p-2">Podcast · Iqbal &amp; Self</div>
-                </div>
-              </div>
-            </div>
+            <div className="absolute -inset-8 bg-gradient-hero opacity-70 blur-2xl" aria-hidden />
+            <img
+              src={appScreens}
+              alt="HearSeek mobile app — upload, search, and recently accessed screens"
+              className="relative w-full rounded-2xl shadow-elegant animate-float"
+              loading="eager"
+            />
           </div>
         </div>
       </section>
