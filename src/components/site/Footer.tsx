@@ -1,16 +1,16 @@
 import { Link } from "react-router-dom";
-import { AudioLines } from "lucide-react";
+import logo from "@/assets/hearseek-logo.png";
 
 export const Footer = () => {
   return (
     <footer className="border-t border-border/40 bg-background">
       <div className="container py-12 grid gap-10 md:grid-cols-4">
         <div className="md:col-span-2">
-          <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-waveform">
-              <AudioLines className="h-4 w-4 text-primary-foreground" />
+          <Link to="/" className="flex items-center gap-2">
+            <img src={logo} alt="HearSeek" className="h-9 w-9 object-contain" />
+            <span className="font-display text-lg font-bold tracking-tight">
+              Hear<span className="text-gradient">Seek</span>
             </span>
-            <span>Hear<span className="text-gradient">Seek</span></span>
           </Link>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
             The World's First AI Search Engine for Audio. Making spoken knowledge as
@@ -34,7 +34,7 @@ export const Footer = () => {
       </div>
       <div className="border-t border-border/40">
         <div className="container py-6 text-xs text-muted-foreground flex flex-col sm:flex-row justify-between gap-2">
-          <p>© {new Date().getFullYear()} HearSeek. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} HearSeek · hearseek.com — All rights reserved.</p>
           <p>Built for the Audio Era.</p>
         </div>
       </div>
