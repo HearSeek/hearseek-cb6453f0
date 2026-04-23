@@ -8,35 +8,43 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* HearSeek dark audio-tech theme (default) */
+    --background: 230 25% 6%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 230 25% 9%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 230 25% 8%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 186 100% 55%;
+    --primary-foreground: 230 30% 6%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 230 20% 14%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 230 20% 12%;
+    --muted-foreground: 220 15% 65%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 270 95% 65%;
+    --accent-foreground: 230 30% 6%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 230 20% 16%;
+    --input: 230 20% 14%;
+    --ring: 186 100% 55%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    --gradient-hero: radial-gradient(ellipse at top, hsl(270 95% 25% / 0.4), transparent 60%), radial-gradient(ellipse at bottom, hsl(186 100% 30% / 0.3), transparent 60%);
+    --gradient-waveform: linear-gradient(90deg, hsl(186 100% 55%), hsl(270 95% 65%));
+    --gradient-card: linear-gradient(135deg, hsl(230 25% 11%), hsl(230 25% 8%));
+    --glow-primary: 0 0 40px hsl(186 100% 55% / 0.4);
+    --glow-accent: 0 0 60px hsl(270 95% 65% / 0.35);
+    --shadow-elegant: 0 20px 60px -20px hsl(186 100% 30% / 0.5);
 
     --sidebar-background: 0 0% 98%;
 
@@ -100,6 +108,42 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+}
+
+@layer utilities {
+  .bg-gradient-hero { background-image: var(--gradient-hero); }
+  .bg-gradient-waveform { background-image: var(--gradient-waveform); }
+  .bg-gradient-card { background-image: var(--gradient-card); }
+  .text-gradient {
+    background-image: var(--gradient-waveform);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .glow-primary { box-shadow: var(--glow-primary); }
+  .glow-accent { box-shadow: var(--glow-accent); }
+  .shadow-elegant { box-shadow: var(--shadow-elegant); }
+}
+
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px hsl(186 100% 55% / 0.3); }
+  50% { box-shadow: 0 0 40px hsl(186 100% 55% / 0.6); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.animate-wave { animation: wave 1.2s ease-in-out infinite; transform-origin: center; }
+.animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+.animate-float { animation: float 4s ease-in-out infinite; }
+
+html { scroll-behavior: smooth; }
   }
 }
