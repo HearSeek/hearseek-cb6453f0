@@ -51,7 +51,7 @@ const EnterprisePage = () => {
       </section>
 
       {/* DEMO */}
-      <Section eyebrow="See It In Action" centered title="A 3-minute walkthrough.">
+      <Section eyebrow="See It In Action" centered title="A quick walkthrough.">
         <VideoEmbed label="Enterprise demo · coming soon" />
       </Section>
 
@@ -72,6 +72,9 @@ const EnterprisePage = () => {
             <StatCard value="700+" label="Videos indexed" />
             <StatCard value="7.5M" label="Community served" />
             <StatCard value="100%" label="On-prem deployment" />
+          </div>
+          <div className="mb-10">
+            <VideoEmbed label="Pilot project demo · coming soon" />
           </div>
           <div className="rounded-2xl bg-secondary/40 p-6 md:p-8 border border-border/40">
             <Quote className="h-8 w-8 text-primary mb-4" />

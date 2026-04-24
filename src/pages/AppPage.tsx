@@ -6,7 +6,7 @@ import { Section } from "@/components/site/Section";
 import { VideoEmbed } from "@/components/site/VideoEmbed";
 import { FeatureCard } from "@/components/site/FeatureCard";
 import { toast } from "@/hooks/use-toast";
-import appScreens from "@/assets/hearseek-app-screens.jpeg";
+import appScreen from "@/assets/hearseek-app-single.jpeg";
 
 const AppPage = () => {
   const [email, setEmail] = useState("");
@@ -49,14 +49,19 @@ const AppPage = () => {
               </div>
             </div>
           </div>
-          <div className="relative">
+          <div className="relative flex justify-center">
             <div className="absolute -inset-8 bg-gradient-hero opacity-70 blur-2xl" aria-hidden />
-            <img
-              src={appScreens}
-              alt="HearSeek mobile app — upload, search, and recently accessed screens"
-              className="relative w-full rounded-2xl shadow-elegant animate-float"
-              loading="eager"
-            />
+            {/* Phone frame */}
+            <div className="relative w-[280px] md:w-[320px] aspect-[9/19] rounded-[3rem] border-[10px] border-foreground/80 bg-foreground/90 shadow-elegant animate-float overflow-hidden">
+              {/* Notch */}
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 h-6 w-28 rounded-full bg-foreground" />
+              <img
+                src={appScreen}
+                alt="HearSeek mobile app screen"
+                className="absolute inset-0 h-full w-full object-cover rounded-[2.25rem]"
+                loading="eager"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -64,10 +69,10 @@ const AppPage = () => {
       {/* USE CASES */}
       <Section eyebrow="Use Cases" centered title="One app. Every spoken corner of your life.">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <FeatureCard icon={Mic} title="Voice Notes" description="Find that one idea you recorded weeks ago — by what you said, not when." />
+          <FeatureCard icon={MessageSquare} title="WhatsApp" description="Search your voice-note inbox like it's email." />
+          <FeatureCard icon={Mic} title="Phone Audio Recordings" description="Find that one idea you recorded weeks ago — by what you said, not when." />
           <FeatureCard icon={Languages} title="Lectures" description="Search hours of class recordings by concept, term, or paraphrase." />
           <FeatureCard icon={Play} title="Podcasts" description="Jump to the exact moment a guest mentioned the topic you care about." />
-          <FeatureCard icon={MessageSquare} title="WhatsApp" description="Search your voice-note inbox like it's email." />
         </div>
       </Section>
 
