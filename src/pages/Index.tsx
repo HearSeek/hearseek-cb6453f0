@@ -19,7 +19,7 @@ const Index = () => {
           <img
             src={hearseekLogo}
             alt="HearSeek logo"
-            className="mx-auto h-20 md:h-24 w-auto drop-shadow-[0_0_30px_hsl(var(--primary)/0.5)]"
+            className="mx-auto h-24 md:h-28 w-auto drop-shadow-[0_0_30px_hsl(var(--primary)/0.5)]"
           />
           <h1 className="mt-8 font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
             The World's First <br />
