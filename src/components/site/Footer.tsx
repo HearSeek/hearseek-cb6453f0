@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Linkedin, Facebook, Instagram, MapPin, Phone, Mail } from "lucide-react";
-import logo from "@/assets/hearseek-logo.png";
+import logo from "@/assets/hearseek-logo-mark.png";
 
 export const Footer = () => {
   return (
@@ -19,7 +19,7 @@ export const Footer = () => {
           </p>
           <div className="mt-5 flex items-center gap-3">
             <a
-              href="https://www.linkedin.com/company/hearseek"
+              href="https://www.linkedin.com/company/hearseekofficial"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
@@ -28,7 +28,7 @@ export const Footer = () => {
               <Linkedin className="h-4 w-4" />
             </a>
             <a
-              href="https://www.facebook.com/hearseek"
+              href="https://www.facebook.com/HearSeekOfficial"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Facebook"
@@ -37,7 +37,7 @@ export const Footer = () => {
               <Facebook className="h-4 w-4" />
             </a>
             <a
-              href="https://www.instagram.com/hearseek"
+              href="https://www.instagram.com/HearSeekOfficial"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
