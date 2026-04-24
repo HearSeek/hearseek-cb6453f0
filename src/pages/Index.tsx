@@ -6,7 +6,7 @@ import { Waveform } from "@/components/site/Waveform";
 import { FeatureCard } from "@/components/site/FeatureCard";
 import { StatCard } from "@/components/site/StatCard";
 import { VideoEmbed } from "@/components/site/VideoEmbed";
-import hearseekLogo from "@/assets/hearseek-logo.png";
+import hearseekLogo from "@/assets/hearseek-logo-mark.png";
 
 const Index = () => {
   return (
