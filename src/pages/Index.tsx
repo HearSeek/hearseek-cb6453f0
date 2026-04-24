@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Search, Globe, Brain, Layers, Smartphone, Building2, Sparkles, Quote } from "lucide-react";
+import { ArrowRight, Search, Globe, Brain, Layers, Quote, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/site/Section";
 import { Waveform } from "@/components/site/Waveform";
 import { FeatureCard } from "@/components/site/FeatureCard";
 import { StatCard } from "@/components/site/StatCard";
+import { VideoEmbed } from "@/components/site/VideoEmbed";
+import hearseekLogo from "@/assets/hearseek-logo.png";
 
 const Index = () => {
   return (
@@ -14,11 +16,12 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-hero" />
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-waveform opacity-50" />
         <div className="container relative py-24 md:py-36 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-secondary/40 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur">
-            <Sparkles className="h-3 w-3 text-primary" />
-            Live pilot · 700+ videos indexed for 7.5M users
-          </span>
-          <h1 className="mt-8 font-display text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.05]">
+          <img
+            src={hearseekLogo}
+            alt="HearSeek logo"
+            className="mx-auto h-20 md:h-24 w-auto drop-shadow-[0_0_30px_hsl(var(--primary)/0.5)]"
+          />
+          <h1 className="mt-8 font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
             The World's First <br />
             <span className="text-gradient">AI Search Engine</span> for Audio
           </h1>
@@ -90,45 +93,79 @@ const Index = () => {
       </Section>
 
       {/* TWO REVENUE STREAMS */}
-      <Section eyebrow="Two Products. One Engine." centered title="Whether you're an individual or an institution.">
-        <div className="grid md:grid-cols-2 gap-6">
-          <Link to="/app" className="group relative overflow-hidden rounded-3xl border border-border/60 bg-gradient-card p-8 md:p-10 transition-all hover:border-primary/50 hover:shadow-elegant">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-waveform text-primary-foreground">
-                <Smartphone className="h-6 w-6" />
-              </div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Consumer App</span>
-            </div>
-            <h3 className="mt-6 font-display text-3xl md:text-4xl font-bold">Search every word you've ever heard.</h3>
-            <p className="mt-4 text-muted-foreground">
-              Personal voice notes, lectures, podcasts, WhatsApp clips. $15/month.
+      <Section eyebrow="Consumer App · app.hearseek.com" title="Search every word you've ever heard.">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+          <div>
+            <p className="text-lg text-muted-foreground">
+              Your personal audio search companion. Find any spoken moment across voice
+              notes, lectures, podcasts, and WhatsApp clips — in 160+ languages.
             </p>
-            <div className="mt-8 flex items-center justify-between">
-              <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
-                Explore the App <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </span>
-              <span className="text-xs text-muted-foreground font-mono">app.hearseek.com</span>
+            <ul className="mt-6 space-y-3">
+              {[
+                "Personal voice notes & meetings",
+                "Lectures, podcasts & audiobooks",
+                "WhatsApp voice message companion",
+                "Cross-language & paraphrase search",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3 text-sm">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+                    <Check className="h-3 w-3" />
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 text-sm">
+              <span className="font-display text-2xl font-bold text-gradient">$15</span>
+              <span className="text-muted-foreground"> / month</span>
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild className="bg-gradient-waveform text-primary-foreground hover:opacity-90">
+                <Link to="/app">Explore the App <ArrowRight className="ml-1 h-4 w-4" /></Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/app#waitlist">Join Waitlist</Link>
+              </Button>
             </div>
-          </Link>
+          </div>
+          <VideoEmbed label="App demo coming soon" />
+        </div>
+      </Section>
 
-          <Link to="/enterprise" className="group relative overflow-hidden rounded-3xl border border-border/60 bg-gradient-card p-8 md:p-10 transition-all hover:border-accent/50 hover:shadow-elegant">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-                <Building2 className="h-6 w-6" />
-              </div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Enterprise · Speech Intel</span>
-            </div>
-            <h3 className="mt-6 font-display text-3xl md:text-4xl font-bold">Unlock your private audio archives.</h3>
-            <p className="mt-4 text-muted-foreground">
-              On-prem deployment for media houses, broadcasters, and academic institutions.
+      <Section eyebrow="Enterprise · media.hearseek.com" title="Unlock your private audio archives.">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+          <div className="lg:order-1 order-2">
+            <VideoEmbed label="Enterprise demo coming soon" />
+          </div>
+          <div className="lg:order-2 order-1">
+            <p className="text-lg text-muted-foreground">
+              Speech Intel for media houses, broadcasters, and academic institutions.
+              Turn decades of recordings into a searchable, monetizable knowledge base.
             </p>
-            <div className="mt-8 flex items-center justify-between">
-              <span className="inline-flex items-center gap-2 text-sm font-semibold text-accent">
-                See Enterprise <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </span>
-              <span className="text-xs text-muted-foreground font-mono">media.hearseek.com</span>
+            <ul className="mt-6 space-y-3">
+              {[
+                "On-prem deployment & data sovereignty",
+                "Semantic archive search across back-catalogues",
+                "Monetize legacy audio & video libraries",
+                "Institutional licensing & SLAs",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3 text-sm">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent/20 text-accent">
+                    <Check className="h-3 w-3" />
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild className="bg-gradient-waveform text-primary-foreground hover:opacity-90">
+                <Link to="/enterprise#demo">Book a Demo <ArrowRight className="ml-1 h-4 w-4" /></Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/enterprise">See Enterprise</Link>
+              </Button>
             </div>
-          </Link>
+          </div>
         </div>
       </Section>
 
