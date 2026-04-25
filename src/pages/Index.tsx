@@ -36,7 +36,7 @@ const Index = () => {
               <div className="flex items-center gap-3 px-4 py-3">
                 <Search className="h-5 w-5 text-primary" />
                 <span className="text-sm md:text-base text-muted-foreground flex-1 text-left">
-                  Search "Khudi" across 700 lectures…
+                  Search voice notes, podcasts, lectures...
                 </span>
                 <Waveform className="h-8 w-32" bars={20} />
               </div>
