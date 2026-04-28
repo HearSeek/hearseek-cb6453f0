@@ -581,11 +581,11 @@ const ResultsPage = () => {
                   </RadioRow>
                 ))}
               </FilterSection>
-              <FilterSection title="Sentiment">
-                {SENTIMENT_OPTS.map((s) => (
-                  <CheckRow key={s.id} checked={sentiments.has(s.id)} onChange={() => toggleSentiment(s.id)}>
-                    <span className={cn("h-2 w-2 rounded-full", s.dot)} />
-                    {s.label}
+              <FilterSection title="Language">
+                {LANGUAGE_OPTS.map((l) => (
+                  <CheckRow key={l.id} checked={languages.has(l.id)} onChange={() => toggleLanguage(l.id)}>
+                    <span className={cn("h-2 w-2 rounded-full", l.dot)} />
+                    {l.label}
                   </CheckRow>
                 ))}
               </FilterSection>
@@ -601,7 +601,7 @@ const ResultsPage = () => {
                   setPendingQuery(q);
                   setQuery(q);
                   setSources(new Set(["news", "podcasts", "lectures"]));
-                  setSentiments(new Set(["positive", "neutral", "critical"]));
+                  setLanguages(new Set(["english", "urdu", "arabic", "hindi", "multilingual"]));
                   setDateRange("all");
                 }}
               />
