@@ -10,6 +10,7 @@ import {
   SearchX,
   Sparkles,
   ArrowLeft,
+  Languages as LanguagesIcon,
 } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,7 @@ import logoMark from "@/assets/hearseek-logo-mark.png";
 
 type SourceType = "news" | "podcasts" | "lectures";
 type DateRange = "24h" | "7d" | "30d" | "all";
-type Sentiment = "positive" | "neutral" | "critical";
+type Language = "english" | "urdu" | "arabic" | "hindi" | "multilingual";
 
 type Result = {
   id: string;
@@ -27,9 +28,9 @@ type Result = {
   channel: string;
   date: string;
   ageDays: number;
-  sentiment: Sentiment;
+  language: Language;
   snippet: string;
-  language: "en" | "ur";
+  scriptLang: "en" | "ur";
   tStart: string;
   tEnd: string;
   duration: string;
@@ -45,10 +46,10 @@ const MOCK: Result[] = [
     channel: "Geo News — Capital Talk",
     date: "Apr 22, 2026",
     ageDays: 6,
-    sentiment: "critical",
+    language: "english",
     snippet:
-      "If we fail to strengthen the institutions that uphold democracy, no amount of economic reform will be sustainable in the long run.",
-    language: "en",
+      "If we fail to strengthen the institutions that uphold democracy, no amount of economic reform will be sustainable in the long run. The speaker argues that judicial independence and electoral transparency are the two pillars that cannot be compromised under any political pressure.",
+    scriptLang: "en",
     tStart: "35:21",
     tEnd: "35:35",
     duration: "58:12",
@@ -62,10 +63,10 @@ const MOCK: Result[] = [
     channel: "The Pakistan Experience",
     date: "Apr 20, 2026",
     ageDays: 8,
-    sentiment: "neutral",
+    language: "urdu",
     snippet:
-      "جمہوریت صرف انتخابات کا نام نہیں، یہ اداروں کی مضبوطی اور شہری آزادیوں کے تحفظ کا مسلسل عمل ہے۔",
-    language: "ur",
+      "جمہوریت صرف انتخابات کا نام نہیں، یہ اداروں کی مضبوطی اور شہری آزادیوں کے تحفظ کا مسلسل عمل ہے۔ اس عمل میں میڈیا کی آزادی، عدلیہ کی خودمختاری اور عوام کا باشعور ہونا بنیادی کردار ادا کرتے ہیں۔",
+    scriptLang: "ur",
     tStart: "17:25",
     tEnd: "17:41",
     duration: "1:42:08",
@@ -79,10 +80,10 @@ const MOCK: Result[] = [
     channel: "Dawn News — Live",
     date: "Apr 27, 2026",
     ageDays: 1,
-    sentiment: "positive",
+    language: "english",
     snippet:
-      "The resilience of democracy in South Asia depends on a free press, independent courts, and citizens who refuse to be silent.",
-    language: "en",
+      "The resilience of democracy in South Asia depends on a free press, independent courts, and citizens who refuse to be silent in the face of overreach. Recent reforms suggest a cautious but tangible shift toward accountability in state institutions.",
+    scriptLang: "en",
     tStart: "12:04",
     tEnd: "12:19",
     duration: "42:55",
@@ -96,10 +97,10 @@ const MOCK: Result[] = [
     channel: "LUMS — Public Policy Series",
     date: "Apr 10, 2026",
     ageDays: 18,
-    sentiment: "neutral",
+    language: "multilingual",
     snippet:
-      "Scholars often remind us that democracy is less about majority rule and more about the protections afforded to the minority.",
-    language: "en",
+      "Scholars often remind us that democracy is less about majority rule and more about the protections afforded to the minority. Across comparative cases — from Brazil to South Korea — the strength of civil society has repeatedly proven decisive during periods of institutional strain.",
+    scriptLang: "en",
     tStart: "08:47",
     tEnd: "09:02",
     duration: "1:12:30",
@@ -113,10 +114,10 @@ const MOCK: Result[] = [
     channel: "Junoon Podcast",
     date: "Apr 25, 2026",
     ageDays: 3,
-    sentiment: "critical",
+    language: "urdu",
     snippet:
-      "اگر جمہوریت کو صرف ایک نعرہ بنا دیا جائے تو عوام کا اعتماد کھو جاتا ہے، اور یہی خلا آمریت کو جگہ دیتا ہے۔",
-    language: "ur",
+      "اگر جمہوریت کو صرف ایک نعرہ بنا دیا جائے تو عوام کا اعتماد کھو جاتا ہے، اور یہی خلا آمریت کو جگہ دیتا ہے۔ مقرر کا کہنا ہے کہ نوجوان نسل کو سیاسی عمل میں شامل کیے بغیر کوئی بھی اصلاحات پائیدار نہیں ہو سکتیں۔",
+    scriptLang: "ur",
     tStart: "44:12",
     tEnd: "44:27",
     duration: "2:05:44",
@@ -130,10 +131,10 @@ const MOCK: Result[] = [
     channel: "ARY News — Off The Record",
     date: "Apr 15, 2026",
     ageDays: 13,
-    sentiment: "positive",
+    language: "english",
     snippet:
-      "The election commission's transparency drive is a quiet but important victory for democracy and for every voter in the country.",
-    language: "en",
+      "The election commission's transparency drive is a quiet but important victory for democracy and for every voter in the country. Analysts note that publishing polling-station-level data is a baseline reform that many older democracies still struggle to implement consistently.",
+    scriptLang: "en",
     tStart: "21:40",
     tEnd: "21:55",
     duration: "48:20",
@@ -154,11 +155,16 @@ const DATE_OPTS: { id: DateRange; label: string }[] = [
   { id: "all", label: "All time" },
 ];
 
-const SENTIMENT_OPTS: { id: Sentiment; label: string; dot: string }[] = [
-  { id: "positive", label: "Positive", dot: "bg-emerald-400" },
-  { id: "neutral", label: "Neutral", dot: "bg-sky-400" },
-  { id: "critical", label: "Critical", dot: "bg-rose-400" },
+const LANGUAGE_OPTS: { id: Language; label: string; dot: string }[] = [
+  { id: "english", label: "English", dot: "bg-sky-400" },
+  { id: "urdu", label: "Urdu", dot: "bg-emerald-400" },
+  { id: "arabic", label: "Arabic", dot: "bg-amber-400" },
+  { id: "hindi", label: "Hindi", dot: "bg-rose-400" },
+  { id: "multilingual", label: "Multilingual", dot: "bg-violet-400" },
 ];
+
+const languageLabel = (l: Language) =>
+  l === "english" ? "English" : l === "urdu" ? "Urdu" : l === "arabic" ? "Arabic" : l === "hindi" ? "Hindi" : "Multilingual";
 
 // Relevance meter — circular ring with brand gradient
 const RelevanceMeter = ({ value }: { value: number }) => {
@@ -207,7 +213,7 @@ const Highlighted = ({ text, query, lang }: { text: string; query: string; lang:
     .filter((t) => t.length > 1);
   if (tokens.length === 0) {
     return (
-      <p className={cn("text-[15px] leading-relaxed text-foreground/90", lang === "ur" && "font-urdu text-right text-lg")}>
+      <p className={cn("text-[13.5px] leading-relaxed text-foreground/90", lang === "ur" && "font-urdu text-right text-[1.0625rem]")}>
         {text}
       </p>
     );
@@ -217,8 +223,8 @@ const Highlighted = ({ text, query, lang }: { text: string; query: string; lang:
   return (
     <p
       className={cn(
-        "text-[15px] leading-relaxed text-foreground/90",
-        lang === "ur" && "font-urdu text-right text-lg",
+        "text-[13.5px] leading-relaxed text-foreground/90",
+        lang === "ur" && "font-urdu text-right text-[1.0625rem]",
       )}
       dir={lang === "ur" ? "rtl" : "ltr"}
     >
@@ -239,8 +245,16 @@ const Highlighted = ({ text, query, lang }: { text: string; query: string; lang:
   );
 };
 
-const sentimentDot = (s: Sentiment) =>
-  s === "positive" ? "bg-emerald-400" : s === "critical" ? "bg-rose-400" : "bg-sky-400";
+const languageDot = (l: Language) =>
+  l === "english"
+    ? "bg-sky-400"
+    : l === "urdu"
+      ? "bg-emerald-400"
+      : l === "arabic"
+        ? "bg-amber-400"
+        : l === "hindi"
+          ? "bg-rose-400"
+          : "bg-violet-400";
 
 const SourcePill = ({ source, label }: { source: SourceType; label: string }) => {
   const Icon = source === "news" ? Newspaper : source === "podcasts" ? Mic : GraduationCap;
@@ -281,12 +295,13 @@ const ResultCard = ({ result, query, index }: { result: Result; query: string; i
           <span className="text-xs text-muted-foreground">{result.channel}</span>
           <span className="text-xs text-muted-foreground/60">·</span>
           <span className="text-xs text-muted-foreground">{result.date}</span>
-          <span className="ml-auto inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <span className={cn("h-1.5 w-1.5 rounded-full", sentimentDot(result.sentiment))} />
-            <span className="capitalize">{result.sentiment}</span>
+          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-muted-foreground">
+            <LanguagesIcon className="h-3 w-3 text-primary/80" />
+            <span className={cn("h-1.5 w-1.5 rounded-full", languageDot(result.language))} />
+            <span>{languageLabel(result.language)}</span>
           </span>
         </div>
-        <Highlighted text={result.snippet} query={query} lang={result.language} />
+        <Highlighted text={result.snippet} query={query} lang={result.scriptLang} />
         <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
           <Sparkles className="h-3.5 w-3.5 text-primary" />
           <span>AI-extracted insight · {result.tStart} – {result.tEnd}</span>
@@ -434,26 +449,28 @@ const ResultsPage = () => {
 
   const [sources, setSources] = useState<Set<SourceType>>(new Set(["news", "podcasts", "lectures"]));
   const [dateRange, setDateRange] = useState<DateRange>("all");
-  const [sentiments, setSentiments] = useState<Set<Sentiment>>(new Set(["positive", "neutral", "critical"]));
+  const [languages, setLanguages] = useState<Set<Language>>(
+    new Set(["english", "urdu", "arabic", "hindi", "multilingual"]),
+  );
 
   const toggleSource = (s: SourceType) => {
     const next = new Set(sources);
     next.has(s) ? next.delete(s) : next.add(s);
     setSources(next);
   };
-  const toggleSentiment = (s: Sentiment) => {
-    const next = new Set(sentiments);
-    next.has(s) ? next.delete(s) : next.add(s);
-    setSentiments(next);
+  const toggleLanguage = (l: Language) => {
+    const next = new Set(languages);
+    next.has(l) ? next.delete(l) : next.add(l);
+    setLanguages(next);
   };
 
   const dayLimit = dateRange === "24h" ? 1 : dateRange === "7d" ? 7 : dateRange === "30d" ? 30 : Infinity;
 
   const results = useMemo(() => {
     return MOCK.filter(
-      (r) => sources.has(r.source) && sentiments.has(r.sentiment) && r.ageDays <= dayLimit,
+      (r) => sources.has(r.source) && languages.has(r.language) && r.ageDays <= dayLimit,
     );
-  }, [sources, sentiments, dayLimit]);
+  }, [sources, languages, dayLimit]);
 
   const scopeLabel =
     sources.size === 3
@@ -564,11 +581,11 @@ const ResultsPage = () => {
                   </RadioRow>
                 ))}
               </FilterSection>
-              <FilterSection title="Sentiment">
-                {SENTIMENT_OPTS.map((s) => (
-                  <CheckRow key={s.id} checked={sentiments.has(s.id)} onChange={() => toggleSentiment(s.id)}>
-                    <span className={cn("h-2 w-2 rounded-full", s.dot)} />
-                    {s.label}
+              <FilterSection title="Language">
+                {LANGUAGE_OPTS.map((l) => (
+                  <CheckRow key={l.id} checked={languages.has(l.id)} onChange={() => toggleLanguage(l.id)}>
+                    <span className={cn("h-2 w-2 rounded-full", l.dot)} />
+                    {l.label}
                   </CheckRow>
                 ))}
               </FilterSection>
@@ -584,7 +601,7 @@ const ResultsPage = () => {
                   setPendingQuery(q);
                   setQuery(q);
                   setSources(new Set(["news", "podcasts", "lectures"]));
-                  setSentiments(new Set(["positive", "neutral", "critical"]));
+                  setLanguages(new Set(["english", "urdu", "arabic", "hindi", "multilingual"]));
                   setDateRange("all");
                 }}
               />
