@@ -449,26 +449,28 @@ const ResultsPage = () => {
 
   const [sources, setSources] = useState<Set<SourceType>>(new Set(["news", "podcasts", "lectures"]));
   const [dateRange, setDateRange] = useState<DateRange>("all");
-  const [sentiments, setSentiments] = useState<Set<Sentiment>>(new Set(["positive", "neutral", "critical"]));
+  const [languages, setLanguages] = useState<Set<Language>>(
+    new Set(["english", "urdu", "arabic", "hindi", "multilingual"]),
+  );
 
   const toggleSource = (s: SourceType) => {
     const next = new Set(sources);
     next.has(s) ? next.delete(s) : next.add(s);
     setSources(next);
   };
-  const toggleSentiment = (s: Sentiment) => {
-    const next = new Set(sentiments);
-    next.has(s) ? next.delete(s) : next.add(s);
-    setSentiments(next);
+  const toggleLanguage = (l: Language) => {
+    const next = new Set(languages);
+    next.has(l) ? next.delete(l) : next.add(l);
+    setLanguages(next);
   };
 
   const dayLimit = dateRange === "24h" ? 1 : dateRange === "7d" ? 7 : dateRange === "30d" ? 30 : Infinity;
 
   const results = useMemo(() => {
     return MOCK.filter(
-      (r) => sources.has(r.source) && sentiments.has(r.sentiment) && r.ageDays <= dayLimit,
+      (r) => sources.has(r.source) && languages.has(r.language) && r.ageDays <= dayLimit,
     );
-  }, [sources, sentiments, dayLimit]);
+  }, [sources, languages, dayLimit]);
 
   const scopeLabel =
     sources.size === 3
