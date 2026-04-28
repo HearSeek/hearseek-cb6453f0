@@ -155,11 +155,16 @@ const DATE_OPTS: { id: DateRange; label: string }[] = [
   { id: "all", label: "All time" },
 ];
 
-const SENTIMENT_OPTS: { id: Sentiment; label: string; dot: string }[] = [
-  { id: "positive", label: "Positive", dot: "bg-emerald-400" },
-  { id: "neutral", label: "Neutral", dot: "bg-sky-400" },
-  { id: "critical", label: "Critical", dot: "bg-rose-400" },
+const LANGUAGE_OPTS: { id: Language; label: string; dot: string }[] = [
+  { id: "english", label: "English", dot: "bg-sky-400" },
+  { id: "urdu", label: "Urdu", dot: "bg-emerald-400" },
+  { id: "arabic", label: "Arabic", dot: "bg-amber-400" },
+  { id: "hindi", label: "Hindi", dot: "bg-rose-400" },
+  { id: "multilingual", label: "Multilingual", dot: "bg-violet-400" },
 ];
+
+const languageLabel = (l: Language) =>
+  l === "english" ? "English" : l === "urdu" ? "Urdu" : l === "arabic" ? "Arabic" : l === "hindi" ? "Hindi" : "Multilingual";
 
 // Relevance meter — circular ring with brand gradient
 const RelevanceMeter = ({ value }: { value: number }) => {
