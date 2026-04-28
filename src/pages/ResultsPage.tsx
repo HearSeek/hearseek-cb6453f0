@@ -245,8 +245,16 @@ const Highlighted = ({ text, query, lang }: { text: string; query: string; lang:
   );
 };
 
-const sentimentDot = (s: Sentiment) =>
-  s === "positive" ? "bg-emerald-400" : s === "critical" ? "bg-rose-400" : "bg-sky-400";
+const languageDot = (l: Language) =>
+  l === "english"
+    ? "bg-sky-400"
+    : l === "urdu"
+      ? "bg-emerald-400"
+      : l === "arabic"
+        ? "bg-amber-400"
+        : l === "hindi"
+          ? "bg-rose-400"
+          : "bg-violet-400";
 
 const SourcePill = ({ source, label }: { source: SourceType; label: string }) => {
   const Icon = source === "news" ? Newspaper : source === "podcasts" ? Mic : GraduationCap;
