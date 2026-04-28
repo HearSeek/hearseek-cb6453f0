@@ -295,12 +295,13 @@ const ResultCard = ({ result, query, index }: { result: Result; query: string; i
           <span className="text-xs text-muted-foreground">{result.channel}</span>
           <span className="text-xs text-muted-foreground/60">·</span>
           <span className="text-xs text-muted-foreground">{result.date}</span>
-          <span className="ml-auto inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <span className={cn("h-1.5 w-1.5 rounded-full", sentimentDot(result.sentiment))} />
-            <span className="capitalize">{result.sentiment}</span>
+          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-muted-foreground">
+            <LanguagesIcon className="h-3 w-3 text-primary/80" />
+            <span className={cn("h-1.5 w-1.5 rounded-full", languageDot(result.language))} />
+            <span>{languageLabel(result.language)}</span>
           </span>
         </div>
-        <Highlighted text={result.snippet} query={query} lang={result.language} />
+        <Highlighted text={result.snippet} query={query} lang={result.scriptLang} />
         <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
           <Sparkles className="h-3.5 w-3.5 text-primary" />
           <span>AI-extracted insight · {result.tStart} – {result.tEnd}</span>
