@@ -17,7 +17,7 @@ import logoMark from "@/assets/hearseek-logo-mark.png";
 
 type SourceType = "news" | "podcasts" | "lectures";
 type DateRange = "24h" | "7d" | "30d" | "all";
-type Sentiment = "positive" | "neutral" | "critical";
+type Language = "english" | "urdu" | "arabic" | "hindi" | "multilingual";
 
 type Result = {
   id: string;
@@ -27,9 +27,9 @@ type Result = {
   channel: string;
   date: string;
   ageDays: number;
-  sentiment: Sentiment;
+  language: Language;
   snippet: string;
-  language: "en" | "ur";
+  scriptLang: "en" | "ur";
   tStart: string;
   tEnd: string;
   duration: string;
