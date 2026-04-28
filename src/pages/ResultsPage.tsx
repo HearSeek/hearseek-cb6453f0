@@ -10,6 +10,7 @@ import {
   SearchX,
   Sparkles,
   ArrowLeft,
+  Languages as LanguagesIcon,
 } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { cn } from "@/lib/utils";
