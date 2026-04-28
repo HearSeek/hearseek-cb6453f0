@@ -213,7 +213,7 @@ const Highlighted = ({ text, query, lang }: { text: string; query: string; lang:
     .filter((t) => t.length > 1);
   if (tokens.length === 0) {
     return (
-      <p className={cn("text-[15px] leading-relaxed text-foreground/90", lang === "ur" && "font-urdu text-right text-lg")}>
+      <p className={cn("text-[13.5px] leading-relaxed text-foreground/90", lang === "ur" && "font-urdu text-right text-[1.0625rem]")}>
         {text}
       </p>
     );
@@ -223,8 +223,8 @@ const Highlighted = ({ text, query, lang }: { text: string; query: string; lang:
   return (
     <p
       className={cn(
-        "text-[15px] leading-relaxed text-foreground/90",
-        lang === "ur" && "font-urdu text-right text-lg",
+        "text-[13.5px] leading-relaxed text-foreground/90",
+        lang === "ur" && "font-urdu text-right text-[1.0625rem]",
       )}
       dir={lang === "ur" ? "rtl" : "ltr"}
     >
