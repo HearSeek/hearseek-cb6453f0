@@ -19,8 +19,8 @@ export const Header = () => {
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2" aria-label="HearSeek home">
           <img src={logo} alt="HearSeek" className="h-9 w-9 object-contain" />
-          <span className="font-display text-lg font-bold tracking-tight">
-            Hear<span className="text-gradient">Seek</span>
+          <span className="font-display text-lg font-bold tracking-tight text-white">
+            HearSeek
           </span>
         </Link>
 

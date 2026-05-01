@@ -175,16 +175,17 @@ const RelevanceMeter = ({ value }: { value: number }) => {
   const offset = c * (1 - value / 100);
   return (
     <div className="relative flex flex-col items-center gap-1.5">
-      <svg width={size} height={size} className="-rotate-90">
-        <defs>
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="-rotate-90 block">
+          <defs>
           <linearGradient id="relGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="hsl(190 95% 55%)" />
             <stop offset="60%" stopColor="hsl(258 90% 66%)" />
             <stop offset="100%" stopColor="hsl(290 80% 60%)" />
           </linearGradient>
-        </defs>
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="hsl(var(--border))" strokeWidth={stroke} fill="none" />
-        <circle
+          </defs>
+          <circle cx={size / 2} cy={size / 2} r={r} stroke="hsl(var(--border))" strokeWidth={stroke} fill="none" />
+          <circle
           cx={size / 2}
           cy={size / 2}
           r={r}
@@ -195,10 +196,11 @@ const RelevanceMeter = ({ value }: { value: number }) => {
           strokeDasharray={c}
           strokeDashoffset={offset}
           style={{ filter: "drop-shadow(0 0 6px hsl(258 90% 66% / 0.55))" }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center pt-0.5">
-        <span className="font-display text-sm font-semibold text-foreground">{value}%</span>
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="font-display text-sm font-semibold leading-none text-foreground">{value}%</span>
+        </div>
       </div>
       <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Match</span>
     </div>
