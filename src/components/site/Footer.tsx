@@ -9,8 +9,8 @@ export const Footer = () => {
         <div className="md:col-span-2">
           <Link to="/" className="flex items-center gap-2">
             <img src={logo} alt="HearSeek" className="h-9 w-9 object-contain" />
-            <span className="font-display text-lg font-bold tracking-tight">
-              Hear<span className="text-gradient">Seek</span>
+            <span className="font-display text-lg font-bold tracking-tight text-white">
+              HearSeek
             </span>
           </Link>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
