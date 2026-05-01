@@ -17,10 +17,23 @@ export const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/70 backdrop-blur-xl">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2" aria-label="HearSeek home">
-          <img src={logo} alt="HearSeek" className="h-9 w-9 object-contain" />
-          <span className="font-display text-lg font-bold tracking-tight">
-            Hear<span className="text-gradient">Seek</span>
+        <Link to="/" className="flex items-center gap-3" aria-label="HearSeek home">
+          <span
+            className="relative flex h-11 w-11 items-center justify-center rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle at center, hsl(258 90% 35% / 0.55) 0%, hsl(230 25% 11%) 70%)",
+            }}
+          >
+            <img src={logo} alt="HearSeek" className="relative h-9 w-9 object-contain" />
+          </span>
+          <span className="flex flex-col leading-tight">
+            <span className="font-display text-lg font-bold tracking-tight text-white">
+              HearSeek
+            </span>
+            <span className="hidden text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground sm:inline">
+              The World's First AI Search Engine for Audio
+            </span>
           </span>
         </Link>
 
