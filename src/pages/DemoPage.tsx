@@ -88,7 +88,7 @@ const DemoPage = () => {
         <img
           src={logoMark}
           alt="HearSeek"
-          className="mb-8 h-16 w-16 object-contain drop-shadow-[0_0_28px_hsl(var(--primary)/0.6)] md:h-20 md:w-20"
+          className="mb-8 h-[70px] w-[70px] object-contain drop-shadow-[0_0_28px_hsl(var(--primary)/0.6)] md:h-[88px] md:w-[88px]"
         />
         <h1 className="mb-10 text-center font-display text-2xl font-semibold tracking-tight md:text-3xl">
           What would you like to find today?
