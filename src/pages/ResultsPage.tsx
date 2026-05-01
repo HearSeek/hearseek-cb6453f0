@@ -175,30 +175,32 @@ const RelevanceMeter = ({ value }: { value: number }) => {
   const offset = c * (1 - value / 100);
   return (
     <div className="relative flex flex-col items-center gap-1.5">
-      <svg width={size} height={size} className="-rotate-90">
-        <defs>
-          <linearGradient id="relGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="hsl(190 95% 55%)" />
-            <stop offset="60%" stopColor="hsl(258 90% 66%)" />
-            <stop offset="100%" stopColor="hsl(290 80% 60%)" />
-          </linearGradient>
-        </defs>
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="hsl(var(--border))" strokeWidth={stroke} fill="none" />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          stroke="url(#relGrad)"
-          strokeWidth={stroke}
-          fill="none"
-          strokeLinecap="round"
-          strokeDasharray={c}
-          strokeDashoffset={offset}
-          style={{ filter: "drop-shadow(0 0 6px hsl(258 90% 66% / 0.55))" }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center pt-0.5">
-        <span className="font-display text-sm font-semibold text-foreground">{value}%</span>
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="-rotate-90">
+          <defs>
+            <linearGradient id="relGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="hsl(190 95% 55%)" />
+              <stop offset="60%" stopColor="hsl(258 90% 66%)" />
+              <stop offset="100%" stopColor="hsl(290 80% 60%)" />
+            </linearGradient>
+          </defs>
+          <circle cx={size / 2} cy={size / 2} r={r} stroke="hsl(var(--border))" strokeWidth={stroke} fill="none" />
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={r}
+            stroke="url(#relGrad)"
+            strokeWidth={stroke}
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray={c}
+            strokeDashoffset={offset}
+            style={{ filter: "drop-shadow(0 0 6px hsl(258 90% 66% / 0.55))" }}
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="font-sans text-sm font-bold leading-none text-foreground">{value}%</span>
+        </div>
       </div>
       <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Match</span>
     </div>
@@ -416,7 +418,13 @@ const EmptyState = ({ query, onPick }: { query: string; onPick: (q: string) => v
     <div className="mx-auto mt-10 max-w-xl rounded-2xl border border-white/10 bg-card/40 p-10 text-center backdrop-blur-xl">
       <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center">
         <div className="absolute inset-0 rounded-full bg-gradient-waveform opacity-20 blur-xl" />
-        <div className="relative flex h-20 w-20 items-center justify-center rounded-full border border-white/10 bg-background/60 backdrop-blur">
+        <div
+          className="relative flex h-20 w-20 items-center justify-center rounded-full border border-white/10 backdrop-blur"
+          style={{
+            background:
+              "radial-gradient(circle at center, hsl(258 90% 35% / 0.5) 0%, hsl(230 25% 9%) 70%)",
+          }}
+        >
           <SearchX className="h-9 w-9 text-primary" strokeWidth={1.4} />
         </div>
       </div>
@@ -504,13 +512,26 @@ const ResultsPage = () => {
             <ArrowLeft className="h-3.5 w-3.5" />
             Back
           </button>
-          <Link to="/demo" className="flex items-center gap-2">
-            <img
-              src={logoMark}
-              alt="HearSeek"
-              className="h-9 w-9 object-contain drop-shadow-[0_0_18px_hsl(var(--primary)/0.55)]"
-            />
-            <span className="font-display text-sm font-semibold tracking-tight">HearSeek</span>
+          <Link to="/demo" className="flex items-center gap-2.5">
+            <span
+              className="relative flex h-11 w-11 items-center justify-center rounded-full"
+              style={{
+                background:
+                  "radial-gradient(circle at center, hsl(258 90% 35% / 0.6) 0%, hsl(230 25% 9%) 70%)",
+              }}
+            >
+              <img
+                src={logoMark}
+                alt="HearSeek"
+                className="relative h-9 w-9 object-contain drop-shadow-[0_0_18px_hsl(var(--primary)/0.55)]"
+              />
+            </span>
+            <div className="flex flex-col leading-tight">
+              <span className="font-display text-sm font-semibold tracking-tight text-white">HearSeek</span>
+              <span className="hidden text-[9px] font-medium uppercase tracking-[0.14em] text-muted-foreground sm:inline">
+                AI Search Engine for Audio
+              </span>
+            </div>
           </Link>
           <div className="w-[72px]" />
         </div>

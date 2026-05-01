@@ -85,11 +85,24 @@ const DemoPage = () => {
 
       <main className="relative mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center px-5 py-16 md:px-8">
         {/* Logo */}
-        <img
-          src={logoMark}
-          alt="HearSeek"
-          className="mb-8 h-16 w-16 object-contain drop-shadow-[0_0_28px_hsl(var(--primary)/0.6)] md:h-20 md:w-20"
-        />
+        <div
+          className="mb-3 flex items-center justify-center rounded-full"
+          style={{
+            width: 96,
+            height: 96,
+            background:
+              "radial-gradient(circle at center, hsl(258 90% 35% / 0.55) 0%, hsl(230 25% 6%) 70%)",
+          }}
+        >
+          <img
+            src={logoMark}
+            alt="HearSeek"
+            className="h-[70px] w-[70px] object-contain drop-shadow-[0_0_28px_hsl(var(--primary)/0.6)] md:h-[88px] md:w-[88px]"
+          />
+        </div>
+        <p className="mb-6 text-center text-[11px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+          The World's First AI Search Engine for Audio
+        </p>
         <h1 className="mb-10 text-center font-display text-2xl font-semibold tracking-tight md:text-3xl">
           What would you like to find today?
         </h1>
