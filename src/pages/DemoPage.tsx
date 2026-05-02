@@ -1,14 +1,33 @@
 import { useEffect, useRef, useState } from "react";
-import { Search, Newspaper, Mic, ChevronDown, Check } from "lucide-react";
+import {
+  Search,
+  Newspaper,
+  Mic,
+  ChevronDown,
+  Check,
+  PlayCircle,
+  Video,
+  Users,
+  Library,
+  Loader2,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoMark from "@/assets/hearseek-logo-mark.png";
 
-type Scope = "news" | "podcasts";
+const COLLECTIONS_ENDPOINT = "https://server.hearseek.com/api/enterprise";
+const FALLBACK_COLLECTIONS = ["News Channels", "Podcasts"];
 
-const SCOPES: { id: Scope; label: string; icon: typeof Newspaper }[] = [
-  { id: "news", label: "News Channels", icon: Newspaper },
-  { id: "podcasts", label: "Podcasts", icon: Mic },
-];
+type IconType = typeof Newspaper;
+
+const iconForCollection = (name: string): IconType => {
+  const n = name.toLowerCase();
+  if (n.includes("news")) return Newspaper;
+  if (n.includes("podcast")) return Mic;
+  if (n.includes("demo")) return PlayCircle;
+  if (n.includes("video")) return Video;
+  if (n.includes("interview")) return Users;
+  return Library;
+};
 
 const PLACEHOLDERS = [
   "Ask HearSeek to search across hundreds of broadcasts...",
@@ -53,13 +72,48 @@ const useTypingPlaceholder = (phrases: string[], active: boolean) => {
 };
 
 const DemoPage = () => {
-  const [scope, setScope] = useState<Scope>("news");
+  const [collections, setCollections] = useState<string[]>(FALLBACK_COLLECTIONS);
+  const [collectionsLoading, setCollectionsLoading] = useState(true);
+  const [usedFallback, setUsedFallback] = useState(false);
+  const [scope, setScope] = useState<string>(FALLBACK_COLLECTIONS[0]);
   const [scopeOpen, setScopeOpen] = useState(false);
   const [focused, setFocused] = useState(false);
   const [value, setValue] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const placeholder = useTypingPlaceholder(PLACEHOLDERS, value.length === 0);
+
+  // Fetch dynamic collections from the HearSeek enterprise API
+  useEffect(() => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+
+    (async () => {
+      try {
+        const res = await fetch(COLLECTIONS_ENDPOINT, { signal: controller.signal });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0 && data.every((x) => typeof x === "string")) {
+          setCollections(data);
+          setScope(data[0]);
+          setUsedFallback(false);
+        } else {
+          setUsedFallback(true);
+        }
+      } catch (err) {
+        console.warn("[DemoPage] Failed to load collections, using defaults:", err);
+        setUsedFallback(true);
+      } finally {
+        clearTimeout(timeout);
+        setCollectionsLoading(false);
+      }
+    })();
+
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
+  }, []);
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -71,8 +125,8 @@ const DemoPage = () => {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  const ActiveIcon = SCOPES.find((s) => s.id === scope)!.icon;
-  const activeLabel = SCOPES.find((s) => s.id === scope)!.label;
+  const ActiveIcon = iconForCollection(scope);
+  const activeLabel = scope;
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-background text-foreground">
@@ -121,31 +175,42 @@ const DemoPage = () => {
                 className="min-w-0 flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none md:text-base"
               />
 
-              {/* Integrated scope dropdown */}
+              {/* Integrated scope dropdown — dynamic from API */}
               <div ref={dropdownRef} className="relative shrink-0">
                 <button
                   type="button"
-                  onClick={() => setScopeOpen((o) => !o)}
+                  onClick={() => !collectionsLoading && setScopeOpen((o) => !o)}
+                  disabled={collectionsLoading}
                   className={cn(
                     "inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-medium text-foreground/90 transition hover:border-primary/40 hover:bg-white/10 md:text-sm",
                     scopeOpen && "border-primary/40 bg-white/10",
+                    collectionsLoading && "cursor-wait opacity-70",
                   )}
                 >
-                  <ActiveIcon className="h-3.5 w-3.5 text-primary" />
-                  <span className="hidden sm:inline">{activeLabel}</span>
+                  {collectionsLoading ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+                      <span className="hidden sm:inline">Loading…</span>
+                    </>
+                  ) : (
+                    <>
+                      <ActiveIcon className="h-3.5 w-3.5 text-primary" />
+                      <span className="hidden max-w-[140px] truncate sm:inline">{activeLabel}</span>
+                    </>
+                  )}
                   <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition", scopeOpen && "rotate-180")} />
                 </button>
-                {scopeOpen && (
-                  <div className="absolute right-0 top-[calc(100%+8px)] z-20 w-52 overflow-hidden rounded-xl border border-white/10 bg-popover/95 p-1 shadow-elegant backdrop-blur-xl animate-fade-in">
-                    {SCOPES.map((s) => {
-                      const Icon = s.icon;
-                      const active = s.id === scope;
+                {scopeOpen && !collectionsLoading && (
+                  <div className="absolute right-0 top-[calc(100%+8px)] z-20 max-h-72 w-56 overflow-y-auto rounded-xl border border-white/10 bg-popover/95 p-1 shadow-elegant backdrop-blur-xl animate-fade-in">
+                    {collections.map((name) => {
+                      const Icon = iconForCollection(name);
+                      const active = name === scope;
                       return (
                         <button
-                          key={s.id}
+                          key={name}
                           type="button"
                           onClick={() => {
-                            setScope(s.id);
+                            setScope(name);
                             setScopeOpen(false);
                           }}
                           className={cn(
@@ -153,9 +218,9 @@ const DemoPage = () => {
                             active ? "bg-primary/10 text-foreground" : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
                           )}
                         >
-                          <Icon className="h-4 w-4 text-primary" />
-                          <span className="flex-1">{s.label}</span>
-                          {active && <Check className="h-3.5 w-3.5 text-primary" />}
+                          <Icon className="h-4 w-4 shrink-0 text-primary" />
+                          <span className="flex-1 truncate">{name}</span>
+                          {active && <Check className="h-3.5 w-3.5 shrink-0 text-primary" />}
                         </button>
                       );
                     })}
@@ -166,6 +231,9 @@ const DemoPage = () => {
           </div>
           <p className="mt-4 text-center text-xs text-muted-foreground/80">
             Search across hundreds of {activeLabel.toLowerCase()} — by meaning, not just keywords.
+            {usedFallback && (
+              <span className="ml-1 text-muted-foreground/60">(using default collections)</span>
+            )}
           </p>
         </div>
       </main>
