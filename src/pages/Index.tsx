@@ -116,7 +116,7 @@ const Index = () => {
               ))}
             </ul>
             <p className="mt-6 text-sm">
-              <span className="font-display text-2xl font-bold text-gradient">$20</span>
+              <span className="font-display text-2xl font-bold text-gradient">$15</span>
               <span className="text-muted-foreground"> / month</span>
             </p>
             <div className="mt-8 flex flex-wrap gap-3">

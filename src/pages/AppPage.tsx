@@ -26,7 +26,7 @@ const AppPage = () => {
         <div className="container relative py-20 md:py-28 grid md:grid-cols-2 gap-12 items-center">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-secondary/40 px-4 py-1.5 text-xs font-medium text-muted-foreground">
-              <Smartphone className="h-3 w-3 text-primary" /> Consumer App · $20/month
+              <Smartphone className="h-3 w-3 text-primary" /> Consumer App · $15/month
             </span>
             <h1 className="mt-6 font-display text-5xl md:text-6xl font-bold tracking-tight leading-[1.05]">
               Search every word <br /> you've <span className="text-gradient">ever heard.</span>
@@ -99,7 +99,7 @@ const AppPage = () => {
           <div className="rounded-3xl border border-primary/30 bg-gradient-card p-8 shadow-elegant">
             <div className="text-sm font-semibold uppercase tracking-wider text-primary">HearSeek Pro</div>
             <div className="mt-4 flex items-baseline gap-2">
-              <span className="font-display text-5xl font-bold">$20</span>
+              <span className="font-display text-5xl font-bold">$15</span>
               <span className="text-muted-foreground">/month</span>
             </div>
             <ul className="mt-6 space-y-3 text-sm">
