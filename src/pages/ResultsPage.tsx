@@ -127,7 +127,7 @@ const Snippet = ({ hit }: { hit: SearchHit }) => {
       dir={rtl ? "rtl" : "ltr"}
     >
       {hit.pre && <span>{hit.pre} </span>}
-      <span className="font-semibold text-foreground">{hit.main}</span>
+      <span>{hit.main}</span>
       {hit.post && <span> {hit.post}</span>}
     </p>
   );
