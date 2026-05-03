@@ -272,8 +272,6 @@ const ResultsPage = () => {
     name: configName,
     slug: configSlug,
   });
-  const [focused, setFocused] = useState(false);
-
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [numHits, setNumHits] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -408,13 +406,6 @@ const ResultsPage = () => {
         <form onSubmit={onSubmit} className="mx-auto mt-8 max-w-2xl">
           <div className="relative">
             <div
-              aria-hidden
-              className={cn(
-                "absolute -inset-[2px] rounded-xl bg-gradient-waveform blur-md transition-opacity duration-300",
-                focused ? "opacity-60" : "opacity-0",
-              )}
-            />
-            <div
               className={cn(
                 "relative flex items-center gap-2.5 rounded-xl border bg-card/60 px-3.5 py-2.5 backdrop-blur-xl transition-colors duration-300",
                 "border-white/10",
@@ -425,11 +416,9 @@ const ResultsPage = () => {
                 type="text"
                 value={pendingQuery}
                 onChange={(e) => setPendingQuery(e.target.value)}
-                onFocus={() => setFocused(true)}
-                onBlur={() => setFocused(false)}
                 placeholder="Ask anything..."
-                className="flex-1 appearance-none border-0 bg-transparent text-sm text-foreground outline-none ring-0 placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
-                style={{ WebkitAppearance: "none", WebkitTapHighlightColor: "transparent" }}
+                className="flex-1 appearance-none border-0 bg-transparent text-sm text-foreground outline-none ring-0 shadow-none placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus:shadow-none focus-visible:outline-none focus-visible:ring-0 focus-visible:shadow-none"
+                style={{ WebkitAppearance: "none", WebkitTapHighlightColor: "transparent", boxShadow: "none", outline: "none" }}
               />
               {/* Scope dropdown — switch collection without leaving results */}
               <div ref={dropdownRef} className="relative shrink-0">

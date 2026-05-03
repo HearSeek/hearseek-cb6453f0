@@ -1,36 +1,30 @@
-# Strip `�` from displayed snippets
+I reproduced what you’re describing: the sharp-edged highlighted rectangle is not Safari’s native focus outline anymore. It is the app’s own focus treatment — an absolutely-positioned gradient layer behind the search bar that turns visible when `focused === true`. Because it sits behind a rounded rectangle and uses blur, it reads like a glowing rectangular panel with visible edges.
 
-Fix the visible `�` characters in Urdu (and any other) results by pruning the Unicode replacement character (`U+FFFD`) from snippet text at normalization time. Pure client-side cleanup — leaves the underlying transcription / API alone for later investigation.
+Plan:
 
-## Change
+1. Remove the focus-triggered glow layer from the search bars
+   - In `src/pages/DemoPage.tsx`, remove or permanently disable the `focused ? "opacity-70" : "opacity-0"` gradient halo behind the main search bar.
+   - In `src/pages/ResultsPage.tsx`, do the same for the compact results-page search bar.
+   - This will eliminate the rectangle that appears only when clicking into the input.
 
-One file: `src/lib/hearseek.ts`.
+2. Remove now-unused focus state if it is only used for that glow
+   - Delete the `focused` state and the `onFocus` / `onBlur` handlers from both search inputs if they no longer control anything.
+   - Keep the actual input behavior unchanged.
 
-1. Add a small helper just above `normalizeHit`:
+3. Keep the search bar visually stable
+   - Leave the normal static bar styling intact: rounded shape, subtle border, translucent background, backdrop blur.
+   - No border-color switch, no ring, no outline, no focus glow.
+   - The only focus indication will be the text caret inside the input, so clicking will feel clean and professional.
 
-```ts
-// Strip Unicode replacement chars (U+FFFD) introduced upstream by bad
-// transcoding. Also collapses any double-spaces they leave behind.
-const stripReplacementChars = (s: string): string =>
-  s.replace(/\uFFFD+/g, "").replace(/[ \t]{2,}/g, " ").trim();
-```
+4. Optional hardening against browser-native focus artifacts
+   - Add a small search-input-specific class or inline style to ensure Safari/Chrome do not add native focus UI:
+     - `outline: none`
+     - `box-shadow: none`
+     - `-webkit-appearance: none`
+     - `-webkit-tap-highlight-color: transparent`
+   - This is already mostly present, but I’ll make it explicit enough that the browser should not reintroduce a focus rectangle.
 
-2. In `normalizeHit`, run the three snippet fields through it:
-
-```ts
-pre:  typeof segment.pre  === "string" ? stripReplacementChars(segment.pre)  : "",
-main: typeof segment.main === "string" ? stripReplacementChars(segment.main) : "",
-post: typeof segment.post === "string" ? stripReplacementChars(segment.post) : "",
-```
-
-## Why this scope
-
-- `\uFFFD` is always the marker for a decode failure, never legitimate content — safe to strip blindly.
-- Done once at normalization, so every consumer (`ResultsPage`, future filters, future PDF/share) gets clean text automatically.
-- Whitespace cleanup avoids leaving awkward `"word  word"` gaps where a character used to be.
-- We deliberately do **not** touch `title` or `channel`; if those ever show `�` it's a different bug worth surfacing.
-
-## Out of scope
-
-- Server-side / transcription pipeline fix (you'll investigate later).
-- Any font or RTL changes — the replacement char isn't a font issue.
+Expected result:
+- Clicking the search bar will no longer create any glowing or rectangular highlighted area behind it.
+- The bar will remain visually identical before and after focus, except for the cursor/caret appearing where the user types.
+- This should address the Safari concern as well, because the visible artifact is currently coming from our code rather than Safari.
