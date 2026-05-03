@@ -442,7 +442,7 @@ const ResultsPage = () => {
                 >
                   <ActiveIcon className="h-3.5 w-3.5 text-primary" />
                   <span className="hidden max-w-[140px] truncate sm:inline">
-                    {activeConfig.name}
+                    {pendingConfig.name}
                   </span>
                   <ChevronDown
                     className={cn(
@@ -455,7 +455,7 @@ const ResultsPage = () => {
                   <div className="absolute right-0 top-[calc(100%+8px)] z-20 max-h-72 w-56 overflow-y-auto rounded-xl border border-white/10 bg-popover/95 p-1 shadow-elegant backdrop-blur-xl animate-fade-in">
                     {collections.map((cfg) => {
                       const Icon = iconForCollection(cfg.name);
-                      const active = cfg.slug === configSlug;
+                      const active = cfg.slug === pendingConfig.slug;
                       return (
                         <button
                           key={cfg.slug}
