@@ -79,7 +79,11 @@ export const getSearchConfigurations = async (force = false): Promise<SearchConf
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
   try {
+    if (!DEMO_KEY) {
+      throw new Error("Missing VITE_HEARSEEK_DEMO_KEY");
+    }
     const res = await fetch(`${API_BASE}/enterprise/search_configurations`, {
+      headers: { "X-Company-Key": DEMO_KEY },
       signal: controller.signal,
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
