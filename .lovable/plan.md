@@ -1,30 +1,45 @@
-I reproduced what you’re describing: the sharp-edged highlighted rectangle is not Safari’s native focus outline anymore. It is the app’s own focus treatment — an absolutely-positioned gradient layer behind the search bar that turns visible when `focused === true`. Because it sits behind a rounded rectangle and uses blur, it reads like a glowing rectangular panel with visible edges.
+I found the issue: the glow is still being rendered as a big rectangular gradient element behind the search bar. Even with blur and rounded corners, Safari can expose the element’s rectangular bounds, which is the sharp-corner box you’re seeing.
 
 Plan:
 
-1. Remove the focus-triggered glow layer from the search bars
-   - In `src/pages/DemoPage.tsx`, remove or permanently disable the `focused ? "opacity-70" : "opacity-0"` gradient halo behind the main search bar.
-   - In `src/pages/ResultsPage.tsx`, do the same for the compact results-page search bar.
-   - This will eliminate the rectangle that appears only when clicking into the input.
+1. Replace the current gradient rectangle glow
+   - Remove the `absolute -inset-* bg-gradient-waveform blur-2xl` focus layer from both search bars.
+   - This is the element creating the “bigger rectangle.”
 
-2. Remove now-unused focus state if it is only used for that glow
-   - Delete the `focused` state and the `onFocus` / `onBlur` handlers from both search inputs if they no longer control anything.
-   - Keep the actual input behavior unchanged.
+2. Rebuild the focus glow as non-rectangular radial light
+   - Use CSS `radial-gradient(...)` layers instead of the existing linear `bg-gradient-waveform` block.
+   - Anchor the glow around the search bar with transparent edges, so there is no visible rectangular fill area for Safari to reveal.
+   - Keep it subtle: cyan/violet/pink haze, low opacity, soft blur.
 
-3. Keep the search bar visually stable
-   - Leave the normal static bar styling intact: rounded shape, subtle border, translucent background, backdrop blur.
-   - No border-color switch, no ring, no outline, no focus glow.
-   - The only focus indication will be the text caret inside the input, so clicking will feel clean and professional.
+3. Keep the glow behavior the user liked
+   - Glow appears only while the input is focused.
+   - It fades in/out smoothly.
+   - The search bar itself stays stable: no layout shift, no border jump, no native Safari focus ring.
 
-4. Optional hardening against browser-native focus artifacts
-   - Add a small search-input-specific class or inline style to ensure Safari/Chrome do not add native focus UI:
-     - `outline: none`
-     - `box-shadow: none`
-     - `-webkit-appearance: none`
-     - `-webkit-tap-highlight-color: transparent`
-   - This is already mostly present, but I’ll make it explicit enough that the browser should not reintroduce a focus rectangle.
+4. Apply consistently in both places
+   - `src/pages/DemoPage.tsx` hero search bar.
+   - `src/pages/ResultsPage.tsx` compact search bar.
 
-Expected result:
-- Clicking the search bar will no longer create any glowing or rectangular highlighted area behind it.
-- The bar will remain visually identical before and after focus, except for the cursor/caret appearing where the user types.
-- This should address the Safari concern as well, because the visible artifact is currently coming from our code rather than Safari.
+Technical detail:
+
+The current implementation is effectively:
+
+```text
+[ large rectangular div ]
+  background: linear-gradient(...)
+  blur: large
+  opacity: focus-controlled
+```
+
+I’ll change it to a true halo-style background, roughly:
+
+```text
+[ transparent radial glow layer ]
+  background:
+    radial-gradient(ellipse at 20% 50%, cyan transparent),
+    radial-gradient(ellipse at 50% 50%, violet transparent),
+    radial-gradient(ellipse at 80% 50%, pink transparent)
+  mask/fade edges if needed
+```
+
+This preserves the attractive focus glow while eliminating the sharp-corner rectangle behind it.

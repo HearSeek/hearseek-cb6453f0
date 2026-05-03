@@ -186,9 +186,14 @@ const DemoPage = () => {
             <div
               aria-hidden
               className={cn(
-                "pointer-events-none absolute -inset-6 rounded-[40px] bg-gradient-waveform blur-2xl transition-opacity duration-500",
-                focused ? "opacity-40" : "opacity-0",
+                "pointer-events-none absolute -inset-10 transition-opacity duration-500",
+                focused ? "opacity-100" : "opacity-0",
               )}
+              style={{
+                background:
+                  "radial-gradient(ellipse 55% 70% at 18% 50%, hsl(190 95% 55% / 0.45), transparent 70%), radial-gradient(ellipse 55% 80% at 50% 50%, hsl(258 90% 66% / 0.5), transparent 70%), radial-gradient(ellipse 55% 70% at 82% 50%, hsl(290 80% 60% / 0.45), transparent 70%)",
+                filter: "blur(28px)",
+              }}
             />
             <div
               className={cn(
