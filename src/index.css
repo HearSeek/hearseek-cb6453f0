@@ -132,6 +132,21 @@ All colors MUST be HSL.
   }
 }
 
+/* Search bar focus halo — uses layered box-shadows on the rounded
+   container itself so there is no rectangular blur layer that the
+   browser can reveal as a sharp-edged box. */
+.search-halo {
+  box-shadow: 0 0 0 0 hsl(190 95% 55% / 0), 0 0 0 0 hsl(258 90% 66% / 0), 0 0 0 0 hsl(290 80% 60% / 0);
+  transition: box-shadow 500ms ease;
+}
+.search-halo-active {
+  box-shadow:
+    0 0 60px -8px hsl(190 95% 55% / 0.45),
+    0 0 80px -4px hsl(258 90% 66% / 0.55),
+    0 0 60px -8px hsl(290 80% 60% / 0.45),
+    0 0 0 1px hsl(258 90% 66% / 0.35);
+}
+
 @keyframes wave {
   0%, 100% { transform: scaleY(0.4); }
   50% { transform: scaleY(1); }
