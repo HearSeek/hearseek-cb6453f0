@@ -417,7 +417,7 @@ const ResultsPage = () => {
             <div
               className={cn(
                 "relative flex items-center gap-2.5 rounded-xl border bg-card/60 px-3.5 py-2.5 backdrop-blur-xl transition-colors duration-300",
-                focused ? "border-primary/40" : "border-white/10",
+                "border-white/10",
               )}
             >
               <Search className="h-4 w-4 text-primary" />

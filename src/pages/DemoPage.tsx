@@ -193,7 +193,7 @@ const DemoPage = () => {
             <div
               className={cn(
                 "relative flex items-center gap-2 rounded-2xl border bg-card/60 px-3 py-3 backdrop-blur-xl transition-colors duration-300 md:gap-3 md:px-4 md:py-3.5",
-                focused ? "border-primary/40" : "border-white/10",
+                "border-white/10",
               )}
             >
               <Search className="h-5 w-5 shrink-0 text-primary" />
