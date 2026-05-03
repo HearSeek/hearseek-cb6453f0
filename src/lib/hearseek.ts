@@ -155,8 +155,18 @@ export const prettifyChannel = (code: string | null | undefined): string => {
   if (!code) return "Unknown";
   const key = code.toLowerCase().trim();
   if (CHANNEL_NAMES[key]) return CHANNEL_NAMES[key];
-  // Fallback: title-case
-  return key.charAt(0).toUpperCase() + key.slice(1);
+  // Generic fallback: replace underscores/hyphens/dots with spaces, collapse
+  // whitespace, then title-case each word. Handles things like
+  // "DIARY_OF_A_CEO" → "Diary Of A Ceo", "the-daily" → "The Daily".
+  const cleaned = code
+    .replace(/[_\-.]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!cleaned) return "Unknown";
+  return cleaned
+    .split(" ")
+    .map((w) => (w.length === 0 ? w : w[0].toUpperCase() + w.slice(1).toLowerCase()))
+    .join(" ");
 };
 
 const normalizeHit = (raw: unknown): SearchHit | null => {
