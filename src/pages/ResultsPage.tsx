@@ -416,8 +416,8 @@ const ResultsPage = () => {
             />
             <div
               className={cn(
-                "relative flex items-center gap-2.5 rounded-xl border border-white/10 bg-card/60 px-3.5 py-2.5 backdrop-blur-xl transition",
-                focused && "ring-1 ring-primary/40",
+                "relative flex items-center gap-2.5 rounded-xl border bg-card/60 px-3.5 py-2.5 backdrop-blur-xl transition-colors duration-300",
+                focused ? "border-primary/40" : "border-white/10",
               )}
             >
               <Search className="h-4 w-4 text-primary" />
@@ -428,7 +428,8 @@ const ResultsPage = () => {
                 onFocus={() => setFocused(true)}
                 onBlur={() => setFocused(false)}
                 placeholder="Ask anything..."
-                className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                className="flex-1 appearance-none border-0 bg-transparent text-sm text-foreground outline-none ring-0 placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+                style={{ WebkitAppearance: "none", WebkitTapHighlightColor: "transparent" }}
               />
               {/* Scope dropdown — switch collection without leaving results */}
               <div ref={dropdownRef} className="relative shrink-0">
