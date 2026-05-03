@@ -184,21 +184,11 @@ const DemoPage = () => {
         <form onSubmit={onSubmit} className="w-full">
           <div className="relative">
             <div
-              aria-hidden
-              className={cn(
-                "pointer-events-none absolute -inset-10 transition-opacity duration-500",
-                focused ? "opacity-100" : "opacity-0",
-              )}
-              style={{
-                background:
-                  "radial-gradient(ellipse 55% 70% at 18% 50%, hsl(190 95% 55% / 0.45), transparent 70%), radial-gradient(ellipse 55% 80% at 50% 50%, hsl(258 90% 66% / 0.5), transparent 70%), radial-gradient(ellipse 55% 70% at 82% 50%, hsl(290 80% 60% / 0.45), transparent 70%)",
-                filter: "blur(28px)",
-              }}
-            />
-            <div
               className={cn(
                 "relative flex items-center gap-2 rounded-2xl border bg-card/60 px-3 py-3 backdrop-blur-xl transition-colors duration-300 md:gap-3 md:px-4 md:py-3.5",
                 "border-white/10",
+                "search-halo",
+                focused && "search-halo-active",
               )}
             >
               <Search className="h-5 w-5 shrink-0 text-primary" />
