@@ -103,6 +103,7 @@ const DemoPage = () => {
   const [usedFallback, setUsedFallback] = useState(false);
   const [scope, setScope] = useState<SearchConfig>(FALLBACK_CONFIGS[0]);
   const [scopeOpen, setScopeOpen] = useState(false);
+  const [focused, setFocused] = useState(false);
   const [value, setValue] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -183,6 +184,13 @@ const DemoPage = () => {
         <form onSubmit={onSubmit} className="w-full">
           <div className="relative">
             <div
+              aria-hidden
+              className={cn(
+                "pointer-events-none absolute -inset-6 rounded-[40px] bg-gradient-waveform blur-2xl transition-opacity duration-500",
+                focused ? "opacity-40" : "opacity-0",
+              )}
+            />
+            <div
               className={cn(
                 "relative flex items-center gap-2 rounded-2xl border bg-card/60 px-3 py-3 backdrop-blur-xl transition-colors duration-300 md:gap-3 md:px-4 md:py-3.5",
                 "border-white/10",
@@ -194,6 +202,8 @@ const DemoPage = () => {
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder={placeholder}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
                 className="min-w-0 flex-1 appearance-none border-0 bg-transparent text-sm text-foreground outline-none ring-0 shadow-none placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus:shadow-none focus-visible:outline-none focus-visible:ring-0 focus-visible:shadow-none md:text-base"
                 style={{ WebkitAppearance: "none", WebkitTapHighlightColor: "transparent", boxShadow: "none", outline: "none" }}
               />
