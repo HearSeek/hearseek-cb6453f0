@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   Newspaper,
@@ -13,9 +14,12 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoMark from "@/assets/hearseek-logo-mark.png";
+import { getSearchConfigurations, type SearchConfig } from "@/lib/hearseek";
 
-const COLLECTIONS_ENDPOINT = "https://server.hearseek.com/api/enterprise";
-const FALLBACK_COLLECTIONS = ["News Channels", "Podcasts"];
+const FALLBACK_CONFIGS: SearchConfig[] = [
+  { name: "News Channels", slug: "news-channels" },
+  { name: "Podcasts", slug: "podcasts" },
+];
 
 type IconType = typeof Newspaper;
 
@@ -72,10 +76,11 @@ const useTypingPlaceholder = (phrases: string[], active: boolean) => {
 };
 
 const DemoPage = () => {
-  const [collections, setCollections] = useState<string[]>(FALLBACK_COLLECTIONS);
+  const navigate = useNavigate();
+  const [collections, setCollections] = useState<SearchConfig[]>(FALLBACK_CONFIGS);
   const [collectionsLoading, setCollectionsLoading] = useState(true);
   const [usedFallback, setUsedFallback] = useState(false);
-  const [scope, setScope] = useState<string>(FALLBACK_COLLECTIONS[0]);
+  const [scope, setScope] = useState<SearchConfig>(FALLBACK_CONFIGS[0]);
   const [scopeOpen, setScopeOpen] = useState(false);
   const [focused, setFocused] = useState(false);
   const [value, setValue] = useState("");
@@ -83,17 +88,14 @@ const DemoPage = () => {
 
   const placeholder = useTypingPlaceholder(PLACEHOLDERS, value.length === 0);
 
-  // Fetch dynamic collections from the HearSeek enterprise API
+  // Fetch dynamic search configurations (cached 5 min in lib/hearseek.ts)
   useEffect(() => {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-
+    let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(COLLECTIONS_ENDPOINT, { signal: controller.signal });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0 && data.every((x) => typeof x === "string")) {
+        const data = await getSearchConfigurations();
+        if (cancelled) return;
+        if (data.length > 0) {
           setCollections(data);
           setScope(data[0]);
           setUsedFallback(false);
@@ -101,17 +103,14 @@ const DemoPage = () => {
           setUsedFallback(true);
         }
       } catch (err) {
-        console.warn("[DemoPage] Failed to load collections, using defaults:", err);
-        setUsedFallback(true);
+        console.warn("[DemoPage] Failed to load search configurations:", err);
+        if (!cancelled) setUsedFallback(true);
       } finally {
-        clearTimeout(timeout);
-        setCollectionsLoading(false);
+        if (!cancelled) setCollectionsLoading(false);
       }
     })();
-
     return () => {
-      clearTimeout(timeout);
-      controller.abort();
+      cancelled = true;
     };
   }, []);
 
@@ -125,8 +124,20 @@ const DemoPage = () => {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  const ActiveIcon = iconForCollection(scope);
-  const activeLabel = scope;
+  const ActiveIcon = iconForCollection(scope.name);
+  const activeLabel = scope.name;
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = value.trim();
+    if (!q) return;
+    const params = new URLSearchParams({
+      q,
+      config: scope.slug,
+      configName: scope.name,
+    });
+    navigate(`/results?${params.toString()}`);
+  };
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-background text-foreground">
@@ -149,7 +160,7 @@ const DemoPage = () => {
         </h1>
 
         {/* Hero search */}
-        <div className="w-full">
+        <form onSubmit={onSubmit} className="w-full">
           <div className="relative">
             <div
               aria-hidden
@@ -202,15 +213,15 @@ const DemoPage = () => {
                 </button>
                 {scopeOpen && !collectionsLoading && (
                   <div className="absolute right-0 top-[calc(100%+8px)] z-20 max-h-72 w-56 overflow-y-auto rounded-xl border border-white/10 bg-popover/95 p-1 shadow-elegant backdrop-blur-xl animate-fade-in">
-                    {collections.map((name) => {
-                      const Icon = iconForCollection(name);
-                      const active = name === scope;
+                    {collections.map((cfg) => {
+                      const Icon = iconForCollection(cfg.name);
+                      const active = cfg.slug === scope.slug;
                       return (
                         <button
-                          key={name}
+                          key={cfg.slug}
                           type="button"
                           onClick={() => {
-                            setScope(name);
+                            setScope(cfg);
                             setScopeOpen(false);
                           }}
                           className={cn(
@@ -219,7 +230,7 @@ const DemoPage = () => {
                           )}
                         >
                           <Icon className="h-4 w-4 shrink-0 text-primary" />
-                          <span className="flex-1 truncate">{name}</span>
+                          <span className="flex-1 truncate">{cfg.name}</span>
                           {active && <Check className="h-3.5 w-3.5 shrink-0 text-primary" />}
                         </button>
                       );
@@ -235,7 +246,7 @@ const DemoPage = () => {
               <span className="ml-1 text-muted-foreground/60">(using default collections)</span>
             )}
           </p>
-        </div>
+        </form>
       </main>
 
       <p className="relative mb-6 text-center text-xs text-muted-foreground/70">
