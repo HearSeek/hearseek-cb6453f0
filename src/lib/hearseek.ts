@@ -127,46 +127,9 @@ export const formatTimestamp = (totalSeconds: number): string => {
   return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
 };
 
-const CHANNEL_NAMES: Record<string, string> = {
-  cnn: "CNN",
-  fox: "Fox News",
-  foxnews: "Fox News",
-  msnbc: "MSNBC",
-  bbc: "BBC",
-  sky: "Sky News",
-  skynews: "Sky News",
-  nbc: "NBC News",
-  abc: "ABC News",
-  cbs: "CBS News",
-  aljazeera: "Al Jazeera",
-  samaa: "Samaa TV",
-  geo: "Geo News",
-  ary: "ARY News",
-  dawn: "Dawn News",
-  reuters: "Reuters",
-  ap: "Associated Press",
-  npr: "NPR",
-  pbs: "PBS NewsHour",
-  c4: "Channel 4 News",
-  itv: "ITV News",
-};
-
 export const prettifyChannel = (code: string | null | undefined): string => {
   if (!code) return "Unknown";
-  const key = code.toLowerCase().trim();
-  if (CHANNEL_NAMES[key]) return CHANNEL_NAMES[key];
-  // Generic fallback: replace underscores/hyphens/dots with spaces, collapse
-  // whitespace, then title-case each word. Handles things like
-  // "DIARY_OF_A_CEO" → "Diary Of A Ceo", "the-daily" → "The Daily".
-  const cleaned = code
-    .replace(/[_\-.]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-  if (!cleaned) return "Unknown";
-  return cleaned
-    .split(" ")
-    .map((w) => (w.length === 0 ? w : w[0].toUpperCase() + w.slice(1).toLowerCase()))
-    .join(" ");
+  return code.replace(/_/g, " ").toUpperCase();
 };
 
 const normalizeHit = (raw: unknown): SearchHit | null => {
