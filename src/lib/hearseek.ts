@@ -132,6 +132,11 @@ export const prettifyChannel = (code: string | null | undefined): string => {
   return code.replace(/_/g, " ").toUpperCase();
 };
 
+// Strip Unicode replacement chars (U+FFFD) introduced upstream by bad
+// transcoding. Also collapses any double-spaces they leave behind.
+const stripReplacementChars = (s: string): string =>
+  s.replace(/\uFFFD+/g, "").replace(/[ \t]{2,}/g, " ").trim();
+
 const normalizeHit = (raw: unknown): SearchHit | null => {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
@@ -149,9 +154,9 @@ const normalizeHit = (raw: unknown): SearchHit | null => {
     score: typeof r.score === "number" ? r.score : 0,
     rank: typeof r.rank === "number" ? r.rank : null,
     source: typeof r.source === "string" ? r.source : null,
-    pre: typeof segment.pre === "string" ? segment.pre : "",
-    main: typeof segment.main === "string" ? segment.main : "",
-    post: typeof segment.post === "string" ? segment.post : "",
+    pre: typeof segment.pre === "string" ? stripReplacementChars(segment.pre) : "",
+    main: typeof segment.main === "string" ? stripReplacementChars(segment.main) : "",
+    post: typeof segment.post === "string" ? stripReplacementChars(segment.post) : "",
     start: typeof segment.start === "number" ? segment.start : 0,
     end: typeof segment.end === "number" ? segment.end : 0,
     videoId,
