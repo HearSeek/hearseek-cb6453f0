@@ -5,7 +5,7 @@
 const API_BASE = "https://server.hearseek.com/api";
 const DEMO_KEY = (import.meta.env.VITE_HEARSEEK_DEMO_KEY as string | undefined) ?? "";
 
-const CONFIGS_CACHE_KEY = "hearseek:search_configs:v1";
+const CONFIGS_CACHE_KEY = "hearseek:search_configs:v2";
 const CONFIGS_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 export type SearchConfig = { name: string; slug: string };
@@ -79,7 +79,11 @@ export const getSearchConfigurations = async (force = false): Promise<SearchConf
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
   try {
+    if (!DEMO_KEY) {
+      throw new Error("Missing VITE_HEARSEEK_DEMO_KEY");
+    }
     const res = await fetch(`${API_BASE}/enterprise/search_configurations`, {
+      headers: { "X-Company-Key": DEMO_KEY },
       signal: controller.signal,
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
