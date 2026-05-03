@@ -43,34 +43,55 @@ const PLACEHOLDERS = [
 const useTypingPlaceholder = (phrases: string[], active: boolean) => {
   const [text, setText] = useState("");
   useEffect(() => {
-    if (!active) return;
+    if (!active) {
+      setText("");
+      return;
+    }
     let phraseIdx = 0;
     let charIdx = 0;
     let deleting = false;
-    let timer: ReturnType<typeof setTimeout>;
+    let cancelled = false;
+    let raf = 0;
+    let nextAt = performance.now() + 250;
 
-    const tick = () => {
-      const current = phrases[phraseIdx];
-      if (!deleting) {
-        charIdx++;
-        setText(current.slice(0, charIdx));
-        if (charIdx === current.length) {
-          deleting = true;
-          timer = setTimeout(tick, 1800);
-          return;
-        }
-      } else {
-        charIdx--;
-        setText(current.slice(0, charIdx));
-        if (charIdx === 0) {
-          deleting = false;
-          phraseIdx = (phraseIdx + 1) % phrases.length;
+    const TYPE_MS = 55;       // steady typing cadence
+    const DELETE_MS = 30;     // steady deleting cadence
+    const HOLD_FULL_MS = 1600; // pause at full phrase
+    const HOLD_EMPTY_MS = 350; // brief pause before next phrase
+    const JITTER = 18;         // small randomness for organic feel
+
+    const loop = (now: number) => {
+      if (cancelled) return;
+      if (now >= nextAt) {
+        const current = phrases[phraseIdx];
+        if (!deleting) {
+          charIdx++;
+          setText(current.slice(0, charIdx));
+          if (charIdx === current.length) {
+            deleting = true;
+            nextAt = now + HOLD_FULL_MS;
+          } else {
+            nextAt = now + TYPE_MS + Math.random() * JITTER;
+          }
+        } else {
+          charIdx--;
+          setText(current.slice(0, charIdx));
+          if (charIdx === 0) {
+            deleting = false;
+            phraseIdx = (phraseIdx + 1) % phrases.length;
+            nextAt = now + HOLD_EMPTY_MS;
+          } else {
+            nextAt = now + DELETE_MS + Math.random() * (JITTER / 2);
+          }
         }
       }
-      timer = setTimeout(tick, deleting ? 25 : 45);
+      raf = requestAnimationFrame(loop);
     };
-    timer = setTimeout(tick, 300);
-    return () => clearTimeout(timer);
+    raf = requestAnimationFrame(loop);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
+    };
   }, [phrases, active]);
   return text;
 };
@@ -171,8 +192,8 @@ const DemoPage = () => {
             />
             <div
               className={cn(
-                "relative flex items-center gap-2 rounded-2xl border border-white/10 bg-card/60 px-3 py-3 backdrop-blur-xl transition md:gap-3 md:px-4 md:py-3.5",
-                focused && "ring-1 ring-primary/40",
+                "relative flex items-center gap-2 rounded-2xl border bg-card/60 px-3 py-3 backdrop-blur-xl transition-colors duration-300 md:gap-3 md:px-4 md:py-3.5",
+                focused ? "border-primary/40" : "border-white/10",
               )}
             >
               <Search className="h-5 w-5 shrink-0 text-primary" />
@@ -183,7 +204,8 @@ const DemoPage = () => {
                 placeholder={placeholder}
                 onFocus={() => setFocused(true)}
                 onBlur={() => setFocused(false)}
-                className="min-w-0 flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none md:text-base"
+                className="min-w-0 flex-1 appearance-none border-0 bg-transparent text-sm text-foreground outline-none ring-0 placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 md:text-base"
+                style={{ WebkitAppearance: "none", WebkitTapHighlightColor: "transparent" }}
               />
 
               {/* Integrated scope dropdown — dynamic from API */}
