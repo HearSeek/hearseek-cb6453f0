@@ -407,21 +407,11 @@ const ResultsPage = () => {
         <form onSubmit={onSubmit} className="mx-auto mt-8 max-w-2xl">
           <div className="relative">
             <div
-              aria-hidden
-              className={cn(
-                "pointer-events-none absolute -inset-8 transition-opacity duration-500",
-                focused ? "opacity-100" : "opacity-0",
-              )}
-              style={{
-                background:
-                  "radial-gradient(ellipse 55% 70% at 18% 50%, hsl(190 95% 55% / 0.4), transparent 70%), radial-gradient(ellipse 55% 80% at 50% 50%, hsl(258 90% 66% / 0.45), transparent 70%), radial-gradient(ellipse 55% 70% at 82% 50%, hsl(290 80% 60% / 0.4), transparent 70%)",
-                filter: "blur(24px)",
-              }}
-            />
-            <div
               className={cn(
                 "relative flex items-center gap-2.5 rounded-xl border bg-card/60 px-3.5 py-2.5 backdrop-blur-xl transition-colors duration-300",
                 "border-white/10",
+                "search-halo",
+                focused && "search-halo-active",
               )}
             >
               <Search className="h-4 w-4 text-primary" />
