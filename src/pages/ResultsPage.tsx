@@ -268,6 +268,10 @@ const ResultsPage = () => {
   const configName = params.get("configName") ?? configSlug;
 
   const [pendingQuery, setPendingQuery] = useState(query);
+  const [pendingConfig, setPendingConfig] = useState<SearchConfig>({
+    name: configName,
+    slug: configSlug,
+  });
   const [focused, setFocused] = useState(false);
 
   const [hits, setHits] = useState<SearchHit[]>([]);
@@ -287,7 +291,12 @@ const ResultsPage = () => {
     (async () => {
       try {
         const data = await getSearchConfigurations();
-        if (!cancelled && data.length > 0) setCollections(data);
+        if (!cancelled && data.length > 0) {
+          setCollections(data);
+          // Hydrate pending config name from server if we only had the slug.
+          const match = data.find((c) => c.slug === configSlug);
+          if (match) setPendingConfig(match);
+        }
       } catch {
         /* keep fallback */
       }
@@ -295,7 +304,7 @@ const ResultsPage = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [configSlug]);
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -307,23 +316,25 @@ const ResultsPage = () => {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  const activeConfig =
-    collections.find((c) => c.slug === configSlug) ??
-    { name: configName, slug: configSlug };
-  const ActiveIcon = iconForCollection(activeConfig.name);
+  const ActiveIcon = iconForCollection(pendingConfig.name);
 
+  // Selecting a collection only updates pending state — no auto search.
+  // The search runs when the user submits the form (Enter / click).
   const selectConfig = (cfg: SearchConfig) => {
     setScopeOpen(false);
-    if (cfg.slug === configSlug) return;
-    const next = new URLSearchParams(params);
-    next.set("config", cfg.slug);
-    next.set("configName", cfg.name);
-    setParams(next);
+    setPendingConfig(cfg);
   };
 
   useEffect(() => {
     setPendingQuery(query);
   }, [query]);
+
+  // Keep pending config in sync when URL config changes (e.g. back/forward nav).
+  useEffect(() => {
+    setPendingConfig((prev) =>
+      prev.slug === configSlug ? prev : { name: configName, slug: configSlug },
+    );
+  }, [configSlug, configName]);
 
   useEffect(() => {
     if (!query || !configSlug) {
@@ -357,6 +368,8 @@ const ResultsPage = () => {
     if (!q) return;
     const next = new URLSearchParams(params);
     next.set("q", q);
+    next.set("config", pendingConfig.slug);
+    next.set("configName", pendingConfig.name);
     setParams(next);
   };
 
