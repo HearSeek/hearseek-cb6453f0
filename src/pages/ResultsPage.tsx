@@ -1,14 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Search,
   Play,
   SearchX,
-  Sparkles,
   ArrowLeft,
   Languages as LanguagesIcon,
   AlertCircle,
   Loader2,
+  ChevronDown,
+  Check,
+  Newspaper,
+  Mic,
+  PlayCircle,
+  Video,
+  Users,
+  Library,
 } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { cn } from "@/lib/utils";
@@ -19,7 +26,9 @@ import {
   youtubeThumbnail,
   formatTimestamp,
   prettifyChannel,
+  getSearchConfigurations,
   type SearchHit,
+  type SearchConfig,
 } from "@/lib/hearseek";
 
 const isRtl = (lang: string | null) => lang === "ur" || lang === "ar" || lang === "fa" || lang === "he";
@@ -95,6 +104,17 @@ const RelevanceMeter = ({ value }: { value: number }) => {
   );
 };
 
+type IconType = typeof Newspaper;
+const iconForCollection = (name: string): IconType => {
+  const n = name.toLowerCase();
+  if (n.includes("news")) return Newspaper;
+  if (n.includes("podcast")) return Mic;
+  if (n.includes("demo")) return PlayCircle;
+  if (n.includes("video")) return Video;
+  if (n.includes("interview")) return Users;
+  return Library;
+};
+
 // Snippet renderer: pre (muted) + bold/highlighted main + post (muted)
 const Snippet = ({ hit }: { hit: SearchHit }) => {
   const rtl = isRtl(hit.language);
@@ -107,12 +127,7 @@ const Snippet = ({ hit }: { hit: SearchHit }) => {
       dir={rtl ? "rtl" : "ltr"}
     >
       {hit.pre && <span>{hit.pre} </span>}
-      <mark
-        className="rounded-sm bg-primary/15 px-1 font-semibold text-foreground"
-        style={{ textShadow: "0 0 10px hsl(190 95% 55% / 0.45)" }}
-      >
-        {hit.main}
-      </mark>
+      <span className="font-semibold text-foreground">{hit.main}</span>
       {hit.post && <span> {hit.post}</span>}
     </p>
   );
@@ -162,8 +177,7 @@ const ResultCard = ({ hit, index }: { hit: SearchHit; index: number }) => {
         </div>
         <Snippet hit={hit} />
         <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
-          <Sparkles className="h-3.5 w-3.5 text-primary" />
-          <span>AI-extracted insight · {tStart} – {tEnd}</span>
+          <span>{tStart} – {tEnd}</span>
           {jumpLink && (
             <a
               href={jumpLink}
@@ -261,6 +275,52 @@ const ResultsPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Collection dropdown — re-selectable from results page
+  const [collections, setCollections] = useState<SearchConfig[]>([
+    { name: configName, slug: configSlug },
+  ]);
+  const [scopeOpen, setScopeOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await getSearchConfigurations();
+        if (!cancelled && data.length > 0) setCollections(data);
+      } catch {
+        /* keep fallback */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setScopeOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
+
+  const activeConfig =
+    collections.find((c) => c.slug === configSlug) ??
+    { name: configName, slug: configSlug };
+  const ActiveIcon = iconForCollection(activeConfig.name);
+
+  const selectConfig = (cfg: SearchConfig) => {
+    setScopeOpen(false);
+    if (cfg.slug === configSlug) return;
+    const next = new URLSearchParams(params);
+    next.set("config", cfg.slug);
+    next.set("configName", cfg.name);
+    setParams(next);
+  };
+
   useEffect(() => {
     setPendingQuery(query);
   }, [query]);
@@ -357,9 +417,53 @@ const ResultsPage = () => {
                 placeholder="Ask anything..."
                 className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
               />
-              <kbd className="hidden items-center gap-1 rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline-flex">
-                ⌘K
-              </kbd>
+              {/* Scope dropdown — switch collection without leaving results */}
+              <div ref={dropdownRef} className="relative shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setScopeOpen((o) => !o)}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-medium text-foreground/90 transition hover:border-primary/40 hover:bg-white/10",
+                    scopeOpen && "border-primary/40 bg-white/10",
+                  )}
+                >
+                  <ActiveIcon className="h-3.5 w-3.5 text-primary" />
+                  <span className="hidden max-w-[140px] truncate sm:inline">
+                    {activeConfig.name}
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      "h-3.5 w-3.5 text-muted-foreground transition",
+                      scopeOpen && "rotate-180",
+                    )}
+                  />
+                </button>
+                {scopeOpen && (
+                  <div className="absolute right-0 top-[calc(100%+8px)] z-20 max-h-72 w-56 overflow-y-auto rounded-xl border border-white/10 bg-popover/95 p-1 shadow-elegant backdrop-blur-xl animate-fade-in">
+                    {collections.map((cfg) => {
+                      const Icon = iconForCollection(cfg.name);
+                      const active = cfg.slug === configSlug;
+                      return (
+                        <button
+                          key={cfg.slug}
+                          type="button"
+                          onClick={() => selectConfig(cfg)}
+                          className={cn(
+                            "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition",
+                            active
+                              ? "bg-primary/10 text-foreground"
+                              : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
+                          )}
+                        >
+                          <Icon className="h-4 w-4 shrink-0 text-primary" />
+                          <span className="flex-1 truncate">{cfg.name}</span>
+                          {active && <Check className="h-3.5 w-3.5 shrink-0 text-primary" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </form>
