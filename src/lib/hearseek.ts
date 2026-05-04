@@ -174,16 +174,89 @@ export type SearchResponse = {
   hits: SearchHit[];
 };
 
+// ---- Filters ----------------------------------------------------------------
+// UI-side filter state. yearMin/yearMax are inclusive years; null = no bound.
+export type SearchFilters = {
+  languages: string[];
+  yearMin: number | null;
+  yearMax: number | null;
+};
+
+export const EMPTY_FILTERS: SearchFilters = {
+  languages: [],
+  yearMin: null,
+  yearMax: null,
+};
+
+export const FILTER_YEAR_MIN = 2005;
+export const FILTER_YEAR_MAX = new Date().getFullYear();
+
+export const filtersAreEmpty = (f: SearchFilters): boolean =>
+  f.languages.length === 0 &&
+  (f.yearMin === null || f.yearMin <= FILTER_YEAR_MIN) &&
+  (f.yearMax === null || f.yearMax >= FILTER_YEAR_MAX);
+
+export const filtersEqual = (a: SearchFilters, b: SearchFilters): boolean => {
+  if (a.yearMin !== b.yearMin || a.yearMax !== b.yearMax) return false;
+  if (a.languages.length !== b.languages.length) return false;
+  const as = [...a.languages].sort();
+  const bs = [...b.languages].sort();
+  return as.every((v, i) => v === bs[i]);
+};
+
+// Build a Qdrant-compatible filter object, or null if no constraints.
+// creation_date is stored as ISO datetime ("2019-06-21T00:00:00Z"), so we
+// translate the year range into ISO string boundaries: gte Jan 1 of yearMin,
+// lt Jan 1 of (yearMax + 1).
+export const buildQdrantFilter = (
+  filters: SearchFilters,
+): Record<string, unknown> | null => {
+  const must: Record<string, unknown>[] = [];
+
+  if (filters.languages.length > 0) {
+    must.push({
+      key: "source_info.language",
+      match: { any: filters.languages },
+    });
+  }
+
+  const lo = filters.yearMin !== null && filters.yearMin > FILTER_YEAR_MIN
+    ? filters.yearMin
+    : null;
+  const hi = filters.yearMax !== null && filters.yearMax < FILTER_YEAR_MAX
+    ? filters.yearMax
+    : null;
+  if (lo !== null || hi !== null) {
+    const range: Record<string, string> = {};
+    if (lo !== null) range.gte = `${lo}-01-01T00:00:00Z`;
+    if (hi !== null) range.lt = `${hi + 1}-01-01T00:00:00Z`;
+    must.push({ key: "source_info.creation_date", range });
+  }
+
+  if (must.length === 0) return null;
+  return { must };
+};
+
 export const runSearch = async (
   query: string,
   configSlug: string,
   signal?: AbortSignal,
+  filters?: SearchFilters,
 ): Promise<SearchResponse> => {
   if (!DEMO_KEY) {
     throw new Error(
       "Missing VITE_HEARSEEK_DEMO_KEY. Add it to .env (see plan).",
     );
   }
+  const qdrant = filters ? buildQdrantFilter(filters) : null;
+  const body: Record<string, unknown> = { texts: query };
+  if (qdrant) body.filters = qdrant;
+
+  if (qdrant && import.meta.env.DEV) {
+    // Helpful for verifying the API contract during initial rollout.
+    console.debug("[hearseek] search filters payload:", qdrant);
+  }
+
   const res = await fetch(`${API_BASE}/search/`, {
     method: "POST",
     headers: {
@@ -191,7 +264,7 @@ export const runSearch = async (
       "X-Company-Key": DEMO_KEY,
       "X-Search-Config": configSlug,
     },
-    body: JSON.stringify({ texts: query }),
+    body: JSON.stringify(body),
     signal,
   });
   if (!res.ok) {
