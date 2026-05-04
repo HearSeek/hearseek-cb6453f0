@@ -29,7 +29,16 @@ import {
   getSearchConfigurations,
   type SearchHit,
   type SearchConfig,
+  type SearchFilters,
+  EMPTY_FILTERS,
+  filtersEqual,
+  filtersAreEmpty,
 } from "@/lib/hearseek";
+import {
+  FilterBar,
+  filtersFromUrl,
+  writeFiltersToParams,
+} from "@/components/results/FilterBar";
 
 const isRtl = (lang: string | null) => lang === "ur" || lang === "ar" || lang === "fa" || lang === "he";
 
@@ -278,6 +287,21 @@ const ResultsPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Applied filters mirror what's in the URL and drive the search effect.
+  // Staged filters live only in local state until the user hits Apply.
+  const appliedFilters = filtersFromUrl(params);
+  const appliedFiltersKey = JSON.stringify(appliedFilters);
+  const [stagedFilters, setStagedFilters] = useState<SearchFilters>(appliedFilters);
+
+  // Re-sync staged filters when the URL changes (back/forward, clear, etc.)
+  // unless the user already has unapplied edits matching the new applied set.
+  useEffect(() => {
+    setStagedFilters((prev) =>
+      filtersEqual(prev, appliedFilters) ? prev : appliedFilters,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appliedFiltersKey]);
+
   // Collection dropdown — re-selectable from results page
   const [collections, setCollections] = useState<SearchConfig[]>([
     { name: configName, slug: configSlug },
@@ -344,7 +368,7 @@ const ResultsPage = () => {
     const controller = new AbortController();
     setLoading(true);
     setError(null);
-    runSearch(query, configSlug, controller.signal)
+    runSearch(query, configSlug, controller.signal, appliedFilters)
       .then((res) => {
         setHits(res.hits);
         setNumHits(res.numHits);
@@ -359,7 +383,9 @@ const ResultsPage = () => {
       })
       .finally(() => setLoading(false));
     return () => controller.abort();
-  }, [query, configSlug]);
+    // appliedFiltersKey captures the filter state cheaply for the dep array.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, configSlug, appliedFiltersKey]);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -369,6 +395,19 @@ const ResultsPage = () => {
     next.set("q", q);
     next.set("config", pendingConfig.slug);
     next.set("configName", pendingConfig.name);
+    setParams(next);
+  };
+
+  const applyFilters = () => {
+    const next = new URLSearchParams(params);
+    writeFiltersToParams(next, stagedFilters);
+    setParams(next);
+  };
+
+  const clearFilters = () => {
+    setStagedFilters(EMPTY_FILTERS);
+    const next = new URLSearchParams(params);
+    writeFiltersToParams(next, EMPTY_FILTERS);
     setParams(next);
   };
 
