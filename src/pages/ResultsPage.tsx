@@ -32,7 +32,6 @@ import {
   type SearchFilters,
   EMPTY_FILTERS,
   filtersEqual,
-  filtersAreEmpty,
 } from "@/lib/hearseek";
 import {
   FilterBar,
