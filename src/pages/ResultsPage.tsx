@@ -515,6 +515,15 @@ const ResultsPage = () => {
           </div>
         </form>
 
+        {/* Filters */}
+        <FilterBar
+          staged={stagedFilters}
+          applied={appliedFilters}
+          onChange={setStagedFilters}
+          onApply={applyFilters}
+          onClear={clearFilters}
+        />
+
         {/* Results summary */}
         <div className="mt-5 text-center">
           {loading ? (
