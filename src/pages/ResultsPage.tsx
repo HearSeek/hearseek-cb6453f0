@@ -34,10 +34,11 @@ import {
   filtersEqual,
 } from "@/lib/hearseek";
 import {
-  FilterBar,
+  FilterSidebar,
   filtersFromUrl,
   writeFiltersToParams,
 } from "@/components/results/FilterBar";
+import { fetchVideoDurations } from "@/lib/youtubeDuration";
 
 const isRtl = (lang: string | null) => lang === "ur" || lang === "ar" || lang === "fa" || lang === "he";
 
@@ -147,7 +148,7 @@ const ChannelPill = ({ channel }: { channel: string | null }) => (
   </span>
 );
 
-const ResultCard = ({ hit, index }: { hit: SearchHit; index: number }) => {
+const ResultCard = ({ hit, index, duration }: { hit: SearchHit; index: number; duration?: number }) => {
   const jumpLink = buildJumpLink(hit);
   const thumb = hit.videoId ? youtubeThumbnail(hit.videoId) : null;
   const tStart = formatTimestamp(hit.start);
@@ -236,10 +237,12 @@ const ResultCard = ({ hit, index }: { hit: SearchHit; index: number }) => {
                     {tStart} — {tEnd}
                   </span>
                 </div>
-                {/* Score corner */}
-                <span className="absolute right-2 top-2 rounded bg-background/70 px-1.5 py-0.5 font-mono text-[10px] text-foreground/80 backdrop-blur">
-                  {hit.score.toFixed(2)}
-                </span>
+                {/* Video duration corner */}
+                {duration !== undefined && duration > 0 && (
+                  <span className="absolute right-2 top-2 rounded bg-background/80 px-1.5 py-0.5 font-mono text-[10px] text-foreground/90 backdrop-blur">
+                    {formatTimestamp(duration)}
+                  </span>
+                )}
               </div>
             </AspectRatio>
           </div>
@@ -285,6 +288,7 @@ const ResultsPage = () => {
   const [numHits, setNumHits] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [durations, setDurations] = useState<Record<string, number>>({});
 
   // Applied filters mirror what's in the URL and drive the search effect.
   // Staged filters live only in local state until the user hits Apply.
@@ -371,6 +375,14 @@ const ResultsPage = () => {
       .then((res) => {
         setHits(res.hits);
         setNumHits(res.numHits);
+        const ids = Array.from(
+          new Set(res.hits.map((h) => h.videoId).filter((v): v is string => !!v)),
+        );
+        if (ids.length > 0) {
+          fetchVideoDurations(ids).then((map) => {
+            setDurations((prev) => ({ ...prev, ...map }));
+          });
+        }
       })
       .catch((err: unknown) => {
         if ((err as { name?: string })?.name === "AbortError") return;
@@ -514,35 +526,35 @@ const ResultsPage = () => {
           </div>
         </form>
 
-        {/* Filters */}
-        <FilterBar
-          staged={stagedFilters}
-          applied={appliedFilters}
-          onChange={setStagedFilters}
-          onApply={applyFilters}
-          onClear={clearFilters}
-        />
+        {/* Sidebar + results */}
+        <div className="mt-6 grid gap-6 md:grid-cols-[260px_1fr]">
+          <FilterSidebar
+            staged={stagedFilters}
+            applied={appliedFilters}
+            onChange={setStagedFilters}
+            onApply={applyFilters}
+            onClear={clearFilters}
+          />
 
-        {/* Results summary */}
-        <div className="mt-5 text-center">
-          {loading ? (
-            <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
-              Searching {configName}…
-            </p>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              Found <span className="font-semibold text-foreground">{numHits}</span> relevant insight
-              {numHits === 1 ? "" : "s"} for{" "}
-              <span className="font-semibold text-foreground">"{query}"</span> in{" "}
-              <span className="text-foreground">{configName}</span>.
-            </p>
-          )}
-        </div>
+          <div>
+            <div className="text-center md:text-left">
+              {loading ? (
+                <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+                  Searching {configName}…
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Found <span className="font-semibold text-foreground">{numHits}</span> relevant insight
+                  {numHits === 1 ? "" : "s"} for{" "}
+                  <span className="font-semibold text-foreground">"{query}"</span> in{" "}
+                  <span className="text-foreground">{configName}</span>.
+                </p>
+              )}
+            </div>
 
-        {/* Results list (filters sidebar deferred to next iteration) */}
-        <div className="mt-8">
-          {error ? (
+            <div className="mt-6">
+              {error ? (
             <div className="mx-auto max-w-xl rounded-2xl border border-destructive/30 bg-destructive/10 p-6 text-center">
               <AlertCircle className="mx-auto mb-3 h-8 w-8 text-destructive" />
               <h2 className="font-display text-base font-semibold text-foreground">Search failed</h2>
@@ -575,10 +587,17 @@ const ResultsPage = () => {
           ) : (
             <div className="flex flex-col gap-4">
               {hits.map((h, i) => (
-                <ResultCard key={h.id} hit={h} index={i} />
+                <ResultCard
+                  key={h.id}
+                  hit={h}
+                  index={i}
+                  duration={h.videoId ? durations[h.videoId] : undefined}
+                />
               ))}
             </div>
           )}
+            </div>
+          </div>
         </div>
 
         <p className="mt-16 text-center text-xs text-muted-foreground/70">
