@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Search,
@@ -39,12 +39,21 @@ const PLACEHOLDERS = [
   "Ask HearSeek to analyze news coverage on any topic...",
 ];
 
-// Typing-animation placeholder
+// Typing-animation placeholder — mutates the input's `placeholder` attribute
+// directly via RAF, so it never triggers React re-renders (critical for
+// Safari, where re-rendering a backdrop-blur surface every frame stutters).
 const useTypingPlaceholder = (phrases: string[], active: boolean) => {
-  const [text, setText] = useState("");
+  const elRef = useRef<HTMLInputElement | null>(null);
+
+  const setRef = useCallback((el: HTMLInputElement | null) => {
+    elRef.current = el;
+  }, []);
+
   useEffect(() => {
+    const el = elRef.current;
+    if (!el) return;
     if (!active) {
-      setText("");
+      el.placeholder = "";
       return;
     }
     let phraseIdx = 0;
@@ -54,11 +63,11 @@ const useTypingPlaceholder = (phrases: string[], active: boolean) => {
     let raf = 0;
     let nextAt = performance.now() + 250;
 
-    const TYPE_MS = 55;       // steady typing cadence
-    const DELETE_MS = 30;     // steady deleting cadence
-    const HOLD_FULL_MS = 1600; // pause at full phrase
-    const HOLD_EMPTY_MS = 350; // brief pause before next phrase
-    const JITTER = 18;         // small randomness for organic feel
+    const TYPE_MS = 55;
+    const DELETE_MS = 30;
+    const HOLD_FULL_MS = 1600;
+    const HOLD_EMPTY_MS = 350;
+    const JITTER = 18;
 
     const loop = (now: number) => {
       if (cancelled) return;
@@ -66,7 +75,7 @@ const useTypingPlaceholder = (phrases: string[], active: boolean) => {
         const current = phrases[phraseIdx];
         if (!deleting) {
           charIdx++;
-          setText(current.slice(0, charIdx));
+          if (elRef.current) elRef.current.placeholder = current.slice(0, charIdx);
           if (charIdx === current.length) {
             deleting = true;
             nextAt = now + HOLD_FULL_MS;
@@ -75,7 +84,7 @@ const useTypingPlaceholder = (phrases: string[], active: boolean) => {
           }
         } else {
           charIdx--;
-          setText(current.slice(0, charIdx));
+          if (elRef.current) elRef.current.placeholder = current.slice(0, charIdx);
           if (charIdx === 0) {
             deleting = false;
             phraseIdx = (phraseIdx + 1) % phrases.length;
@@ -93,7 +102,8 @@ const useTypingPlaceholder = (phrases: string[], active: boolean) => {
       cancelAnimationFrame(raf);
     };
   }, [phrases, active]);
-  return text;
+
+  return setRef;
 };
 
 const DemoPage = () => {
@@ -107,7 +117,7 @@ const DemoPage = () => {
   const [value, setValue] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const placeholder = useTypingPlaceholder(PLACEHOLDERS, value.length === 0);
+  const placeholderRef = useTypingPlaceholder(PLACEHOLDERS, value.length === 0);
 
   // Fetch dynamic search configurations (cached 5 min in lib/hearseek.ts)
   useEffect(() => {
@@ -190,13 +200,14 @@ const DemoPage = () => {
                 "search-halo",
                 focused && "search-halo-active",
               )}
+              style={{ transform: "translateZ(0)", willChange: "transform" }}
             >
               <Search className="h-5 w-5 shrink-0 text-primary" />
               <input
                 type="text"
+                ref={placeholderRef}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                placeholder={placeholder}
                 onFocus={() => setFocused(true)}
                 onBlur={() => setFocused(false)}
                 className="min-w-0 flex-1 appearance-none border-0 bg-transparent text-sm text-foreground outline-none ring-0 shadow-none placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus:shadow-none focus-visible:outline-none focus-visible:ring-0 focus-visible:shadow-none md:text-base"
