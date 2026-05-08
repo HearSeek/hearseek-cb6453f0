@@ -257,7 +257,7 @@ export const runSearch = async (
     console.debug("[hearseek] search filters payload:", qdrant);
   }
 
-  const res = await fetch(`${API_BASE}/search/`, {
+  const res = await fetch(`${API_BASE}/search`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
