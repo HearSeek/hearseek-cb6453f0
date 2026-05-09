@@ -39,6 +39,7 @@ import {
   writeFiltersToParams,
 } from "@/components/results/FilterBar";
 import { fetchVideoDurations } from "@/lib/youtubeDuration";
+import { type Pilot } from "@/lib/pilots";
 
 const isRtl = (lang: string | null) => lang === "ur" || lang === "ar" || lang === "fa" || lang === "he";
 
@@ -271,12 +272,17 @@ const EmptyState = ({ query }: { query: string }) => {
   );
 };
 
-const ResultsPage = () => {
+type ResultsPageProps = {
+  pilot?: Pilot;
+};
+
+const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const query = params.get("q") ?? "";
-  const configSlug = params.get("config") ?? "";
-  const configName = params.get("configName") ?? configSlug;
+  const configSlug = pilot?.configSlug ?? params.get("config") ?? "";
+  const configName = pilot?.configName ?? params.get("configName") ?? configSlug;
+  const backTo = pilot ? `/pilots/${pilot.slug}` : "/demo";
 
   const [pendingQuery, setPendingQuery] = useState(query);
   const [pendingConfig, setPendingConfig] = useState<SearchConfig>({
@@ -314,6 +320,7 @@ const ResultsPage = () => {
 
   useEffect(() => {
     let cancelled = false;
+    if (pilot) return; // pilot mode locks the collection — no need to fetch
     (async () => {
       try {
         const data = await getSearchConfigurations();
@@ -330,7 +337,7 @@ const ResultsPage = () => {
     return () => {
       cancelled = true;
     };
-  }, [configSlug]);
+  }, [configSlug, pilot]);
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -436,19 +443,21 @@ const ResultsPage = () => {
         <div className="flex items-center justify-between gap-4">
           <button
             type="button"
-            onClick={() => navigate("/demo")}
+            onClick={() => navigate(backTo)}
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur transition hover:border-primary/40 hover:text-foreground"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Back
           </button>
-          <Link to="/demo" className="flex items-center gap-2">
+          <Link to={backTo} className="flex items-center gap-2">
             <img
               src={logoMark}
               alt="HearSeek"
               className="h-9 w-9 object-contain drop-shadow-[0_0_18px_hsl(var(--primary)/0.55)]"
             />
-            <span className="font-display text-sm font-semibold tracking-tight">HearSeek</span>
+            <span className="font-display text-sm font-semibold tracking-tight">
+              {pilot ? pilot.shortName : "HearSeek"}
+            </span>
           </Link>
           <div className="w-[72px]" />
         </div>
