@@ -10,6 +10,7 @@ const nav = [
   { to: "/", label: "Home" },
   { to: "/app", label: "App" },
   { to: "/enterprise", label: "Enterprise" },
+  { to: "/creators", label: "Content Creators" },
 ];
 
 export const Header = () => {
@@ -42,12 +43,6 @@ export const Header = () => {
           ))}
         </nav>
 
-        <div className="hidden md:block">
-          <Button asChild size="sm" className="bg-gradient-waveform text-primary-foreground hover:opacity-90">
-            <Link to="/enterprise#demo">Book a Demo</Link>
-          </Button>
-        </div>
-
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="md:hidden">
@@ -69,9 +64,6 @@ export const Header = () => {
                   {n.label}
                 </NavLink>
               ))}
-              <Button asChild className="bg-gradient-waveform text-primary-foreground">
-                <Link to="/enterprise#demo" onClick={() => setOpen(false)}>Book a Demo</Link>
-              </Button>
             </div>
           </SheetContent>
         </Sheet>

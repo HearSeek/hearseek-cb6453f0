@@ -39,6 +39,29 @@ const PLACEHOLDERS = [
   "Ask HearSeek to analyze news coverage on any topic...",
 ];
 
+// Suggested searches per collection. We match by substring on the slug so this
+// keeps working regardless of the exact slug naming returned by the API.
+const PODCAST_SUGGESTIONS = [
+  "what CIA missed about the global geopolitics",
+  "how are narratives built?",
+  "what opportunity gap results in",
+  "Can we achieve equality as humans",
+  "part where the guest admits uncertainty",
+];
+const NEWS_SUGGESTIONS = [
+  "how global alliances are shifting",
+  "Does Putin want negotiations?",
+  "Imran khan about Israel",
+  "AI increasing jobs",
+  "Different interpretations of Zionism",
+];
+const suggestionsForScope = (scopeSlug: string): string[] => {
+  const s = scopeSlug.toLowerCase();
+  if (s.includes("podcast")) return PODCAST_SUGGESTIONS;
+  if (s.includes("news")) return NEWS_SUGGESTIONS;
+  return [];
+};
+
 // Typing-animation placeholder — mutates the input's `placeholder` attribute
 // directly via RAF, so it never triggers React re-renders (critical for
 // Safari, where re-rendering a backdrop-blur surface every frame stutters).
@@ -157,17 +180,22 @@ const DemoPage = () => {
 
   const ActiveIcon = iconForCollection(scope.name);
   const activeLabel = scope.name;
+  const suggestions = suggestionsForScope(scope.slug);
 
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const q = value.trim();
-    if (!q) return;
+  const submitQuery = (q: string) => {
+    const trimmed = q.trim();
+    if (!trimmed) return;
     const params = new URLSearchParams({
-      q,
+      q: trimmed,
       config: scope.slug,
       configName: scope.name,
     });
     navigate(`/results?${params.toString()}`);
+  };
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitQuery(value);
   };
 
   return (
@@ -268,12 +296,31 @@ const DemoPage = () => {
               </div>
             </div>
           </div>
-          <p className="mt-4 text-center text-xs text-muted-foreground/80">
-            Search across hundreds of {activeLabel.toLowerCase()} — by meaning, not just keywords.
+          <p className="mx-auto mt-4 max-w-2xl text-center text-sm font-normal text-white/70">
+            This demo searches a limited, hand-picked collection of podcasts and news clips
+            to showcase HearSeek's capabilities. It does not yet search the entire web.
             {usedFallback && (
-              <span className="ml-1 text-muted-foreground/60">(using default collections)</span>
+              <span className="ml-1 text-white/50">(using default collections)</span>
             )}
           </p>
+
+          {suggestions.length > 0 && (
+            <div className="mt-6 flex flex-wrap justify-center gap-2">
+              {suggestions.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => {
+                    setValue(s);
+                    submitQuery(s);
+                  }}
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground transition hover:border-primary/40 hover:bg-white/10 hover:text-foreground md:text-sm"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
         </form>
       </main>
 

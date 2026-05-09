@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Search, Globe, Brain, Layers, Quote, Check } from "lucide-react";
+import { ArrowRight, Globe, Brain, Layers, Quote, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/site/Section";
 import { Waveform } from "@/components/site/Waveform";
@@ -30,22 +30,9 @@ const Index = () => {
             the internet — across 160+ languages.
           </p>
 
-          {/* Mock search bar */}
-          <div className="mx-auto mt-12 max-w-2xl">
-            <div className="relative rounded-2xl border border-border/80 bg-card/80 backdrop-blur p-2 shadow-elegant glow-primary">
-              <div className="flex items-center gap-3 px-4 py-3">
-                <Search className="h-5 w-5 text-primary" />
-                <span className="text-sm md:text-base text-muted-foreground flex-1 text-left">
-                  Search voice notes, podcasts, lectures...
-                </span>
-                <Waveform className="h-8 w-32" bars={20} />
-              </div>
-            </div>
-          </div>
-
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Button asChild size="lg" className="bg-gradient-waveform text-primary-foreground hover:opacity-90">
-              <Link to="/enterprise#demo">Book a Demo <ArrowRight className="ml-1 h-4 w-4" /></Link>
+              <Link to="/demo">Experience the Magic <ArrowRight className="ml-1 h-4 w-4" /></Link>
             </Button>
             <Button asChild size="lg" variant="outline">
               <Link to="/app#waitlist">Join App Waitlist</Link>
@@ -170,20 +157,50 @@ const Index = () => {
       </Section>
 
       {/* PILOT */}
-      <Section eyebrow="Live Pilot" centered title="International Iqbal Society" subtitle="Indexing decades of philosophical lectures for a 7.5M-strong global community.">
-        <div className="rounded-3xl border border-border/60 bg-gradient-card p-8 md:p-12">
-          <div className="grid md:grid-cols-3 gap-6 mb-10">
-            <StatCard value="700+" label="Videos indexed" sub="And growing weekly" />
-            <StatCard value="7.5M" label="Global community" sub="Across 80+ countries" />
-            <StatCard value="160+" label="Languages supported" sub="Including Urdu & transliteration" />
+      <Section eyebrow="Live Pilots" centered title="Real archives, already searchable." subtitle="Two pilots in production — one philosophy archive, one of the world's biggest podcasts.">
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* IIS */}
+          <div className="flex flex-col rounded-3xl border border-border/60 bg-gradient-card p-8 md:p-10">
+            <div className="text-xs font-semibold uppercase tracking-wider text-primary">International Iqbal Society</div>
+            <h3 className="mt-2 font-display text-2xl font-bold">Decades of philosophy, instantly searchable.</h3>
+            <div className="mt-6 grid grid-cols-3 gap-3">
+              <StatCard value="700+" label="Videos indexed" />
+              <StatCard value="7.5M" label="Global community" />
+              <StatCard value="160+" label="Languages" />
+            </div>
+            <div className="mt-6 rounded-2xl bg-secondary/40 p-5 border border-border/40">
+              <Quote className="h-6 w-6 text-primary mb-2" />
+              <p className="text-sm md:text-base leading-relaxed">
+                "For the first time, a global audience can search through decades of Iqbal lectures by meaning — not just title."
+              </p>
+            </div>
+            <div className="mt-6 flex">
+              <Button asChild className="bg-gradient-waveform text-primary-foreground hover:opacity-90">
+                <Link to="/pilots/iis">Open IIS Search <ArrowRight className="ml-1 h-4 w-4" /></Link>
+              </Button>
+            </div>
           </div>
-          <div className="rounded-2xl bg-secondary/40 p-6 md:p-8 border border-border/40">
-            <Quote className="h-8 w-8 text-primary mb-4" />
-            <p className="font-display text-xl md:text-2xl leading-relaxed">
-              "For the first time, a global audience can search through decades of Iqbal
-              lectures by meaning — not just title."
-            </p>
-            <p className="mt-4 text-sm text-muted-foreground">— International Iqbal Society pilot</p>
+
+          {/* Diary of the CEO */}
+          <div className="flex flex-col rounded-3xl border border-border/60 bg-gradient-card p-8 md:p-10">
+            <div className="text-xs font-semibold uppercase tracking-wider text-accent">The Diary of the CEO</div>
+            <h3 className="mt-2 font-display text-2xl font-bold">Every guest, every insight — by Steven Bartlett.</h3>
+            <div className="mt-6 grid grid-cols-3 gap-3">
+              <StatCard value="400+" label="Episodes indexed" />
+              <StatCard value="50M+" label="Monthly listeners" />
+              <StatCard value="160+" label="Languages" />
+            </div>
+            <div className="mt-6 rounded-2xl bg-secondary/40 p-5 border border-border/40">
+              <Quote className="h-6 w-6 text-accent mb-2" />
+              <p className="text-sm md:text-base leading-relaxed">
+                "Find the exact moment a guest opens up about failure, hiring, or what really drives them — in seconds."
+              </p>
+            </div>
+            <div className="mt-6 flex">
+              <Button asChild className="bg-gradient-waveform text-primary-foreground hover:opacity-90">
+                <Link to="/pilots/diary-of-the-ceo">Open Diary Search <ArrowRight className="ml-1 h-4 w-4" /></Link>
+              </Button>
+            </div>
           </div>
         </div>
       </Section>
