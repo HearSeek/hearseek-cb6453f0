@@ -160,7 +160,7 @@ const Index = () => {
       <Section eyebrow="Live Pilots" centered title="Real archives, already searchable." subtitle="Two pilots in production — one philosophy archive, one of the world's biggest podcasts.">
         <div className="grid gap-6 md:grid-cols-2">
           {/* IIS */}
-          <div className="flex flex-col rounded-3xl border border-border/60 bg-gradient-card p-8 md:p-10">
+          <div className="flex flex-col rounded-3xl border border-border/60 bg-gradient-card p-5 sm:p-8 md:p-10">
             <div className="text-xs font-semibold uppercase tracking-wider text-primary">International Iqbal Society</div>
             <h3 className="mt-2 font-display text-2xl font-bold">Decades of philosophy, instantly searchable.</h3>
             <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
@@ -189,7 +189,7 @@ const Index = () => {
           </div>
 
           {/* Diary of the CEO */}
-          <div className="flex flex-col rounded-3xl border border-border/60 bg-gradient-card p-8 md:p-10">
+          <div className="flex flex-col rounded-3xl border border-border/60 bg-gradient-card p-5 sm:p-8 md:p-10">
             <div className="text-xs font-semibold uppercase tracking-wider text-accent">The Diary of the CEO</div>
             <h3 className="mt-2 font-display text-2xl font-bold">Every guest, every insight — by Steven Bartlett.</h3>
             <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
