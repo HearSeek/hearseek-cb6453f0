@@ -411,8 +411,10 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
     if (!q) return;
     const next = new URLSearchParams(params);
     next.set("q", q);
-    next.set("config", pendingConfig.slug);
-    next.set("configName", pendingConfig.name);
+    if (!pilot) {
+      next.set("config", pendingConfig.slug);
+      next.set("configName", pendingConfig.name);
+    }
     setParams(next);
   };
 
@@ -484,7 +486,8 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
                 className="flex-1 appearance-none border-0 bg-transparent text-sm text-foreground outline-none ring-0 shadow-none placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus:shadow-none focus-visible:outline-none focus-visible:ring-0 focus-visible:shadow-none"
                 style={{ WebkitAppearance: "none", WebkitTapHighlightColor: "transparent", boxShadow: "none", outline: "none" }}
               />
-              {/* Scope dropdown — switch collection without leaving results */}
+              {/* Scope dropdown — hidden in pilot mode (collection is locked) */}
+              {!pilot && (
               <div ref={dropdownRef} className="relative shrink-0">
                 <button
                   type="button"
@@ -531,6 +534,7 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
                   </div>
                 )}
               </div>
+              )}
             </div>
           </div>
         </form>
