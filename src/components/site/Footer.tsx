@@ -52,6 +52,7 @@ export const Footer = () => {
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
             <li><Link to="/app" className="hover:text-foreground">Consumer App</Link></li>
             <li><Link to="/enterprise" className="hover:text-foreground">Enterprise</Link></li>
+            <li><Link to="/creators" className="hover:text-foreground">Content Creators</Link></li>
           </ul>
         </div>
         <div>
