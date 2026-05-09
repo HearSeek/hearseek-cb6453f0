@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Search, Globe, Brain, Layers, Quote, Check } from "lucide-react";
+import { ArrowRight, Globe, Brain, Layers, Quote, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/site/Section";
 import { Waveform } from "@/components/site/Waveform";
@@ -30,22 +30,9 @@ const Index = () => {
             the internet — across 160+ languages.
           </p>
 
-          {/* Mock search bar */}
-          <div className="mx-auto mt-12 max-w-2xl">
-            <div className="relative rounded-2xl border border-border/80 bg-card/80 backdrop-blur p-2 shadow-elegant glow-primary">
-              <div className="flex items-center gap-3 px-4 py-3">
-                <Search className="h-5 w-5 text-primary" />
-                <span className="text-sm md:text-base text-muted-foreground flex-1 text-left">
-                  Search voice notes, podcasts, lectures...
-                </span>
-                <Waveform className="h-8 w-32" bars={20} />
-              </div>
-            </div>
-          </div>
-
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Button asChild size="lg" className="bg-gradient-waveform text-primary-foreground hover:opacity-90">
-              <Link to="/enterprise#demo">Book a Demo <ArrowRight className="ml-1 h-4 w-4" /></Link>
+              <Link to="/demo">Experience the Magic <ArrowRight className="ml-1 h-4 w-4" /></Link>
             </Button>
             <Button asChild size="lg" variant="outline">
               <Link to="/app#waitlist">Join App Waitlist</Link>
