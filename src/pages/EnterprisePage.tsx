@@ -1,4 +1,5 @@
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
+import { useLocation } from "react-router-dom";
 import { Building2, Lock, Database, Search, DollarSign, GraduationCap, ShieldCheck, Server, ArrowRight, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,18 @@ import { toast } from "@/hooks/use-toast";
 
 const EnterprisePage = () => {
   const [form, setForm] = useState({ name: "", email: "", org: "", message: "" });
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace("#", "");
+      // wait for layout
+      requestAnimationFrame(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  }, [location.pathname, location.hash]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -137,7 +150,7 @@ const EnterprisePage = () => {
       </Section>
 
       {/* DEMO FORM */}
-      <Section id="demo" eyebrow="Get In Touch" centered title="Book an enterprise demo." subtitle="Tell us a bit about your archive — we'll tailor the walkthrough.">
+      <Section id="demo" className="scroll-mt-24" eyebrow="Get In Touch" centered title="Book an enterprise demo." subtitle="Tell us a bit about your archive — we'll tailor the walkthrough.">
         <form onSubmit={handleSubmit} className="max-w-2xl mx-auto rounded-3xl border border-border/60 bg-gradient-card p-8 md:p-10 space-y-5">
           <div className="grid md:grid-cols-2 gap-5">
             <div className="space-y-2">
