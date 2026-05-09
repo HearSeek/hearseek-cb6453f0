@@ -163,10 +163,17 @@ const Index = () => {
           <div className="flex flex-col rounded-3xl border border-border/60 bg-gradient-card p-8 md:p-10">
             <div className="text-xs font-semibold uppercase tracking-wider text-primary">International Iqbal Society</div>
             <h3 className="mt-2 font-display text-2xl font-bold">Decades of philosophy, instantly searchable.</h3>
-            <div className="mt-6 grid grid-cols-3 gap-3">
-              <StatCard value="700+" label="Videos indexed" />
-              <StatCard value="7.5M" label="Global community" />
-              <StatCard value="160+" label="Languages" />
+            <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
+              {[
+                { v: "700+", l: "Videos indexed" },
+                { v: "7.5M", l: "Global community" },
+                { v: "160+", l: "Languages" },
+              ].map((s) => (
+                <div key={s.l} className="rounded-2xl border border-border/60 bg-gradient-card p-3 text-center sm:p-4 md:p-6">
+                  <div className="font-display text-xl font-bold text-gradient sm:text-2xl md:text-4xl">{s.v}</div>
+                  <div className="mt-1 text-[11px] font-medium text-foreground sm:text-xs md:text-sm">{s.l}</div>
+                </div>
+              ))}
             </div>
             <div className="mt-6 rounded-2xl bg-secondary/40 p-5 border border-border/40">
               <Quote className="h-6 w-6 text-primary mb-2" />
@@ -185,10 +192,17 @@ const Index = () => {
           <div className="flex flex-col rounded-3xl border border-border/60 bg-gradient-card p-8 md:p-10">
             <div className="text-xs font-semibold uppercase tracking-wider text-accent">The Diary of the CEO</div>
             <h3 className="mt-2 font-display text-2xl font-bold">Every guest, every insight — by Steven Bartlett.</h3>
-            <div className="mt-6 grid grid-cols-3 gap-3">
-              <StatCard value="400+" label="Episodes indexed" />
-              <StatCard value="50M+" label="Monthly listeners" />
-              <StatCard value="160+" label="Languages" />
+            <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
+              {[
+                { v: "400+", l: "Episodes indexed" },
+                { v: "50M+", l: "Monthly listeners" },
+                { v: "160+", l: "Languages" },
+              ].map((s) => (
+                <div key={s.l} className="rounded-2xl border border-border/60 bg-gradient-card p-3 text-center sm:p-4 md:p-6">
+                  <div className="font-display text-xl font-bold text-gradient sm:text-2xl md:text-4xl">{s.v}</div>
+                  <div className="mt-1 text-[11px] font-medium text-foreground sm:text-xs md:text-sm">{s.l}</div>
+                </div>
+              ))}
             </div>
             <div className="mt-6 rounded-2xl bg-secondary/40 p-5 border border-border/40">
               <Quote className="h-6 w-6 text-accent mb-2" />
