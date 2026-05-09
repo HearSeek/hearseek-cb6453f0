@@ -42,24 +42,38 @@ const PilotPage = () => {
       </div>
 
       {/* Top nav */}
-      <div className="relative mx-auto flex w-full max-w-6xl items-center justify-between px-5 pt-6 md:px-8">
+      <div className="relative mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-5 pt-6 md:px-8">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur transition hover:border-primary/40 hover:text-foreground"
+          className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs text-muted-foreground backdrop-blur transition hover:border-primary/40 hover:text-foreground"
         >
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to HearSeek
+          <ArrowLeft className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Back to HearSeek</span>
+          <span className="sm:hidden">Back</span>
         </Link>
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logoMark} alt="HearSeek" className="h-8 w-8 object-contain" />
-          <span className="font-display text-sm font-semibold tracking-tight">HearSeek</span>
+        <Link to="/" className="flex flex-col items-center gap-1">
+          <div className="flex items-center gap-2">
+            <img src={logoMark} alt="HearSeek" className="h-[35px] w-[35px] object-contain" />
+            <span className="font-display text-sm font-semibold tracking-tight md:text-base">HearSeek</span>
+          </div>
+          <span className="hidden text-[10px] text-muted-foreground md:block">
+            The World's First AI Search Engine for Audio
+          </span>
         </Link>
-        <div className="w-[140px]" />
+        <div className="w-[60px] sm:w-[140px]" />
       </div>
 
       <main className="relative mx-auto flex w-full max-w-4xl flex-1 flex-col items-center px-5 py-12 md:px-8">
         <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
           Pilot Microsite
         </div>
+        {pilot.logo && (
+          <img
+            src={pilot.logo}
+            alt={`${pilot.name} logo`}
+            className="mt-4 h-20 w-auto object-contain md:h-24"
+          />
+        )}
         <h1 className="mt-3 text-center font-display text-3xl font-bold tracking-tight md:text-4xl">
           {pilot.name}
         </h1>

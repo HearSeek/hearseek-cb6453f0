@@ -15,7 +15,11 @@ export type Pilot = {
   disclaimer: string;
   suggestions: string[];
   featuredVideoIds: string[];
+  logo?: string;
 };
+
+import iisLogo from "@/assets/pilot-iis-logo.png";
+import doacLogo from "@/assets/pilot-doac-logo.png";
 
 export const PILOTS: Record<string, Pilot> = {
   iis: {
@@ -36,6 +40,7 @@ export const PILOTS: Record<string, Pilot> = {
       "Iqbal's vision for the Muslim world",
     ],
     featuredVideoIds: ["dQw4w9WgXcQ", "5qap5aO4i9A", "9bZkp7q19f0"],
+    logo: iisLogo,
   },
   "diary-of-the-ceo": {
     slug: "diary-of-the-ceo",
@@ -55,6 +60,7 @@ export const PILOTS: Record<string, Pilot> = {
       "how to build resilience under pressure",
     ],
     featuredVideoIds: ["dQw4w9WgXcQ", "5qap5aO4i9A", "9bZkp7q19f0"],
+    logo: doacLogo,
   },
 };
 
