@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { Search, Play, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-import logoMark from "@/assets/hearseek-logo-mark.png";
+import logoMark from "@/assets/hearseek-logo-mark-white.png";
 import { youtubeThumbnail } from "@/lib/hearseek";
 import { getPilot } from "@/lib/pilots";
 
