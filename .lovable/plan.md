@@ -1,103 +1,88 @@
-## 1. Header & Homepage (`src/components/site/Header.tsx`, `src/pages/Index.tsx`)
+## 1. Quick text fixes
 
-**Header**
-- Remove the desktop "Book a Demo" button and the mobile sheet equivalent.
-- Add `Content Creators` (`/creators`) to the `nav` array so it appears in both desktop and mobile menus.
+`**src/pages/CreatorsPage.tsx` — Hero**
 
-**Homepage Hero**
-- Delete the mock search-bar block (lines 33–44).
-- Replace the primary CTA: text → **"Experience the Magic"**, link → `/demo`. Keep the `bg-gradient-waveform` styling and trailing arrow icon. Keep the secondary "Join App Waitlist" button.
+- Remove the secondary "Join the Waitlist" button from hero (keep only "Experience the Magic").
+- Change H1: "Search every word in your **YouTube Content**." (replacing "back-catalogue").
+- Closing CTA card: keep both buttons there (only the hero one is removed) — confirm if you'd rather strip it from the bottom CTA too.
 
-**Homepage Enterprise section CTA**
-- The button currently links to `/enterprise#demo` — that already anchors to the form (form lives in a `Section id="demo"`). Verify on click and add `scroll-margin-top` if needed so the sticky header doesn't overlap.
+**Rename "The Diary of the CEO" → "The Diary of a CEO" everywhere**
 
-**Live Pilot section** (rewrite the single-pilot block into a 2-up grid)
-- Section heading becomes generic: eyebrow "Live Pilots", title "Real archives, already searchable."
-- Two equal cards in a `grid md:grid-cols-2 gap-6` layout (50/50 desktop, stacked mobile):
-  - **International Iqbal Society (IIS)** — existing copy/stats/quote, condensed, with CTA "Open IIS Search" → `/pilots/iis`.
-  - **The Diary of the CEO by Steven Bartlett** — new card with placeholder stats (e.g. "Episodes indexed", "Global listeners", "Languages"), short blurb, CTA "Open Diary Search" → `/pilots/diary-of-the-ceo`.
-- Final CTA section at the bottom of the page keeps "Book a Demo" → `/enterprise#demo` (still valid; the request only removed the header button).
+- `src/lib/pilots.ts`: `name`, `shortName`, `configName`, `tagline`, `disclaimer` strings (slug `diary-of-the-ceo` stays — changing the route would break links; flag if you want it renamed too).
+- `src/pages/Index.tsx` line 193 label.
+- Any other UI strings that reference the old name.
 
-## 2. Demo Page (`src/pages/DemoPage.tsx`)
+## 2. Vibrant CreatorsPage upgrade
 
-**Disclaimer below the search bar**
-- Replace the existing tiny tagline with the requested copy: *"This demo searches a limited, hand-picked collection of podcasts and news clips to showcase HearSeek's capabilities. It does not yet search the entire web."*
-- Style: `text-sm font-normal text-white/70 text-center` (= 14px Inter Regular, 70% white, centered). Inter is already the body font.
+Goal: make the page feel premium and alive, with the 6 features as the centerpiece.
 
-**Search suggestions**
-- Add a `SUGGESTIONS_BY_SLUG` map keyed by slug containing the two lists provided. Heuristic: match by `slug.includes("podcast")` and `slug.includes("news")` so it works regardless of exact slug naming returned by the API.
-- Render up to 5 suggestion chips below the disclaimer when the input is empty; clicking a chip fills the input and submits the search. Keep them visually light (rounded pills, `border-white/10 bg-white/5`, hover lifts to primary).
-- Suggestions are recomputed when `scope` changes.
+### Hero polish
 
-## 3. New page: Content Creators (`src/pages/CreatorsPage.tsx`)
+- Add a soft animated waveform / gradient orb backdrop behind the headline (reuse `bg-gradient-waveform` + a blurred radial glow, plus `animate-pulse-glow`).
+- Larger H1, tighter tracking, gradient on "YouTube Content".
+- Single primary CTA only.
 
-Mirror the structure of `AppPage` / `EnterprisePage`:
-- Hero (badge "Creators · Find every moment", H1 "Search every word in your back-catalogue", short subtitle, primary CTA → `/demo`, secondary → waitlist anchor).
-- Use Cases grid (4 `FeatureCard`s: YouTube archive, Podcast back-catalogue, Long-form interviews, Shorts/clip mining).
-- Demo `VideoEmbed` placeholder.
-- Features grid (semantic search, cross-language, paraphrase, clip-export, Premiere/YouTube plugins, monetisation).
-- Closing CTA card.
-- Wire it in `src/App.tsx` under `/creators` inside the `<Layout>` route group.
-- Add to `Header.tsx` nav (see §1) and to `Footer.tsx` link list.
+### Use Cases (4 cards) — keep but lift
 
-## 4. Pilot Microsite framework
+- Add subtle hover lift, gradient border on hover, and an animated icon (scale + color shift). No structural change.
 
-Two new pages today, designed so future pilots are a 5-minute add.
+### NEW: "Features" section — full-width scroll showcase
 
-**`src/lib/pilots.ts` — pilot registry**
-```ts
-export type Pilot = {
-  slug: string;            // route segment, e.g. "iis"
-  name: string;            // "International Iqbal Society"
-  shortName: string;       // "IIS"
-  tagline: string;
-  configSlug: string;      // hard-coded HearSeek search-config slug
-  configName: string;      // human label passed to /results
-  disclaimer: string;      // tailored per pilot
-  suggestions: string[];   // chips under search bar
-  featuredVideoIds: string[]; // YouTube IDs for "Featured videos" grid
-  accent?: string;         // optional brand accent (defaults to primary)
-};
-export const PILOTS: Record<string, Pilot> = { iis: {...}, "diary-of-the-ceo": {...} };
+Replace the current 3-col `FeatureCard` grid with a **vertical scroll narrative**: each of the 6 features is its own full-width section, alternating image/illustration left-right, with fade + slide-in animation as it scrolls into view.
+
+Layout per feature row:
+
+```text
+┌─────────────────────────────────────────────────────────┐
+│  [icon badge]                                           │
+│  FEATURE TITLE (display, 4xl)         [visual / mock]   │
+│  long description paragraph                             │
+│  • bullet point                                         │
+│  • bullet point                                         │
+└─────────────────────────────────────────────────────────┘
 ```
-I'll seed each entry with placeholder values for `configSlug`, `featuredVideoIds`, and disclaimer copy — easy to swap once you give me the real slugs/IDs.
 
-**`src/pages/PilotPage.tsx`** — single dynamic route `/pilots/:slug`
-- Looks up the pilot in `PILOTS`; 404 if missing.
-- Layout: logo + pilot name → search bar (reuse the styling from `DemoPage` so no drift) → tailored disclaimer → "Featured" grid (3-col on desktop, 1-col mobile) of YouTube thumbnails linking to the videos.
-- Submitting the search routes to `/pilots/:slug/results?q=…` (mirrors current results page but scoped to the pilot's `configSlug`).
+Behavior:
 
-**`src/pages/PilotResultsPage.tsx`** — pilot-scoped results page
-- Reuses 95% of `ResultsPage`. Refactor the heavy result rendering (cards, empty state, filter sidebar wiring) into a shared `ResultsView` component used by both `ResultsPage` and `PilotResultsPage`. The pilot variant:
-  - Force-locks `configSlug` to the pilot's slug (no collection dropdown).
-  - "Back" button returns to `/pilots/:slug` instead of `/demo`.
-  - Header swaps the HearSeek logo + pilot name.
-- Same filter behaviour, same network calls (`runSearch` already takes any slug).
+- Each row is a `min-h-[80vh]` section, content vertically centered.
+- Sticky-ish reveal: use IntersectionObserver to toggle `opacity-0 translate-y-8` → `opacity-100 translate-y-0` (Tailwind transition, 700ms). Adjacent rows fade out as you scroll past (opacity tied to viewport position).
+- Alternating sides on desktop (`md:grid-cols-2` with `md:[&:nth-child(even)>div:first-child]:order-2`), single column on mobile.
+- Each row gets its own accent gradient (vary hue per feature) using existing `--gradient-*` tokens or new ones added to `index.css`.
+- Right side: animated visual placeholder per feature (e.g. mini search-bar mock for Semantic Search, language chips for Cross-Language, waveform for Paraphrase, share card for Embed, timeline strip for Premiere plugin, $ chart for Monetize). All built with divs + Tailwind — no new images required.
 
-**Routes in `src/App.tsx`**
-- `/creators` → `CreatorsPage` (inside `Layout`).
-- `/pilots/:slug` → `PilotPage` (no Layout, full-bleed like `/demo`).
-- `/pilots/:slug/results` → `PilotResultsPage` (no Layout).
+The 6 features stay the same titles/descriptions you already have.
 
-## 5. Files touched / created
+### Section dividers
+
+- Add thin gradient `<Waveform />` (already in `src/components/site`) between major sections for cohesion.
+
+### Closing CTA
+
+- Keep, but upgrade visual: add animated gradient border, larger headline.
+
+## 3. Technical notes
+
+- New tiny hook `src/hooks/use-in-view.ts` wrapping IntersectionObserver (returns `{ ref, inView }`). Used by each feature row.
+- New component `src/components/site/FeatureShowcaseRow.tsx` — props: `{ icon, title, description, bullets[], accent, visual: ReactNode, reverse }`. Handles the scroll animation + responsive flip.
+- 6 small visual components (or one switch component) for the right-side mocks. Pure Tailwind, no new deps.
+- Add 1–2 new gradient tokens to `index.css` if needed for variety (HSL only).
+- No new packages, no business-logic changes.
+
+## 4. Files
 
 Edit:
-- `src/components/site/Header.tsx`
-- `src/components/site/Footer.tsx`
-- `src/pages/Index.tsx`
-- `src/pages/DemoPage.tsx`
-- `src/pages/ResultsPage.tsx` (extract shared view)
-- `src/App.tsx`
+
+- `src/pages/CreatorsPage.tsx` (rebuild features section, hero tweaks)
+- `src/lib/pilots.ts` (rename Diary of a CEO)
+- `src/pages/Index.tsx` (rename label line)
+- `src/index.css` (optional: extra gradient tokens)
 
 Create:
-- `src/pages/CreatorsPage.tsx`
-- `src/pages/PilotPage.tsx`
-- `src/pages/PilotResultsPage.tsx`
-- `src/lib/pilots.ts`
-- `src/components/results/ResultsView.tsx` (shared)
 
-## Open items I'll seed with placeholders (easy to update later)
+- `src/hooks/use-in-view.ts`
+- `src/components/site/FeatureShowcaseRow.tsx`
 
-- IIS pilot: `configSlug` placeholder = `"iis"`. Diary pilot: `"diary-of-the-ceo"`. Tell me the real slugs and I'll swap.
-- 4–6 placeholder YouTube IDs per pilot for "Featured videos".
-- Diary pilot stat numbers on the homepage card (used reasonable public-domain figures; flag any to change).
+## Open questions
+
+- Bottom CTA "Join the Waitlist" button — remove too, or keep there? remove
+- Pilot route slug `diary-of-the-ceo` — rename to `diary-of-a-ceo`? update it

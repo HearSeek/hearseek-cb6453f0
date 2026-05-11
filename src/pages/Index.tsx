@@ -188,9 +188,9 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Diary of the CEO */}
+          {/* Diary of A CEO */}
           <div className="flex flex-col rounded-3xl border border-border/60 bg-gradient-card p-5 sm:p-8 md:p-10">
-            <div className="text-xs font-semibold uppercase tracking-wider text-accent">The Diary of the CEO</div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-accent">The Diary of A CEO</div>
             <h3 className="mt-2 font-display text-2xl font-bold">Every guest, every insight — by Steven Bartlett.</h3>
             <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
               {[
@@ -212,7 +212,7 @@ const Index = () => {
             </div>
             <div className="mt-6 flex">
               <Button asChild className="bg-gradient-waveform text-primary-foreground hover:opacity-90">
-                <Link to="/pilots/diary-of-the-ceo">Open Diary Search <ArrowRight className="ml-1 h-4 w-4" /></Link>
+                <Link to="/pilots/diary-of-a-ceo">Open Diary Search <ArrowRight className="ml-1 h-4 w-4" /></Link>
               </Button>
             </div>
           </div>

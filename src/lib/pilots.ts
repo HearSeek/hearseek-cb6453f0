@@ -49,16 +49,16 @@ export const PILOTS: Record<string, Pilot> = {
     ],
     logo: iisLogo,
   },
-  "diary-of-the-ceo": {
-    slug: "diary-of-the-ceo",
-    name: "The Diary of the CEO by Steven Bartlett",
-    shortName: "Diary of the CEO",
+  "diary-of-a-ceo": {
+    slug: "diary-of-a-ceo",
+    name: "The Diary of A CEO by Steven Bartlett",
+    shortName: "Diary of A CEO",
     tagline:
-      "Search every episode of Steven Bartlett's Diary of the CEO — find the exact moment any guest said what you're looking for.",
-    configSlug: "diary-of-the-ceo",
-    configName: "Diary of the CEO",
+      "Search every episode of Steven Bartlett's Diary of A CEO — find the exact moment any guest said what you're looking for.",
+    configSlug: "diary-of-a-ceo",
+    configName: "Diary of A CEO",
     disclaimer:
-      "This microsite searches a curated set of Diary of the CEO episodes. It does not search the wider web.",
+      "This microsite searches a curated set of Diary of A CEO episodes. It does not search the wider web.",
     suggestions: [
       "what makes successful founders different",
       "habits that built billion-dollar companies",
