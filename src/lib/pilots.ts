@@ -39,7 +39,14 @@ export const PILOTS: Record<string, Pilot> = {
       "Rumi's influence on Iqbal",
       "Iqbal's vision for the Muslim world",
     ],
-    featuredVideoIds: ["dQw4w9WgXcQ", "5qap5aO4i9A", "9bZkp7q19f0"],
+    featuredVideoIds: [
+      "7og2nxCw6nA",
+      "B03pmu5NRas",
+      "GvCEKOpeAS8",
+      "OURC5LsW-Y0",
+      "5QI3WUbm5Fw",
+      "JvXlzN3k9YQ",
+    ],
     logo: iisLogo,
   },
   "diary-of-the-ceo": {
