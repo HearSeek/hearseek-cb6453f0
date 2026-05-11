@@ -175,33 +175,70 @@ export type SearchResponse = {
 };
 
 // ---- Filters ----------------------------------------------------------------
-// UI-side filter state. yearMin/yearMax are inclusive years; null = no bound.
+// UI-side filter state. dateFrom/dateTo are inclusive ISO dates (YYYY-MM-DD); null = no bound.
+export type DatePreset = "week" | "month" | "year" | "lifetime" | "custom";
+
 export type SearchFilters = {
   languages: string[];
-  yearMin: number | null;
-  yearMax: number | null;
+  dateFrom: string | null;
+  dateTo: string | null;
 };
 
 export const EMPTY_FILTERS: SearchFilters = {
   languages: [],
-  yearMin: null,
-  yearMax: null,
+  dateFrom: null,
+  dateTo: null,
 };
 
-export const FILTER_YEAR_MIN = 2005;
-export const FILTER_YEAR_MAX = new Date().getFullYear();
-
 export const filtersAreEmpty = (f: SearchFilters): boolean =>
-  f.languages.length === 0 &&
-  (f.yearMin === null || f.yearMin <= FILTER_YEAR_MIN) &&
-  (f.yearMax === null || f.yearMax >= FILTER_YEAR_MAX);
+  f.languages.length === 0 && f.dateFrom === null && f.dateTo === null;
 
 export const filtersEqual = (a: SearchFilters, b: SearchFilters): boolean => {
-  if (a.yearMin !== b.yearMin || a.yearMax !== b.yearMax) return false;
+  if (a.dateFrom !== b.dateFrom || a.dateTo !== b.dateTo) return false;
   if (a.languages.length !== b.languages.length) return false;
   const as = [...a.languages].sort();
   const bs = [...b.languages].sort();
   return as.every((v, i) => v === bs[i]);
+};
+
+const toIsoDate = (d: Date): string => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+
+// Compute the dateFrom/dateTo bounds for a named preset. "lifetime" clears both.
+export const datePresetRange = (
+  preset: DatePreset,
+): { dateFrom: string | null; dateTo: string | null } => {
+  if (preset === "lifetime" || preset === "custom") {
+    return { dateFrom: null, dateTo: null };
+  }
+  const now = new Date();
+  const today = toIsoDate(now);
+  if (preset === "week") {
+    const d = new Date(now);
+    d.setDate(d.getDate() - 7);
+    return { dateFrom: toIsoDate(d), dateTo: today };
+  }
+  if (preset === "month") {
+    const d = new Date(now);
+    d.setMonth(d.getMonth() - 1);
+    return { dateFrom: toIsoDate(d), dateTo: today };
+  }
+  // year-to-date
+  return { dateFrom: `${now.getFullYear()}-01-01`, dateTo: today };
+};
+
+// Detect which preset the current filter matches, if any.
+export const detectDatePreset = (f: SearchFilters): DatePreset => {
+  if (f.dateFrom === null && f.dateTo === null) return "lifetime";
+  for (const p of ["week", "month", "year"] as const) {
+    const r = datePresetRange(p);
+    if (r.dateFrom === f.dateFrom && r.dateTo === f.dateTo) return p;
+  }
+  return "custom";
 };
 
 // Build a Qdrant-compatible filter object, or null if no constraints.
@@ -220,16 +257,10 @@ export const buildQdrantFilter = (
     });
   }
 
-  const lo = filters.yearMin !== null && filters.yearMin > FILTER_YEAR_MIN
-    ? filters.yearMin
-    : null;
-  const hi = filters.yearMax !== null && filters.yearMax < FILTER_YEAR_MAX
-    ? filters.yearMax
-    : null;
-  if (lo !== null || hi !== null) {
+  if (filters.dateFrom !== null || filters.dateTo !== null) {
     const range: Record<string, string> = {};
-    if (lo !== null) range.gte = `${lo}-01-01T00:00:00Z`;
-    if (hi !== null) range.lt = `${hi + 1}-01-01T00:00:00Z`;
+    if (filters.dateFrom) range.gte = `${filters.dateFrom}T00:00:00Z`;
+    if (filters.dateTo) range.lte = `${filters.dateTo}T23:59:59Z`;
     must.push({ key: "source_info.creation_date", range });
   }
 

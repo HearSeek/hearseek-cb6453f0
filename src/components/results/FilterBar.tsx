@@ -1,14 +1,17 @@
 import { useState } from "react";
-import * as SliderPrimitive from "@radix-ui/react-slider";
-import { Languages, Calendar, Check, X, SlidersHorizontal, ChevronDown } from "lucide-react";
+import { format } from "date-fns";
+import { Languages, Calendar as CalendarIcon, Check, X, SlidersHorizontal, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   type SearchFilters,
+  type DatePreset,
   EMPTY_FILTERS,
-  FILTER_YEAR_MIN,
-  FILTER_YEAR_MAX,
   filtersAreEmpty,
   filtersEqual,
+  datePresetRange,
+  detectDatePreset,
 } from "@/lib/hearseek";
 
 // TODO: replace with /api/languages once the backend exposes it.
@@ -17,10 +20,27 @@ const AVAILABLE_LANGUAGES: { code: string; label: string; dot: string }[] = [
   { code: "ur", label: "Urdu", dot: "bg-emerald-400" },
 ];
 
-const yearLo = (f: SearchFilters) => f.yearMin ?? FILTER_YEAR_MIN;
-const yearHi = (f: SearchFilters) => f.yearMax ?? FILTER_YEAR_MAX;
-const isFullYearRange = (f: SearchFilters) =>
-  yearLo(f) <= FILTER_YEAR_MIN && yearHi(f) >= FILTER_YEAR_MAX;
+const PRESETS: { value: DatePreset; label: string }[] = [
+  { value: "week", label: "Last week" },
+  { value: "month", label: "Last month" },
+  { value: "year", label: "This year" },
+  { value: "lifetime", label: "Lifetime" },
+  { value: "custom", label: "Custom range" },
+];
+
+const parseIsoDate = (s: string | null): Date | undefined => {
+  if (!s) return undefined;
+  const [y, m, d] = s.split("-").map((n) => Number.parseInt(n, 10));
+  if (!y || !m || !d) return undefined;
+  return new Date(y, m - 1, d);
+};
+
+const toIsoDate = (d: Date): string => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
 
 type Props = {
   staged: SearchFilters;
@@ -33,6 +53,7 @@ type Props = {
 const SidebarBody = ({ staged, applied, onChange, onApply, onClear }: Props) => {
   const hasUnapplied = !filtersEqual(staged, applied);
   const hasActive = !filtersAreEmpty(applied);
+  const activePreset = detectDatePreset(staged);
 
   const toggleLanguage = (code: string) => {
     const set = new Set(staged.languages);
@@ -41,9 +62,18 @@ const SidebarBody = ({ staged, applied, onChange, onApply, onClear }: Props) => 
     onChange({ ...staged, languages: Array.from(set) });
   };
 
-  const setYearRange = (lo: number, hi: number) => {
-    onChange({ ...staged, yearMin: lo, yearMax: hi });
+  const selectPreset = (preset: DatePreset) => {
+    if (preset === "custom") {
+      // Keep existing dates if any, otherwise leave null until user picks.
+      onChange({ ...staged });
+      return;
+    }
+    const r = datePresetRange(preset);
+    onChange({ ...staged, dateFrom: r.dateFrom, dateTo: r.dateTo });
   };
+
+  const fromDate = parseIsoDate(staged.dateFrom);
+  const toDate = parseIsoDate(staged.dateTo);
 
   return (
     <aside className="rounded-2xl border border-white/10 bg-card/40 p-4 backdrop-blur-xl">
@@ -107,46 +137,99 @@ const SidebarBody = ({ staged, applied, onChange, onApply, onClear }: Props) => 
         </div>
       </section>
 
-      {/* Year */}
+      {/* Date */}
       <section className="mb-5">
-        <div className="mb-2 flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-            <Calendar className="h-3 w-3 text-primary/80" />
-            Upload year
-          </div>
-          <span className="font-mono text-xs text-foreground">
-            {yearLo(staged)} — {yearHi(staged)}
-          </span>
+        <div className="mb-2 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+          <CalendarIcon className="h-3 w-3 text-primary/80" />
+          Upload date
         </div>
-        <div className="px-1 pt-2 pb-1">
-          <SliderPrimitive.Root
-            min={FILTER_YEAR_MIN}
-            max={FILTER_YEAR_MAX}
-            step={1}
-            minStepsBetweenThumbs={0}
-            value={[yearLo(staged), yearHi(staged)]}
-            onValueChange={(vals) => {
-              if (vals.length === 2) setYearRange(vals[0], vals[1]);
-            }}
-            className="relative flex w-full touch-none select-none items-center"
-          >
-            <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-white/10">
-              <SliderPrimitive.Range className="absolute h-full bg-gradient-to-r from-[hsl(190_95%_55%)] via-[hsl(258_90%_66%)] to-[hsl(290_80%_60%)]" />
-            </SliderPrimitive.Track>
-            <SliderPrimitive.Thumb
-              aria-label="Minimum year"
-              className="block h-4 w-4 rounded-full border-2 border-primary bg-background shadow-[0_0_10px_hsl(258_90%_66%/0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            />
-            <SliderPrimitive.Thumb
-              aria-label="Maximum year"
-              className="block h-4 w-4 rounded-full border-2 border-primary bg-background shadow-[0_0_10px_hsl(258_90%_66%/0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            />
-          </SliderPrimitive.Root>
-          <div className="mt-2 flex justify-between text-[10px] uppercase tracking-wider text-muted-foreground/60">
-            <span>{FILTER_YEAR_MIN}</span>
-            <span>{FILTER_YEAR_MAX}</span>
-          </div>
+        <div className="flex flex-col gap-1">
+          {PRESETS.map((p) => {
+            const active = activePreset === p.value;
+            return (
+              <button
+                key={p.value}
+                type="button"
+                onClick={() => selectPreset(p.value)}
+                className={cn(
+                  "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm transition",
+                  active
+                    ? "bg-primary/10 text-foreground"
+                    : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
+                )}
+              >
+                <span
+                  className={cn(
+                    "h-1.5 w-1.5 rounded-full",
+                    active ? "bg-primary" : "bg-muted-foreground/40",
+                  )}
+                />
+                <span className="flex-1">{p.label}</span>
+              </button>
+            );
+          })}
         </div>
+
+        {activePreset === "custom" && (
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className={cn(
+                    "inline-flex items-center justify-between gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-left text-xs transition hover:border-primary/40",
+                    !fromDate && "text-muted-foreground",
+                  )}
+                >
+                  <span className="truncate">
+                    {fromDate ? format(fromDate, "MMM d, yyyy") : "From"}
+                  </span>
+                  <CalendarIcon className="h-3 w-3 text-primary/70" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={fromDate}
+                  onSelect={(d) =>
+                    onChange({ ...staged, dateFrom: d ? toIsoDate(d) : null })
+                  }
+                  disabled={(date) => date > new Date() || (!!toDate && date > toDate)}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className={cn(
+                    "inline-flex items-center justify-between gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-left text-xs transition hover:border-primary/40",
+                    !toDate && "text-muted-foreground",
+                  )}
+                >
+                  <span className="truncate">
+                    {toDate ? format(toDate, "MMM d, yyyy") : "To"}
+                  </span>
+                  <CalendarIcon className="h-3 w-3 text-primary/70" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={toDate}
+                  onSelect={(d) =>
+                    onChange({ ...staged, dateTo: d ? toIsoDate(d) : null })
+                  }
+                  disabled={(date) => date > new Date() || (!!fromDate && date < fromDate)}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        )}
       </section>
 
       <button
@@ -207,19 +290,19 @@ export const FilterSidebar = (props: Props) => {
   );
 };
 
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
 export const filtersFromUrl = (params: URLSearchParams): SearchFilters => {
   const lang = params.get("lang");
-  const yMin = params.get("yearMin");
-  const yMax = params.get("yearMax");
+  const from = params.get("from");
+  const to = params.get("to");
   const languages = lang
     ? lang.split(",").map((s) => s.trim()).filter(Boolean)
     : [];
-  const yearMin = yMin ? Number.parseInt(yMin, 10) : null;
-  const yearMax = yMax ? Number.parseInt(yMax, 10) : null;
   return {
     languages,
-    yearMin: Number.isFinite(yearMin as number) ? yearMin : null,
-    yearMax: Number.isFinite(yearMax as number) ? yearMax : null,
+    dateFrom: from && ISO_DATE_RE.test(from) ? from : null,
+    dateTo: to && ISO_DATE_RE.test(to) ? to : null,
   };
 };
 
@@ -232,16 +315,13 @@ export const writeFiltersToParams = (
   } else {
     params.delete("lang");
   }
-  if (filters.yearMin !== null && filters.yearMin > FILTER_YEAR_MIN) {
-    params.set("yearMin", String(filters.yearMin));
-  } else {
-    params.delete("yearMin");
-  }
-  if (filters.yearMax !== null && filters.yearMax < FILTER_YEAR_MAX) {
-    params.set("yearMax", String(filters.yearMax));
-  } else {
-    params.delete("yearMax");
-  }
+  if (filters.dateFrom) params.set("from", filters.dateFrom);
+  else params.delete("from");
+  if (filters.dateTo) params.set("to", filters.dateTo);
+  else params.delete("to");
+  // Clean up legacy params
+  params.delete("yearMin");
+  params.delete("yearMax");
 };
 
 export { EMPTY_FILTERS };

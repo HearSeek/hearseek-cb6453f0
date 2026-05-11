@@ -457,9 +457,22 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
               alt="HearSeek"
               className="h-9 w-9 object-contain drop-shadow-[0_0_18px_hsl(var(--primary)/0.55)]"
             />
-            <span className="font-display text-sm font-semibold tracking-tight">
-              {pilot ? pilot.shortName : "HearSeek"}
-            </span>
+            {pilot?.logo ? (
+              <>
+                <span className="text-base font-light text-muted-foreground/70" aria-hidden>
+                  ×
+                </span>
+                <img
+                  src={pilot.logo}
+                  alt={`${pilot.name} logo`}
+                  className="h-9 w-auto object-contain"
+                />
+              </>
+            ) : (
+              <span className="font-display text-sm font-semibold tracking-tight">
+                HearSeek
+              </span>
+            )}
           </Link>
           <div className="w-[72px]" />
         </div>
