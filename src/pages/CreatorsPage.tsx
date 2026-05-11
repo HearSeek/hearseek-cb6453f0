@@ -17,6 +17,7 @@ import { Section } from "@/components/site/Section";
 import { VideoEmbed } from "@/components/site/VideoEmbed";
 import { FeatureCard } from "@/components/site/FeatureCard";
 import { FeatureShowcaseRow } from "@/components/site/FeatureShowcaseRow";
+import { cn } from "@/lib/utils";
 
 const CreatorsPage = () => {
   return (
