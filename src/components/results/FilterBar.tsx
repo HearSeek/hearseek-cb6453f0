@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { Languages, Calendar as CalendarIcon, Check, X, SlidersHorizontal, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -53,7 +53,15 @@ type Props = {
 const SidebarBody = ({ staged, applied, onChange, onApply, onClear }: Props) => {
   const hasUnapplied = !filtersEqual(staged, applied);
   const hasActive = !filtersAreEmpty(applied);
-  const activePreset = detectDatePreset(staged);
+  const detected = detectDatePreset(staged);
+  // Track explicit "custom" selection so the date pickers stay visible even
+  // before the user picks any dates (when from/to are still null, detection
+  // would otherwise resolve to "lifetime").
+  const [customMode, setCustomMode] = useState(detected === "custom");
+  useEffect(() => {
+    if (detected === "custom") setCustomMode(true);
+  }, [detected]);
+  const activePreset = customMode ? "custom" : detected;
 
   const toggleLanguage = (code: string) => {
     const set = new Set(staged.languages);
@@ -64,10 +72,10 @@ const SidebarBody = ({ staged, applied, onChange, onApply, onClear }: Props) => 
 
   const selectPreset = (preset: DatePreset) => {
     if (preset === "custom") {
-      // Keep existing dates if any, otherwise leave null until user picks.
-      onChange({ ...staged });
+      setCustomMode(true);
       return;
     }
+    setCustomMode(false);
     const r = datePresetRange(preset);
     onChange({ ...staged, dateFrom: r.dateFrom, dateTo: r.dateTo });
   };
