@@ -4,7 +4,7 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import logo from "@/assets/hearseek-logo-mark.png";
+import logo from "@/assets/hearseek-logo-mark-white.png";
 
 const nav = [
   { to: "/", label: "Home" },
