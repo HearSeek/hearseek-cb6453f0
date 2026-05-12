@@ -24,7 +24,7 @@ const PilotPage = () => {
     const trimmed = q.trim();
     if (!trimmed) return;
     const params = new URLSearchParams({ q: trimmed });
-    navigate(`/pilots/${pilot.slug}/results?${params.toString()}`);
+    navigate(`/pilots/${pilot.key}/results?${params.toString()}`);
   };
 
   const onSubmit = (e: React.FormEvent) => {
