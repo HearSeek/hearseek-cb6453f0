@@ -282,7 +282,7 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
   const query = params.get("q") ?? "";
   const configSlug = pilot?.configSlug ?? params.get("config") ?? "";
   const configName = pilot?.configName ?? params.get("configName") ?? configSlug;
-  const backTo = pilot ? `/pilots/${pilot.slug}` : "/demo";
+  const backTo = pilot ? `/pilots/${pilot.key}` : "/demo";
 
   const [pendingQuery, setPendingQuery] = useState(query);
   const [pendingConfig, setPendingConfig] = useState<SearchConfig>({
@@ -378,7 +378,7 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
     const controller = new AbortController();
     setLoading(true);
     setError(null);
-    runSearch(query, configSlug, controller.signal, appliedFilters)
+    runSearch(query, configSlug, controller.signal, appliedFilters, pilot?.baseFilter)
       .then((res) => {
         setHits(res.hits);
         setNumHits(res.numHits);
