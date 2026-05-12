@@ -1,47 +1,60 @@
-# Decouple pilot pages from backend config slugs
+# Results card refinements
 
-Pilot URLs (e.g. `/pilots/diary-of-a-ceo`) will keep their path identifier as a microsite-only key — it stops being called a "slug" in code/UI and stops being passed as the search-config to the backend. Each pilot instead declares which shared backend config to query and a baseline Qdrant filter that gets ANDed onto every search.
+Three focused changes to `src/pages/ResultsPage.tsx`. No business-logic changes.
 
-Scope: only the `diary-of-a-ceo` pilot. IIS is left untouched.
+## 1. Replace inline ShareRow with a "Share this clip" popover button
 
-## Changes
+Today `ShareRow` renders a label plus 4 inline icon buttons under the thumbnail. Replace with a single button that opens a popover containing all share options. Same component is used on desktop and mobile (it already renders below the thumbnail in both layouts).
 
-### 1. `src/lib/pilots.ts`
-- Rename the `slug` field to `key` on the `Pilot` type (microsite identifier only). Update `getPilot` and `ALL_PILOTS` accordingly.
-- Add two new fields:
-  - `searchConfig: { slug: string; name: string }` — the backend config to actually hit (e.g. `{ slug: "podcasts", name: "Podcasts" }` for Diary of A CEO).
-  - `baseFilter?: Record<string, unknown>[]` — additional `must` clauses always merged into the Qdrant filter. For Diary of A CEO: `[{ key: "source_info.channel", match: { value: "diary_of_a_ceo" } }]`.
-- For Diary of A CEO entry: set `searchConfig` to `podcasts` and add the channel `baseFilter`. Drop the old `configSlug`/`configName` from the entry (or keep them deprecated — see Technical notes).
-- Leave the IIS entry on its existing fields for now.
+- Use the existing shadcn `Popover` (`@/components/ui/popover`) — already in the project.
+- Trigger button: full-width under the thumbnail, outline style, label "Share this clip", `Share2` icon on the left. Sized to match the thumbnail block (`w-full`).
+- Popover content (~w-64, anchored to trigger):
+  - Header: "Share this clip" (small, muted).
+  - Vertical list of options, each a row with icon + label, hover state, full-width click target:
+    - Copy link (`Link2`) — calls existing `copyLink` (clipboard + toast).
+    - WhatsApp (`WhatsAppIcon`) — opens `https://wa.me/?text=…`.
+    - Facebook (`Facebook`) — opens FB sharer.
+    - X (`Twitter`) — opens tweet intent.
+  - External links open in new tab (`target="_blank"`, `rel="noopener noreferrer"`); after activation the popover closes (controlled `open` state).
+- Keep all visuals on design tokens (`border-white/10`, `bg-card/...`, `text-muted-foreground`, `hover:text-foreground`, `hover:border-primary/40`).
+- Mobile parity is automatic — same button, same popover. Popover already handles small-viewport positioning.
 
-### 2. `src/lib/hearseek.ts`
-- Extend `buildQdrantFilter` to accept an optional `extraMust: Record<string, unknown>[]` argument and prepend/append those clauses to the `must` array. Returns a filter object whenever either user filters OR extra clauses are present.
-- Extend `runSearch` with an optional `extraMust` parameter and pass it through to `buildQdrantFilter`.
+## 2. Update share metadata text
 
-### 3. `src/pages/PilotResultsPage.tsx` & `src/pages/ResultsPage.tsx`
-- `ResultsPage` already accepts a `pilot` prop. Update it to:
-  - Read `configSlug` / `configName` from `pilot.searchConfig` when in pilot mode.
-  - Pass `pilot.baseFilter` through to `runSearch` as `extraMust`.
-  - Use `pilot.key` everywhere it currently uses `pilot.slug` (back link, etc.).
+Currently `SHARE_TAGLINE = "Found this exact moment using HearSeek – The World's First AI Search Engine for Audio. 🔍🎧"` is reused for all platforms.
 
-### 4. `src/pages/PilotPage.tsx`
-- Replace `pilot.slug` references with `pilot.key` for the navigation URL (`/pilots/${pilot.key}/results`).
+Replace with a per-hit composer that uses the current query (already available in `ResultsPage` as `query`, will be threaded into `ShareRow` via a new `query` prop):
 
-### 5. `src/App.tsx`
-- Routes stay as `/pilots/:slug` in the URL (React Router param name is just a variable). No route changes required — `useParams<{ slug: string }>()` simply feeds `getPilot(slug)` which now matches against `key`. Optionally rename the param to `:key` for consistency.
+```
+I searched "<query>" on HearSeek and found this exact moment.
+HearSeek - The World's First AI Search Engine for Audio
+<link>
+```
 
-### 6. UI surfaces
-- No user-visible changes. The microsite identifier is never displayed; only the pilot's `name` / `shortName` / `logo` show up.
+- WhatsApp: full 3-line text (newline-encoded).
+- Copy link: still copies just the URL (matches user expectation when they pick "Copy link"). Toast unchanged.
+- Facebook: `u=<link>&quote=<first two lines>` (FB ignores `quote` for most pages now but we keep parity).
+- X: `text=<first two lines>&url=<link>` (X auto-appends URL, so we omit it from `text` to avoid duplication).
+- If `query` is empty, fall back to: `Found this exact moment on HearSeek.\nHearSeek - The World's First AI Search Engine for Audio\n<link>`.
+
+`SHARE_TAGLINE` constant is removed; replaced by an inline `buildShareText(query, link)` helper inside `ResultsPage.tsx`.
+
+## 3. Show video title below the pills row
+
+Currently the `ResultCard` header row (line ~275) puts ChannelPill, then the title as a small truncated inline text, then the language pill on the right. Refactor:
+
+- Top row: ChannelPill (left) + Language pill (right, `ml-auto`). No title here.
+- New second row: video title rendered as a single-line element below the pills and above the snippet.
+  - Element: `<h3>` for semantics, `font-display text-sm font-medium text-foreground/90 truncate` (RTL-aware via `dir` when language is RTL).
+  - Margin: `mt-1.5 mb-1` to sit between pills and snippet.
+  - Only rendered when `hit.title` exists.
+
+No other layout changes.
 
 ## Technical notes
 
-- Filter merge order in `buildQdrantFilter`: base (pilot) clauses first, then user-selected language/date clauses. Single flat `must` array — Qdrant ANDs them.
-- `runSearch` signature becomes `runSearch(query, configSlug, signal?, filters?, extraMust?)`. Existing non-pilot callers pass nothing new.
-- `Pilot.key` rename is mechanical — only `getPilot`, `PilotPage`, `PilotResultsPage`, and `ResultsPage` reference it. We'll grep to confirm no other consumers.
-- The old per-pilot `configSlug` / `configName` fields on Diary of A CEO are removed since the new `searchConfig` field replaces them. IIS keeps its current shape so its behavior is unchanged.
-- Hardcoding is intentional — once the backend evolves we can revisit declaring these dynamically.
-
-## Open follow-ups (not in this change)
-
-- Migrating IIS to the same pattern when the backend is ready.
-- Surfacing pilot selection or category metadata in the UI.
+- File touched: `src/pages/ResultsPage.tsx` only.
+- New imports from `@/components/ui/popover`: `Popover`, `PopoverTrigger`, `PopoverContent`.
+- `ShareRow` signature becomes `({ hit, query }: { hit: SearchHit; query: string })`; `ResultCard` gains a `query` prop forwarded from the parent map (`hits.map(...)`).
+- No changes to `hearseek.ts`, filter logic, routing, or pilot config.
+- Existing toast + clipboard behavior preserved.
