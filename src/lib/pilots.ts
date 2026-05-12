@@ -6,12 +6,15 @@
 // landing page. Update the placeholder values once the real ones are known.
 
 export type Pilot = {
-  slug: string;
+  key: string;
   name: string;
   shortName: string;
   tagline: string;
   configSlug: string;
   configName: string;
+  // Optional baseline Qdrant `must` clauses ANDed onto every search request
+  // for this pilot (e.g. lock to a specific source_info.channel value).
+  baseFilter?: Record<string, unknown>[];
   disclaimer: string;
   suggestions: string[];
   featuredVideoIds: string[];
@@ -23,7 +26,7 @@ import doacLogo from "@/assets/pilot-doac-logo.png";
 
 export const PILOTS: Record<string, Pilot> = {
   iis: {
-    slug: "iis",
+    key: "iis",
     name: "International Iqbal Society",
     shortName: "IIS",
     tagline:
@@ -50,13 +53,16 @@ export const PILOTS: Record<string, Pilot> = {
     logo: iisLogo,
   },
   "diary-of-a-ceo": {
-    slug: "diary-of-a-ceo",
+    key: "diary-of-a-ceo",
     name: "The Diary of A CEO by Steven Bartlett",
     shortName: "Diary of A CEO",
     tagline:
       "Search every episode of Steven Bartlett's Diary of A CEO — find the exact moment any guest said what you're looking for.",
-    configSlug: "diary-of-a-ceo",
-    configName: "Diary of A CEO",
+    configSlug: "podcasts",
+    configName: "Podcasts",
+    baseFilter: [
+      { key: "source_info.channel", match: { value: "diary_of_a_ceo" } },
+    ],
     disclaimer:
       "This microsite searches a curated set of Diary of A CEO episodes. It does not search the wider web.",
     suggestions: [

@@ -247,8 +247,9 @@ export const detectDatePreset = (f: SearchFilters): DatePreset => {
 // lt Jan 1 of (yearMax + 1).
 export const buildQdrantFilter = (
   filters: SearchFilters,
+  extraMust?: Record<string, unknown>[],
 ): Record<string, unknown> | null => {
-  const must: Record<string, unknown>[] = [];
+  const must: Record<string, unknown>[] = extraMust ? [...extraMust] : [];
 
   if (filters.languages.length > 0) {
     must.push({
@@ -273,13 +274,14 @@ export const runSearch = async (
   configSlug: string,
   signal?: AbortSignal,
   filters?: SearchFilters,
+  extraMust?: Record<string, unknown>[],
 ): Promise<SearchResponse> => {
   if (!DEMO_KEY) {
     throw new Error(
       "Missing VITE_HEARSEEK_DEMO_KEY. Add it to .env (see plan).",
     );
   }
-  const qdrant = filters ? buildQdrantFilter(filters) : null;
+  const qdrant = buildQdrantFilter(filters ?? EMPTY_FILTERS, extraMust);
   const body: Record<string, unknown> = { texts: query };
   if (qdrant) body.filters = qdrant;
 
