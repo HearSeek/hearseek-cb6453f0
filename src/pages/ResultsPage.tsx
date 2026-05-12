@@ -330,7 +330,7 @@ const ResultCard = ({
   const tStart = formatTimestamp(hit.start);
   const tEnd = formatTimestamp(hit.end);
   const rtl = isRtl(hit.language);
-  const displayTitle = hit.title || titleOverride || null;
+  const displayTitle = titleOverride || hit.title || null;
   return (
     <article
       className="group relative grid animate-fade-in-up grid-cols-1 gap-5 overflow-hidden rounded-2xl border border-white/10 bg-card/40 p-5 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant md:grid-cols-[92px_1fr_260px] md:gap-6 md:p-6"
@@ -388,7 +388,7 @@ const ResultCard = ({
       </div>
 
       {/* Video preview */}
-      <div className="flex w-full flex-col justify-center md:w-[260px]">
+      <div className="flex h-full w-full flex-col justify-center self-stretch md:w-[260px]">
         <a
           href={jumpLink ?? "#"}
           target="_blank"
@@ -434,7 +434,9 @@ const ResultCard = ({
             </AspectRatio>
           </div>
         </a>
-        <ShareRow hit={hit} />
+        <div className="flex justify-center">
+          <ShareRow hit={hit} />
+        </div>
       </div>
     </article>
   );
