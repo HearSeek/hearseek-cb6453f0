@@ -20,6 +20,7 @@ import {
   Link2,
   Facebook,
   Twitter,
+  Code2,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -44,7 +45,7 @@ import {
   filtersFromUrl,
   writeFiltersToParams,
 } from "@/components/results/FilterBar";
-import { fetchVideoDurations } from "@/lib/youtubeDuration";
+import { fetchVideoDurations, fetchVideoTitles } from "@/lib/youtubeDuration";
 import { type Pilot } from "@/lib/pilots";
 
 const isRtl = (lang: string | null) => lang === "ur" || lang === "ar" || lang === "fa" || lang === "he";
@@ -155,21 +156,37 @@ const ChannelPill = ({ channel }: { channel: string | null }) => (
   </span>
 );
 
-const buildShareText = (query: string, link: string): string => {
-  const q = query.trim();
-  const firstLine = q
-    ? `I searched "${q}" on HearSeek and found this exact moment.`
-    : `Found this exact moment on HearSeek.`;
-  return `${firstLine}\nHearSeek - The World's First AI Search Engine for Audio\n${link}`;
+// Convert ASCII letters to Unicode sans-serif bold (𝗛𝗲𝗮𝗿𝗦𝗲𝗲𝗸).
+const toUnicodeBold = (s: string): string => {
+  let out = "";
+  for (const ch of s) {
+    const c = ch.codePointAt(0)!;
+    if (c >= 65 && c <= 90) out += String.fromCodePoint(0x1d5d4 + (c - 65));
+    else if (c >= 97 && c <= 122) out += String.fromCodePoint(0x1d5ee + (c - 97));
+    else out += ch;
+  }
+  return out;
+};
+// Convert ASCII letters to Unicode sans-serif italic.
+const toUnicodeItalic = (s: string): string => {
+  let out = "";
+  for (const ch of s) {
+    const c = ch.codePointAt(0)!;
+    if (c >= 65 && c <= 90) out += String.fromCodePoint(0x1d608 + (c - 65));
+    else if (c >= 97 && c <= 122) out += String.fromCodePoint(0x1d622 + (c - 97));
+    else out += ch;
+  }
+  return out;
 };
 
-const buildShareCaption = (query: string): string => {
-  const q = query.trim();
-  const firstLine = q
-    ? `I searched "${q}" on HearSeek and found this exact moment.`
-    : `Found this exact moment on HearSeek.`;
-  return `${firstLine}\nHearSeek - The World's First AI Search Engine for Audio`;
-};
+const BRAND_BOLD = toUnicodeBold("HearSeek");
+const TAGLINE_ITALIC = toUnicodeItalic("The World's First AI Search Engine for Audio");
+
+const buildShareCaption = (): string =>
+  `I found this exact moment on ${BRAND_BOLD} - ${TAGLINE_ITALIC}`;
+
+const buildShareText = (link: string): string =>
+  `${buildShareCaption()}\n${link}`;
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
@@ -177,11 +194,11 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const ShareRow = ({ hit, query }: { hit: SearchHit; query: string }) => {
+const ShareRow = ({ hit }: { hit: SearchHit }) => {
   const [open, setOpen] = useState(false);
   const link = buildJumpLink(hit) ?? (typeof window !== "undefined" ? window.location.href : "");
-  const fullText = buildShareText(query, link);
-  const caption = buildShareCaption(query);
+  const fullText = buildShareText(link);
+  const caption = buildShareCaption();
   const encodedText = encodeURIComponent(fullText);
   const encodedCaption = encodeURIComponent(caption);
   const encodedUrl = encodeURIComponent(link);
@@ -190,6 +207,19 @@ const ShareRow = ({ hit, query }: { hit: SearchHit; query: string }) => {
     try {
       await navigator.clipboard.writeText(link);
       toast({ title: "Link copied", description: "Jump link copied to clipboard." });
+    } catch {
+      toast({ title: "Copy failed", description: "Could not access clipboard.", variant: "destructive" });
+    }
+    setOpen(false);
+  };
+
+  const copyEmbed = async () => {
+    const embed = hit.videoId
+      ? `<iframe width="560" height="315" src="https://www.youtube.com/embed/${hit.videoId}?start=${hit.start}" title="HearSeek clip" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`
+      : link;
+    try {
+      await navigator.clipboard.writeText(embed);
+      toast({ title: "Embed code copied", description: "Paste it into your site's HTML." });
     } catch {
       toast({ title: "Copy failed", description: "Could not access clipboard.", variant: "destructive" });
     }
@@ -221,6 +251,11 @@ const ShareRow = ({ hit, query }: { hit: SearchHit; query: string }) => {
       label: "X",
       icon: <Twitter className="h-4 w-4" />,
       href: `https://twitter.com/intent/tweet?text=${encodedCaption}&url=${encodedUrl}`,
+    },
+    {
+      label: "Embed",
+      icon: <Code2 className="h-4 w-4" />,
+      onClick: copyEmbed,
     },
   ];
 
@@ -279,12 +314,23 @@ const ShareRow = ({ hit, query }: { hit: SearchHit; query: string }) => {
   );
 };
 
-const ResultCard = ({ hit, index, duration, query }: { hit: SearchHit; index: number; duration?: number; query: string }) => {
+const ResultCard = ({
+  hit,
+  index,
+  duration,
+  titleOverride,
+}: {
+  hit: SearchHit;
+  index: number;
+  duration?: number;
+  titleOverride?: string;
+}) => {
   const jumpLink = buildJumpLink(hit);
   const thumb = hit.videoId ? youtubeThumbnail(hit.videoId) : null;
   const tStart = formatTimestamp(hit.start);
   const tEnd = formatTimestamp(hit.end);
   const rtl = isRtl(hit.language);
+  const displayTitle = hit.title || titleOverride || null;
   return (
     <article
       className="group relative grid animate-fade-in-up grid-cols-1 gap-5 overflow-hidden rounded-2xl border border-white/10 bg-card/40 p-5 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant md:grid-cols-[92px_1fr_260px] md:gap-6 md:p-6"
@@ -315,7 +361,7 @@ const ResultCard = ({ hit, index, duration, query }: { hit: SearchHit; index: nu
             <span>{languageLabel(hit.language)}</span>
           </span>
         </div>
-        {hit.title && (
+        {displayTitle && (
           <h3
             dir={rtl ? "rtl" : "ltr"}
             className={cn(
@@ -323,7 +369,7 @@ const ResultCard = ({ hit, index, duration, query }: { hit: SearchHit; index: nu
               rtl && "text-right",
             )}
           >
-            {hit.title}
+            {displayTitle}
           </h3>
         )}
         <Snippet hit={hit} />
@@ -342,7 +388,7 @@ const ResultCard = ({ hit, index, duration, query }: { hit: SearchHit; index: nu
       </div>
 
       {/* Video preview */}
-      <div className="w-full md:w-[260px]">
+      <div className="flex w-full flex-col justify-center md:w-[260px]">
         <a
           href={jumpLink ?? "#"}
           target="_blank"
@@ -388,7 +434,7 @@ const ResultCard = ({ hit, index, duration, query }: { hit: SearchHit; index: nu
             </AspectRatio>
           </div>
         </a>
-        <ShareRow hit={hit} query={query} />
+        <ShareRow hit={hit} />
       </div>
     </article>
   );
@@ -436,6 +482,7 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [durations, setDurations] = useState<Record<string, number>>({});
+  const [videoTitles, setVideoTitles] = useState<Record<string, string>>({});
 
   // Applied filters mirror what's in the URL and drive the search effect.
   // Staged filters live only in local state until the user hits Apply.
@@ -529,6 +576,9 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
         if (ids.length > 0) {
           fetchVideoDurations(ids).then((map) => {
             setDurations((prev) => ({ ...prev, ...map }));
+          });
+          fetchVideoTitles(ids).then((map) => {
+            setVideoTitles((prev) => ({ ...prev, ...map }));
           });
         }
       })
@@ -762,7 +812,7 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
                   hit={h}
                   index={i}
                   duration={h.videoId ? durations[h.videoId] : undefined}
-                  query={query}
+                  titleOverride={h.videoId ? videoTitles[h.videoId] : undefined}
                 />
               ))}
             </div>
