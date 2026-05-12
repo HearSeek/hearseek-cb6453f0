@@ -14,11 +14,28 @@ import {
   detectDatePreset,
 } from "@/lib/hearseek";
 
-// TODO: replace with /api/languages once the backend exposes it.
-const AVAILABLE_LANGUAGES: { code: string; label: string; dot: string }[] = [
-  { code: "en", label: "English", dot: "bg-sky-400" },
-  { code: "ur", label: "Urdu", dot: "bg-emerald-400" },
-];
+// Catalog of languages we know how to label/dot. The actual options shown
+// in the sidebar are filtered down to the languages present in the current
+// search results (passed via `availableLanguages`).
+const LANGUAGE_CATALOG: Record<string, { label: string; dot: string }> = {
+  en: { label: "English", dot: "bg-sky-400" },
+  ur: { label: "Urdu", dot: "bg-emerald-400" },
+  ar: { label: "Arabic", dot: "bg-amber-400" },
+  hi: { label: "Hindi", dot: "bg-rose-400" },
+  fa: { label: "Persian", dot: "bg-violet-400" },
+  he: { label: "Hebrew", dot: "bg-violet-400" },
+  es: { label: "Spanish", dot: "bg-amber-400" },
+  fr: { label: "French", dot: "bg-sky-400" },
+  de: { label: "German", dot: "bg-amber-400" },
+  pt: { label: "Portuguese", dot: "bg-emerald-400" },
+  zh: { label: "Chinese", dot: "bg-rose-400" },
+  ja: { label: "Japanese", dot: "bg-rose-400" },
+};
+
+const labelFor = (code: string) =>
+  LANGUAGE_CATALOG[code]?.label ?? code.toUpperCase();
+const dotFor = (code: string) =>
+  LANGUAGE_CATALOG[code]?.dot ?? "bg-violet-400";
 
 const PRESETS: { value: DatePreset; label: string }[] = [
   { value: "week", label: "Last week" },
@@ -48,9 +65,10 @@ type Props = {
   onChange: (next: SearchFilters) => void;
   onApply: () => void;
   onClear: () => void;
+  availableLanguages?: string[];
 };
 
-const SidebarBody = ({ staged, applied, onChange, onApply, onClear }: Props) => {
+const SidebarBody = ({ staged, applied, onChange, onApply, onClear, availableLanguages }: Props) => {
   const hasUnapplied = !filtersEqual(staged, applied);
   const hasActive = !filtersAreEmpty(applied);
   const detected = detectDatePreset(staged);
@@ -63,12 +81,16 @@ const SidebarBody = ({ staged, applied, onChange, onApply, onClear }: Props) => 
   }, [detected]);
   const activePreset = customMode ? "custom" : detected;
 
-  const toggleLanguage = (code: string) => {
-    const set = new Set(staged.languages);
-    if (set.has(code)) set.delete(code);
-    else set.add(code);
-    onChange({ ...staged, languages: Array.from(set) });
+  // Languages shown in the sidebar are restricted to those present in the
+  // current results. Selection is single — picking "All" clears the filter,
+  // picking a language replaces the current selection.
+  const visibleLanguages = (availableLanguages ?? []).filter(
+    (c, i, arr) => arr.indexOf(c) === i,
+  );
+  const selectLanguage = (code: string | null) => {
+    onChange({ ...staged, languages: code ? [code] : [] });
   };
+  const isAllSelected = staged.languages.length === 0;
 
   const selectPreset = (preset: DatePreset) => {
     if (preset === "custom") {
@@ -110,13 +132,34 @@ const SidebarBody = ({ staged, applied, onChange, onApply, onClear }: Props) => 
           Language
         </div>
         <div className="flex flex-col gap-1">
-          {AVAILABLE_LANGUAGES.map((lang) => {
-            const checked = staged.languages.includes(lang.code);
+          <button
+            key="__all"
+            type="button"
+            onClick={() => selectLanguage(null)}
+            className={cn(
+              "flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left text-sm transition",
+              isAllSelected
+                ? "bg-primary/10 text-foreground"
+                : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
+            )}
+          >
+            <span
+              className={cn(
+                "h-1.5 w-1.5 rounded-full",
+                isAllSelected ? "bg-primary" : "bg-muted-foreground/40",
+              )}
+              aria-hidden
+            />
+            <span className="flex-1 truncate">All</span>
+            {isAllSelected && <Check className="h-3 w-3 text-primary" />}
+          </button>
+          {visibleLanguages.map((code) => {
+            const checked = staged.languages.includes(code);
             return (
               <button
-                key={lang.code}
+                key={code}
                 type="button"
-                onClick={() => toggleLanguage(lang.code)}
+                onClick={() => selectLanguage(code)}
                 className={cn(
                   "flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left text-sm transition",
                   checked
@@ -124,24 +167,20 @@ const SidebarBody = ({ staged, applied, onChange, onApply, onClear }: Props) => 
                     : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
                 )}
               >
-                <span
-                  className={cn(
-                    "flex h-4 w-4 shrink-0 items-center justify-center rounded-[5px] border transition",
-                    checked
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-white/20 bg-transparent",
-                  )}
-                >
-                  {checked && <Check className="h-3 w-3" />}
-                </span>
-                <span className={cn("h-1.5 w-1.5 rounded-full", lang.dot)} aria-hidden />
-                <span className="flex-1 truncate">{lang.label}</span>
+                <span className={cn("h-1.5 w-1.5 rounded-full", dotFor(code))} aria-hidden />
+                <span className="flex-1 truncate">{labelFor(code)}</span>
                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60">
-                  {lang.code}
+                  {code}
                 </span>
+                {checked && <Check className="h-3 w-3 text-primary" />}
               </button>
             );
           })}
+          {visibleLanguages.length === 0 && (
+            <p className="px-2 py-1.5 text-[11px] text-muted-foreground/70">
+              No language data in current results.
+            </p>
+          )}
         </div>
       </section>
 
