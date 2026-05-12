@@ -1,88 +1,47 @@
-## 1. Quick text fixes
+# Decouple pilot pages from backend config slugs
 
-`**src/pages/CreatorsPage.tsx` — Hero**
+Pilot URLs (e.g. `/pilots/diary-of-a-ceo`) will keep their path identifier as a microsite-only key — it stops being called a "slug" in code/UI and stops being passed as the search-config to the backend. Each pilot instead declares which shared backend config to query and a baseline Qdrant filter that gets ANDed onto every search.
 
-- Remove the secondary "Join the Waitlist" button from hero (keep only "Experience the Magic").
-- Change H1: "Search every word in your **YouTube Content**." (replacing "back-catalogue").
-- Closing CTA card: keep both buttons there (only the hero one is removed) — confirm if you'd rather strip it from the bottom CTA too.
+Scope: only the `diary-of-a-ceo` pilot. IIS is left untouched.
 
-**Rename "The Diary of the CEO" → "The Diary of a CEO" everywhere**
+## Changes
 
-- `src/lib/pilots.ts`: `name`, `shortName`, `configName`, `tagline`, `disclaimer` strings (slug `diary-of-the-ceo` stays — changing the route would break links; flag if you want it renamed too).
-- `src/pages/Index.tsx` line 193 label.
-- Any other UI strings that reference the old name.
+### 1. `src/lib/pilots.ts`
+- Rename the `slug` field to `key` on the `Pilot` type (microsite identifier only). Update `getPilot` and `ALL_PILOTS` accordingly.
+- Add two new fields:
+  - `searchConfig: { slug: string; name: string }` — the backend config to actually hit (e.g. `{ slug: "podcasts", name: "Podcasts" }` for Diary of A CEO).
+  - `baseFilter?: Record<string, unknown>[]` — additional `must` clauses always merged into the Qdrant filter. For Diary of A CEO: `[{ key: "source_info.channel", match: { value: "diary_of_a_ceo" } }]`.
+- For Diary of A CEO entry: set `searchConfig` to `podcasts` and add the channel `baseFilter`. Drop the old `configSlug`/`configName` from the entry (or keep them deprecated — see Technical notes).
+- Leave the IIS entry on its existing fields for now.
 
-## 2. Vibrant CreatorsPage upgrade
+### 2. `src/lib/hearseek.ts`
+- Extend `buildQdrantFilter` to accept an optional `extraMust: Record<string, unknown>[]` argument and prepend/append those clauses to the `must` array. Returns a filter object whenever either user filters OR extra clauses are present.
+- Extend `runSearch` with an optional `extraMust` parameter and pass it through to `buildQdrantFilter`.
 
-Goal: make the page feel premium and alive, with the 6 features as the centerpiece.
+### 3. `src/pages/PilotResultsPage.tsx` & `src/pages/ResultsPage.tsx`
+- `ResultsPage` already accepts a `pilot` prop. Update it to:
+  - Read `configSlug` / `configName` from `pilot.searchConfig` when in pilot mode.
+  - Pass `pilot.baseFilter` through to `runSearch` as `extraMust`.
+  - Use `pilot.key` everywhere it currently uses `pilot.slug` (back link, etc.).
 
-### Hero polish
+### 4. `src/pages/PilotPage.tsx`
+- Replace `pilot.slug` references with `pilot.key` for the navigation URL (`/pilots/${pilot.key}/results`).
 
-- Add a soft animated waveform / gradient orb backdrop behind the headline (reuse `bg-gradient-waveform` + a blurred radial glow, plus `animate-pulse-glow`).
-- Larger H1, tighter tracking, gradient on "YouTube Content".
-- Single primary CTA only.
+### 5. `src/App.tsx`
+- Routes stay as `/pilots/:slug` in the URL (React Router param name is just a variable). No route changes required — `useParams<{ slug: string }>()` simply feeds `getPilot(slug)` which now matches against `key`. Optionally rename the param to `:key` for consistency.
 
-### Use Cases (4 cards) — keep but lift
+### 6. UI surfaces
+- No user-visible changes. The microsite identifier is never displayed; only the pilot's `name` / `shortName` / `logo` show up.
 
-- Add subtle hover lift, gradient border on hover, and an animated icon (scale + color shift). No structural change.
+## Technical notes
 
-### NEW: "Features" section — full-width scroll showcase
+- Filter merge order in `buildQdrantFilter`: base (pilot) clauses first, then user-selected language/date clauses. Single flat `must` array — Qdrant ANDs them.
+- `runSearch` signature becomes `runSearch(query, configSlug, signal?, filters?, extraMust?)`. Existing non-pilot callers pass nothing new.
+- `Pilot.key` rename is mechanical — only `getPilot`, `PilotPage`, `PilotResultsPage`, and `ResultsPage` reference it. We'll grep to confirm no other consumers.
+- The old per-pilot `configSlug` / `configName` fields on Diary of A CEO are removed since the new `searchConfig` field replaces them. IIS keeps its current shape so its behavior is unchanged.
+- Hardcoding is intentional — once the backend evolves we can revisit declaring these dynamically.
 
-Replace the current 3-col `FeatureCard` grid with a **vertical scroll narrative**: each of the 6 features is its own full-width section, alternating image/illustration left-right, with fade + slide-in animation as it scrolls into view.
+## Open follow-ups (not in this change)
 
-Layout per feature row:
-
-```text
-┌─────────────────────────────────────────────────────────┐
-│  [icon badge]                                           │
-│  FEATURE TITLE (display, 4xl)         [visual / mock]   │
-│  long description paragraph                             │
-│  • bullet point                                         │
-│  • bullet point                                         │
-└─────────────────────────────────────────────────────────┘
-```
-
-Behavior:
-
-- Each row is a `min-h-[80vh]` section, content vertically centered.
-- Sticky-ish reveal: use IntersectionObserver to toggle `opacity-0 translate-y-8` → `opacity-100 translate-y-0` (Tailwind transition, 700ms). Adjacent rows fade out as you scroll past (opacity tied to viewport position).
-- Alternating sides on desktop (`md:grid-cols-2` with `md:[&:nth-child(even)>div:first-child]:order-2`), single column on mobile.
-- Each row gets its own accent gradient (vary hue per feature) using existing `--gradient-*` tokens or new ones added to `index.css`.
-- Right side: animated visual placeholder per feature (e.g. mini search-bar mock for Semantic Search, language chips for Cross-Language, waveform for Paraphrase, share card for Embed, timeline strip for Premiere plugin, $ chart for Monetize). All built with divs + Tailwind — no new images required.
-
-The 6 features stay the same titles/descriptions you already have.
-
-### Section dividers
-
-- Add thin gradient `<Waveform />` (already in `src/components/site`) between major sections for cohesion.
-
-### Closing CTA
-
-- Keep, but upgrade visual: add animated gradient border, larger headline.
-
-## 3. Technical notes
-
-- New tiny hook `src/hooks/use-in-view.ts` wrapping IntersectionObserver (returns `{ ref, inView }`). Used by each feature row.
-- New component `src/components/site/FeatureShowcaseRow.tsx` — props: `{ icon, title, description, bullets[], accent, visual: ReactNode, reverse }`. Handles the scroll animation + responsive flip.
-- 6 small visual components (or one switch component) for the right-side mocks. Pure Tailwind, no new deps.
-- Add 1–2 new gradient tokens to `index.css` if needed for variety (HSL only).
-- No new packages, no business-logic changes.
-
-## 4. Files
-
-Edit:
-
-- `src/pages/CreatorsPage.tsx` (rebuild features section, hero tweaks)
-- `src/lib/pilots.ts` (rename Diary of a CEO)
-- `src/pages/Index.tsx` (rename label line)
-- `src/index.css` (optional: extra gradient tokens)
-
-Create:
-
-- `src/hooks/use-in-view.ts`
-- `src/components/site/FeatureShowcaseRow.tsx`
-
-## Open questions
-
-- Bottom CTA "Join the Waitlist" button — remove too, or keep there? remove
-- Pilot route slug `diary-of-the-ceo` — rename to `diary-of-a-ceo`? update it
+- Migrating IIS to the same pattern when the backend is ready.
+- Surfacing pilot selection or category metadata in the UI.
