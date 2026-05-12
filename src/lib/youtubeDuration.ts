@@ -8,6 +8,9 @@ const ENDPOINT = "https://www.googleapis.com/youtube/v3/videos";
 const cache = new Map<string, number>();
 const inflight = new Map<string, Promise<void>>();
 
+const titleCache = new Map<string, string>();
+const titleInflight = new Map<string, Promise<void>>();
+
 // Parse ISO-8601 duration (e.g. "PT1H2M3S") into seconds.
 const parseISO8601 = (iso: string): number => {
   const m = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/.exec(iso);
@@ -68,6 +71,56 @@ export const fetchVideoDurations = async (
   const out: Record<string, number> = {};
   for (const id of unique) {
     const v = cache.get(id);
+    if (v !== undefined) out[id] = v;
+  }
+  return out;
+};
+
+export const fetchVideoTitles = async (
+  ids: string[],
+): Promise<Record<string, string>> => {
+  if (!API_KEY || ids.length === 0) {
+    const out: Record<string, string> = {};
+    for (const id of ids) {
+      const v = titleCache.get(id);
+      if (v !== undefined) out[id] = v;
+    }
+    return out;
+  }
+
+  const unique = Array.from(new Set(ids));
+  const missing = unique.filter((id) => !titleCache.has(id) && !titleInflight.has(id));
+
+  if (missing.length > 0) {
+    const batches = chunk(missing, 50);
+    for (const batch of batches) {
+      const p = (async () => {
+        try {
+          const url = `${ENDPOINT}?part=snippet&id=${batch.join(",")}&key=${API_KEY}`;
+          const res = await fetch(url);
+          if (!res.ok) return;
+          const json = await res.json();
+          const items = Array.isArray(json?.items) ? json.items : [];
+          for (const item of items) {
+            const id = item?.id as string | undefined;
+            const title = item?.snippet?.title as string | undefined;
+            if (id && title) titleCache.set(id, title);
+          }
+        } catch {
+          // silent
+        }
+      })();
+      for (const id of batch) titleInflight.set(id, p);
+      await p;
+      for (const id of batch) titleInflight.delete(id);
+    }
+  } else {
+    await Promise.all(unique.map((id) => titleInflight.get(id)).filter(Boolean));
+  }
+
+  const out: Record<string, string> = {};
+  for (const id of unique) {
+    const v = titleCache.get(id);
     if (v !== undefined) out[id] = v;
   }
   return out;
