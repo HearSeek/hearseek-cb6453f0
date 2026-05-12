@@ -16,7 +16,12 @@ import {
   Video,
   Users,
   Library,
+  Share2,
+  Link2,
+  Facebook,
+  Twitter,
 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { cn } from "@/lib/utils";
 import logoMark from "@/assets/hearseek-logo-mark.png";
@@ -149,6 +154,97 @@ const ChannelPill = ({ channel }: { channel: string | null }) => (
   </span>
 );
 
+const SHARE_TAGLINE =
+  "Found this exact moment using HearSeek – The World's First AI Search Engine for Audio. 🔍🎧";
+
+const WhatsAppIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+    <path d="M19.05 4.91A10 10 0 0 0 4.1 18.27L3 22l3.83-1.07a10 10 0 0 0 4.79 1.22h.01a10 10 0 0 0 7.42-17.24Zm-7.42 15.39a8.3 8.3 0 0 1-4.23-1.16l-.3-.18-2.27.63.61-2.21-.2-.32A8.3 8.3 0 1 1 11.63 20.3Zm4.55-6.22c-.25-.13-1.47-.73-1.7-.81s-.4-.13-.56.13-.64.81-.79.97-.29.2-.54.07a6.8 6.8 0 0 1-2-1.24 7.5 7.5 0 0 1-1.39-1.73c-.14-.25 0-.38.11-.51l.38-.44c.13-.15.17-.25.25-.42a.46.46 0 0 0 0-.44c-.07-.13-.56-1.34-.76-1.84s-.4-.42-.56-.43h-.48a.93.93 0 0 0-.67.31 2.83 2.83 0 0 0-.88 2.1c0 1.24.9 2.43 1 2.6s1.77 2.7 4.29 3.78a14 14 0 0 0 1.43.53 3.42 3.42 0 0 0 1.58.1 2.58 2.58 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .14-1.2c-.06-.1-.23-.16-.48-.29Z"/>
+  </svg>
+);
+
+const ShareRow = ({ hit }: { hit: SearchHit }) => {
+  const link = buildJumpLink(hit) ?? (typeof window !== "undefined" ? window.location.href : "");
+  const shareText = `${SHARE_TAGLINE} ${link}`.trim();
+  const encodedText = encodeURIComponent(shareText);
+  const encodedTagline = encodeURIComponent(SHARE_TAGLINE);
+  const encodedUrl = encodeURIComponent(link);
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(link);
+      toast({ title: "Link copied", description: "Jump link copied to clipboard." });
+    } catch {
+      toast({ title: "Copy failed", description: "Could not access clipboard.", variant: "destructive" });
+    }
+  };
+
+  const items: Array<{
+    label: string;
+    icon: React.ReactNode;
+    onClick?: () => void;
+    href?: string;
+  }> = [
+    {
+      label: "Copy link",
+      icon: <Link2 className="h-3.5 w-3.5" />,
+      onClick: copyLink,
+    },
+    {
+      label: "WhatsApp",
+      icon: <WhatsAppIcon className="h-3.5 w-3.5" />,
+      href: `https://wa.me/?text=${encodedText}`,
+    },
+    {
+      label: "Facebook",
+      icon: <Facebook className="h-3.5 w-3.5" />,
+      href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTagline}`,
+    },
+    {
+      label: "X",
+      icon: <Twitter className="h-3.5 w-3.5" />,
+      href: `https://twitter.com/intent/tweet?text=${encodedTagline}&url=${encodedUrl}`,
+    },
+  ];
+
+  return (
+    <div className="mt-2 flex items-center gap-1.5">
+      <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-muted-foreground/70">
+        <Share2 className="h-3 w-3 text-primary/80" />
+        Share
+      </span>
+      <div className="ml-auto flex items-center gap-1">
+        {items.map((it) =>
+          it.href ? (
+            <a
+              key={it.label}
+              href={it.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Share on ${it.label}`}
+              title={`Share on ${it.label}`}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/10 bg-white/5 text-muted-foreground transition hover:border-primary/40 hover:bg-white/10 hover:text-foreground"
+            >
+              {it.icon}
+            </a>
+          ) : (
+            <button
+              key={it.label}
+              type="button"
+              onClick={it.onClick}
+              aria-label={it.label}
+              title={it.label}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/10 bg-white/5 text-muted-foreground transition hover:border-primary/40 hover:bg-white/10 hover:text-foreground"
+            >
+              {it.icon}
+            </button>
+          ),
+        )}
+      </div>
+    </div>
+  );
+};
+
 const ResultCard = ({ hit, index, duration }: { hit: SearchHit; index: number; duration?: number }) => {
   const jumpLink = buildJumpLink(hit);
   const thumb = hit.videoId ? youtubeThumbnail(hit.videoId) : null;
@@ -186,9 +282,8 @@ const ResultCard = ({ hit, index, duration }: { hit: SearchHit; index: number; d
           </span>
         </div>
         <Snippet hit={hit} />
-        <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
-          <span>{tStart} – {tEnd}</span>
-          {jumpLink && (
+        {jumpLink && (
+          <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
             <a
               href={jumpLink}
               target="_blank"
@@ -197,8 +292,8 @@ const ResultCard = ({ hit, index, duration }: { hit: SearchHit; index: number; d
             >
               Jump to {tStart} →
             </a>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Video preview */}
@@ -248,6 +343,7 @@ const ResultCard = ({ hit, index, duration }: { hit: SearchHit; index: number; d
             </AspectRatio>
           </div>
         </a>
+        <ShareRow hit={hit} />
       </div>
     </article>
   );
