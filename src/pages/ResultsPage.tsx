@@ -656,6 +656,9 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
             onChange={setStagedFilters}
             onApply={applyFilters}
             onClear={clearFilters}
+            availableLanguages={Array.from(
+              new Set(hits.map((h) => h.language).filter((l): l is string => !!l)),
+            )}
           />
 
           <div>
