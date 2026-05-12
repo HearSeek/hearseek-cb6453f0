@@ -66,13 +66,21 @@ export const PILOTS: Record<string, Pilot> = {
     disclaimer:
       "This microsite searches a curated set of Diary of A CEO episodes. It does not search the wider web.",
     suggestions: [
-      "what makes successful founders different",
-      "habits that built billion-dollar companies",
-      "guest admits a personal failure",
-      "advice on hiring the first employees",
-      "how to build resilience under pressure",
+      "Why does Andrew Bustamante suggest leaving the USA by 2030?",
+      "What is the missing vitamin that is compared to smoking?",
+      "The specific moment the 'Godfather of AI' warns about human extinction.",
+      "How does stress leak through the skin and cause belly fat?",
+      "The step-by-step playbook to quit a 9-to-5 in 9 months.",
+      "How does AI create 'hell' before it creates 'heaven'?",
     ],
-    featuredVideoIds: ["dQw4w9WgXcQ", "5qap5aO4i9A", "9bZkp7q19f0"],
+    featuredVideoIds: [
+      "JCTb3QSrGMQ",
+      "QVVe2rCHtN0",
+      "S9a1nLw70p0",
+      "giT0ytynSqg",
+      "hCW2NHbWNwA",
+      "qgeQ5kMVwRA",
+    ],
     logo: doacLogo,
   },
 };
