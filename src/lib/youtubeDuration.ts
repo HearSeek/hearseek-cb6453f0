@@ -11,6 +11,18 @@ const inflight = new Map<string, Promise<void>>();
 const titleCache = new Map<string, string>();
 const titleInflight = new Map<string, Promise<void>>();
 
+const fetchTitleFromOembed = async (id: string): Promise<string | null> => {
+  try {
+    const url = `https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${id}`)}&format=json`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const json = await res.json();
+    return typeof json?.title === "string" ? json.title : null;
+  } catch {
+    return null;
+  }
+};
+
 // Parse ISO-8601 duration (e.g. "PT1H2M3S") into seconds.
 const parseISO8601 = (iso: string): number => {
   const m = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/.exec(iso);
@@ -79,7 +91,7 @@ export const fetchVideoDurations = async (
 export const fetchVideoTitles = async (
   ids: string[],
 ): Promise<Record<string, string>> => {
-  if (!API_KEY || ids.length === 0) {
+  if (ids.length === 0) {
     const out: Record<string, string> = {};
     for (const id of ids) {
       const v = titleCache.get(id);
@@ -92,10 +104,19 @@ export const fetchVideoTitles = async (
   const missing = unique.filter((id) => !titleCache.has(id) && !titleInflight.has(id));
 
   if (missing.length > 0) {
-    const batches = chunk(missing, 50);
+    const batches = API_KEY ? chunk(missing, 50) : missing.map((id) => [id]);
     for (const batch of batches) {
       const p = (async () => {
         try {
+          if (!API_KEY) {
+            await Promise.all(
+              batch.map(async (id) => {
+                const title = await fetchTitleFromOembed(id);
+                if (title) titleCache.set(id, title);
+              }),
+            );
+            return;
+          }
           const url = `${ENDPOINT}?part=snippet&id=${batch.join(",")}&key=${API_KEY}`;
           const res = await fetch(url);
           if (!res.ok) return;
