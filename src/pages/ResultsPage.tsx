@@ -24,6 +24,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import logoMark from "@/assets/hearseek-logo-mark.png";
 import {
   runSearch,
@@ -154,8 +155,21 @@ const ChannelPill = ({ channel }: { channel: string | null }) => (
   </span>
 );
 
-const SHARE_TAGLINE =
-  "Found this exact moment using HearSeek – The World's First AI Search Engine for Audio. 🔍🎧";
+const buildShareText = (query: string, link: string): string => {
+  const q = query.trim();
+  const firstLine = q
+    ? `I searched "${q}" on HearSeek and found this exact moment.`
+    : `Found this exact moment on HearSeek.`;
+  return `${firstLine}\nHearSeek - The World's First AI Search Engine for Audio\n${link}`;
+};
+
+const buildShareCaption = (query: string): string => {
+  const q = query.trim();
+  const firstLine = q
+    ? `I searched "${q}" on HearSeek and found this exact moment.`
+    : `Found this exact moment on HearSeek.`;
+  return `${firstLine}\nHearSeek - The World's First AI Search Engine for Audio`;
+};
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
@@ -163,11 +177,13 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const ShareRow = ({ hit }: { hit: SearchHit }) => {
+const ShareRow = ({ hit, query }: { hit: SearchHit; query: string }) => {
+  const [open, setOpen] = useState(false);
   const link = buildJumpLink(hit) ?? (typeof window !== "undefined" ? window.location.href : "");
-  const shareText = `${SHARE_TAGLINE} ${link}`.trim();
-  const encodedText = encodeURIComponent(shareText);
-  const encodedTagline = encodeURIComponent(SHARE_TAGLINE);
+  const fullText = buildShareText(query, link);
+  const caption = buildShareCaption(query);
+  const encodedText = encodeURIComponent(fullText);
+  const encodedCaption = encodeURIComponent(caption);
   const encodedUrl = encodeURIComponent(link);
 
   const copyLink = async () => {
@@ -177,6 +193,7 @@ const ShareRow = ({ hit }: { hit: SearchHit }) => {
     } catch {
       toast({ title: "Copy failed", description: "Could not access clipboard.", variant: "destructive" });
     }
+    setOpen(false);
   };
 
   const items: Array<{
@@ -187,69 +204,87 @@ const ShareRow = ({ hit }: { hit: SearchHit }) => {
   }> = [
     {
       label: "Copy link",
-      icon: <Link2 className="h-3.5 w-3.5" />,
+      icon: <Link2 className="h-4 w-4" />,
       onClick: copyLink,
     },
     {
       label: "WhatsApp",
-      icon: <WhatsAppIcon className="h-3.5 w-3.5" />,
+      icon: <WhatsAppIcon className="h-4 w-4" />,
       href: `https://wa.me/?text=${encodedText}`,
     },
     {
       label: "Facebook",
-      icon: <Facebook className="h-3.5 w-3.5" />,
-      href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTagline}`,
+      icon: <Facebook className="h-4 w-4" />,
+      href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedCaption}`,
     },
     {
       label: "X",
-      icon: <Twitter className="h-3.5 w-3.5" />,
-      href: `https://twitter.com/intent/tweet?text=${encodedTagline}&url=${encodedUrl}`,
+      icon: <Twitter className="h-4 w-4" />,
+      href: `https://twitter.com/intent/tweet?text=${encodedCaption}&url=${encodedUrl}`,
     },
   ];
 
   return (
-    <div className="mt-2 flex items-center gap-1.5">
-      <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-muted-foreground/70">
-        <Share2 className="h-3 w-3 text-primary/80" />
-        Share
-      </span>
-      <div className="ml-auto flex items-center gap-1">
-        {items.map((it) =>
-          it.href ? (
-            <a
-              key={it.label}
-              href={it.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Share on ${it.label}`}
-              title={`Share on ${it.label}`}
-              className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/10 bg-white/5 text-muted-foreground transition hover:border-primary/40 hover:bg-white/10 hover:text-foreground"
-            >
-              {it.icon}
-            </a>
-          ) : (
-            <button
-              key={it.label}
-              type="button"
-              onClick={it.onClick}
-              aria-label={it.label}
-              title={it.label}
-              className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/10 bg-white/5 text-muted-foreground transition hover:border-primary/40 hover:bg-white/10 hover:text-foreground"
-            >
-              {it.icon}
-            </button>
-          ),
-        )}
-      </div>
-    </div>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-foreground/90 transition hover:border-primary/40 hover:bg-white/10 hover:text-foreground"
+        >
+          <Share2 className="h-3.5 w-3.5 text-primary" />
+          Share this clip
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        align="end"
+        sideOffset={8}
+        className="w-64 border border-white/10 bg-popover/95 p-1.5 shadow-elegant backdrop-blur-xl"
+      >
+        <div className="px-2 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+          Share this clip
+        </div>
+        <div className="flex flex-col gap-0.5">
+          {items.map((it) =>
+            it.href ? (
+              <a
+                key={it.label}
+                href={it.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 rounded-md px-2 py-2 text-sm text-muted-foreground transition hover:bg-white/5 hover:text-foreground"
+              >
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-white/5 text-primary">
+                  {it.icon}
+                </span>
+                <span>{it.label}</span>
+              </a>
+            ) : (
+              <button
+                key={it.label}
+                type="button"
+                onClick={it.onClick}
+                className="flex items-center gap-2.5 rounded-md px-2 py-2 text-left text-sm text-muted-foreground transition hover:bg-white/5 hover:text-foreground"
+              >
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-white/5 text-primary">
+                  {it.icon}
+                </span>
+                <span>{it.label}</span>
+              </button>
+            ),
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };
 
-const ResultCard = ({ hit, index, duration }: { hit: SearchHit; index: number; duration?: number }) => {
+const ResultCard = ({ hit, index, duration, query }: { hit: SearchHit; index: number; duration?: number; query: string }) => {
   const jumpLink = buildJumpLink(hit);
   const thumb = hit.videoId ? youtubeThumbnail(hit.videoId) : null;
   const tStart = formatTimestamp(hit.start);
   const tEnd = formatTimestamp(hit.end);
+  const rtl = isRtl(hit.language);
   return (
     <article
       className="group relative grid animate-fade-in-up grid-cols-1 gap-5 overflow-hidden rounded-2xl border border-white/10 bg-card/40 p-5 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-elegant md:grid-cols-[92px_1fr_260px] md:gap-6 md:p-6"
@@ -274,13 +309,23 @@ const ResultCard = ({ hit, index, duration }: { hit: SearchHit; index: number; d
       <div className="min-w-0 flex-1">
         <div className="mb-2 flex flex-wrap items-center gap-2">
           <ChannelPill channel={hit.channel} />
-          {hit.title && <span className="truncate text-xs text-muted-foreground">{hit.title}</span>}
           <span className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-muted-foreground">
             <LanguagesIcon className="h-3 w-3 text-primary/80" />
             <span className={cn("h-1.5 w-1.5 rounded-full", languageDot(hit.language))} />
             <span>{languageLabel(hit.language)}</span>
           </span>
         </div>
+        {hit.title && (
+          <h3
+            dir={rtl ? "rtl" : "ltr"}
+            className={cn(
+              "mt-1.5 mb-1 truncate font-display text-sm font-medium text-foreground/90",
+              rtl && "text-right",
+            )}
+          >
+            {hit.title}
+          </h3>
+        )}
         <Snippet hit={hit} />
         {jumpLink && (
           <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
@@ -343,7 +388,7 @@ const ResultCard = ({ hit, index, duration }: { hit: SearchHit; index: number; d
             </AspectRatio>
           </div>
         </a>
-        <ShareRow hit={hit} />
+        <ShareRow hit={hit} query={query} />
       </div>
     </article>
   );
@@ -717,6 +762,7 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
                   hit={h}
                   index={i}
                   duration={h.videoId ? durations[h.videoId] : undefined}
+                  query={query}
                 />
               ))}
             </div>
