@@ -68,16 +68,16 @@ export const StickyFeatureShowcase = ({
                     {eyebrow}
                   </span>
                 )}
-                <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-[1.1]">
+                <h2 className="font-display text-2xl md:text-[26px] lg:text-3xl font-bold tracking-tight leading-[1.15]">
                   {title}
                 </h2>
                 {description && (
-                  <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed">
+                  <p className="mt-2.5 text-[13px] md:text-sm text-muted-foreground leading-relaxed">
                     {description}
                   </p>
                 )}
 
-                <ul className="mt-5 space-y-1.5">
+                <ul className="mt-4 grid grid-cols-2 gap-1.5">
                   {features.map((f, i) => {
                     const Icon = f.icon;
                     const active = i === activeIndex;
@@ -93,17 +93,17 @@ export const StickyFeatureShowcase = ({
                       >
                         <span
                           className={cn(
-                            "inline-flex h-7 w-7 items-center justify-center rounded-md shrink-0 transition-colors",
+                            "inline-flex h-6 w-6 items-center justify-center rounded-md shrink-0 transition-colors",
                             active
                               ? "bg-gradient-waveform text-primary-foreground"
                               : "bg-secondary text-foreground/70",
                           )}
                         >
-                          <Icon className="h-3.5 w-3.5" />
+                          <Icon className="h-3 w-3" />
                         </span>
                         <span
                           className={cn(
-                            "text-[13px] font-medium",
+                            "text-[12px] font-medium truncate",
                             active && "text-foreground",
                           )}
                         >
@@ -115,7 +115,7 @@ export const StickyFeatureShowcase = ({
                 </ul>
 
                 {ctaHref && ctaLabel && (
-                  <div className="mt-5">
+                  <div className="mt-4">
                     <Button
                       asChild
                       size="sm"
