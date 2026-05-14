@@ -156,10 +156,10 @@ export const StickyFeatureShowcase = ({
           )}
         </div>
 
-        {/* DESKTOP — sticky-left, scrolling-right showcase */}
-        <div className="hidden md:grid md:grid-cols-2 gap-10 md:gap-16">
-          {/* LEFT — sticky intro */}
-          <div className="md:sticky md:top-20 lg:top-24 md:self-start flex">
+        {/* DESKTOP — equal two-column showcase */}
+        <div className="hidden md:grid md:grid-cols-2 gap-6 lg:gap-8 items-start">
+          {/* LEFT — intro */}
+          <div className="flex">
             <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-5 lg:p-6 shadow-elegant overflow-hidden flex flex-col justify-center">
               <div className="absolute inset-0 bg-gradient-hero opacity-40 pointer-events-none" />
               <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gradient-waveform opacity-20 blur-3xl pointer-events-none" />
@@ -232,8 +232,8 @@ export const StickyFeatureShowcase = ({
             </div>
           </div>
 
-          {/* RIGHT — scrolling feature cards */}
-          <div className="space-y-6 md:space-y-10">
+          {/* RIGHT — feature cards */}
+          <div className="space-y-6 lg:space-y-8">
             {features.map((f, i) => {
               const Icon = f.icon;
               return (
