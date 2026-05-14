@@ -156,11 +156,11 @@ export const StickyFeatureShowcase = ({
           )}
         </div>
 
-        {/* DESKTOP — equal two-column showcase */}
+        {/* DESKTOP — sticky left, scrolling right */}
         <div className="hidden md:grid md:grid-cols-2 gap-6 lg:gap-8 items-start">
-          {/* LEFT — intro */}
-          <div className="flex">
-            <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-5 lg:p-6 shadow-elegant overflow-hidden flex flex-col justify-center">
+          {/* LEFT — sticky intro */}
+          <div className="md:sticky md:top-24 self-start">
+            <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-5 lg:p-6 shadow-elegant overflow-hidden">
               <div className="absolute inset-0 bg-gradient-hero opacity-40 pointer-events-none" />
               <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gradient-waveform opacity-20 blur-3xl pointer-events-none" />
               <div className="relative">
