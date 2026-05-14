@@ -30,6 +30,7 @@ import doacLogo from "@/assets/collections/diary-of-a-ceo.png";
 import hubermanLogo from "@/assets/collections/huberman-lab.png";
 import lexLogo from "@/assets/collections/lex-fridman.png";
 import chrisLogo from "@/assets/collections/chris-williamson.png";
+import tomBilyeuLogo from "@/assets/collections/tom-bilyeu.png";
 import tedLogo from "@/assets/collections/ted.png";
 import dhruvLogo from "@/assets/collections/dhruv-rathee.png";
 import thinkSchoolLogo from "@/assets/collections/think-school.png";
