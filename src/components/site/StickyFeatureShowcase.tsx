@@ -58,8 +58,8 @@ export const StickyFeatureShowcase = ({
       <div className="container py-20 md:py-28">
         <div className="grid md:grid-cols-2 gap-10 md:gap-16">
           {/* LEFT — sticky intro */}
-          <div className="md:sticky md:top-24 md:self-start md:h-[calc(100vh-8rem)] flex">
-            <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-8 md:p-10 shadow-elegant overflow-hidden flex flex-col justify-center">
+          <div className="md:sticky md:top-24 md:self-start md:max-h-[calc(100vh-7rem)] flex">
+            <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-6 md:p-8 shadow-elegant overflow-y-auto flex flex-col justify-start">
               <div className="absolute inset-0 bg-gradient-hero opacity-40 pointer-events-none" />
               <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gradient-waveform opacity-20 blur-3xl pointer-events-none" />
               <div className="relative">
@@ -68,7 +68,7 @@ export const StickyFeatureShowcase = ({
                     {eyebrow}
                   </span>
                 )}
-                <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight leading-[1.1]">
+                <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1]">
                   {title}
                 </h2>
                 {description && (
