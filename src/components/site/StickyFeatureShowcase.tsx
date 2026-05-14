@@ -58,7 +58,7 @@ export const StickyFeatureShowcase = ({
       <div className="container py-20 md:py-28">
         <div className="grid md:grid-cols-2 gap-10 md:gap-16">
           {/* LEFT — sticky intro */}
-          <div className="md:sticky md:top-24 md:self-start md:max-h-[calc(100vh-7rem)] flex">
+          <div className="md:sticky md:top-24 md:self-start md:h-[calc(100vh-7rem)] flex">
             <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-5 md:p-6 shadow-elegant overflow-hidden flex flex-col justify-center">
               <div className="absolute inset-0 bg-gradient-hero opacity-40 pointer-events-none" />
               <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gradient-waveform opacity-20 blur-3xl pointer-events-none" />
@@ -140,9 +140,9 @@ export const StickyFeatureShowcase = ({
                   key={f.title}
                   data-index={i}
                   ref={(el) => (cardRefs.current[i] = el)}
-                  className="md:min-h-[80vh] flex"
+                  className="md:h-[calc(100vh-7rem)] flex"
                 >
-                  <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-6 md:p-8 shadow-elegant overflow-hidden">
+                  <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-6 md:p-8 shadow-elegant overflow-y-auto">
                     <div
                       className={cn(
                         "absolute -inset-px opacity-20 blur-2xl pointer-events-none",
