@@ -26,9 +26,37 @@ import doacCollection from "@/assets/creators/doac-collection.png";
 const CreatorsPage = () => {
   const features: ShowcaseFeature[] = [
     {
+      icon: DollarSign,
+      shortLabel: "Monetize Archive",
+      eyebrow: "01 · Monetize Your Archive",
+      title: "Turn your library into a discoverable asset.",
+      description:
+        "Old uploads keep earning. When viewers can find every moment, watch-time on legacy content compounds — and your back-catalogue becomes a revenue engine.",
+      accentClass: "bg-gradient-to-r from-accent to-primary",
+      visual: (
+        <div className="space-y-4">
+          <div className="flex items-end gap-2 h-40">
+            {[20, 28, 24, 36, 32, 48, 56, 52, 70, 82, 78, 96].map((h, i) => (
+              <div key={i} className="flex-1 rounded-t bg-gradient-waveform" style={{ height: `${h}%` }} />
+            ))}
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <div>
+              <div className="text-2xl font-display font-bold text-gradient">+312%</div>
+              <div className="text-xs text-muted-foreground">Avg. archive watch-time</div>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-display font-bold text-gradient">$$$</div>
+              <div className="text-xs text-muted-foreground">Long-tail revenue</div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
       icon: Search,
       shortLabel: "Semantic Search",
-      eyebrow: "01 · Semantic Search",
+      eyebrow: "02 · Semantic Search",
       title: "Find moments by meaning, not keywords.",
       description:
         "Type a thought, a vibe, a question. HearSeek understands intent and surfaces the exact second someone said it — even if they never used your words.",
@@ -47,7 +75,7 @@ const CreatorsPage = () => {
     {
       icon: Globe,
       shortLabel: "Cross-Language",
-      eyebrow: "02 · Cross-Language",
+      eyebrow: "03 · Cross-Language",
       title: "Search in English. Find in Urdu, Hindi, Arabic.",
       description:
         "Meaning travels across scripts. Your global audience finds your content in the language they think in — even when you never spoke a word of it.",
@@ -70,7 +98,7 @@ const CreatorsPage = () => {
     {
       icon: Languages,
       shortLabel: "Paraphrase Matching",
-      eyebrow: "03 · Paraphrase Matching",
+      eyebrow: "04 · Paraphrase Matching",
       title: "Type the gist. Surface every mention.",
       description:
         "You don't need to remember the exact phrase. HearSeek matches paraphrases, synonyms, and the underlying idea — across your entire library.",
@@ -95,7 +123,7 @@ const CreatorsPage = () => {
     {
       icon: Share2,
       shortLabel: "Embed & Share",
-      eyebrow: "04 · Embed & Share",
+      eyebrow: "05 · Embed & Share",
       title: "Deep-link straight to the moment.",
       description:
         "Every result is a shareable, second-precise link to the exact timestamp on YouTube. Drop it in a tweet, an email, a Slack thread — it just works.",
@@ -109,7 +137,7 @@ const CreatorsPage = () => {
     {
       icon: Film,
       shortLabel: "Premiere Pro Plugin",
-      eyebrow: "05 · Premiere Pro Plugin",
+      eyebrow: "06 · Premiere Pro Plugin",
       title: "Search your timeline by spoken word.",
       description:
         "Editing a long-form cut? Find the soundbite in seconds without scrubbing. HearSeek plugs into Premiere and YouTube Studio so search lives where you work.",
@@ -132,34 +160,6 @@ const CreatorsPage = () => {
             </div>
           ))}
           <div className="text-xs text-muted-foreground pt-2">Highlighted: matched clip on track 03</div>
-        </div>
-      ),
-    },
-    {
-      icon: DollarSign,
-      shortLabel: "Monetize Archive",
-      eyebrow: "06 · Monetize Your Archive",
-      title: "Turn your library into a discoverable asset.",
-      description:
-        "Old uploads keep earning. When viewers can find every moment, watch-time on legacy content compounds — and your back-catalogue becomes a revenue engine.",
-      accentClass: "bg-gradient-to-r from-accent to-primary",
-      visual: (
-        <div className="space-y-4">
-          <div className="flex items-end gap-2 h-40">
-            {[20, 28, 24, 36, 32, 48, 56, 52, 70, 82, 78, 96].map((h, i) => (
-              <div key={i} className="flex-1 rounded-t bg-gradient-waveform" style={{ height: `${h}%` }} />
-            ))}
-          </div>
-          <div className="flex items-center justify-between text-sm">
-            <div>
-              <div className="text-2xl font-display font-bold text-gradient">+312%</div>
-              <div className="text-xs text-muted-foreground">Avg. archive watch-time</div>
-            </div>
-            <div className="text-right">
-              <div className="text-2xl font-display font-bold text-gradient">$$$</div>
-              <div className="text-xs text-muted-foreground">Long-tail revenue</div>
-            </div>
-          </div>
         </div>
       ),
     },

@@ -243,7 +243,7 @@ export const StickyFeatureShowcase = ({
                   ref={(el) => (cardRefs.current[i] = el)}
                   className="md:h-[calc(100vh-7rem)] flex"
                 >
-                  <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-6 md:p-8 shadow-elegant overflow-y-auto">
+                  <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-6 md:p-8 shadow-elegant overflow-hidden">
                     <div
                       className={cn(
                         "absolute -inset-px opacity-20 blur-2xl pointer-events-none",
