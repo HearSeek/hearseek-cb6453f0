@@ -26,7 +26,7 @@ export type Collection = {
 };
 
 import iisLogo from "@/assets/collections/iis.png";
-import doacLogo from "@/assets/pilot-doac-logo.png";
+import doacLogo from "@/assets/collections/diary-of-a-ceo.png";
 import hubermanLogo from "@/assets/collections/huberman-lab.png";
 import lexLogo from "@/assets/collections/lex-fridman.png";
 import chrisLogo from "@/assets/collections/chris-williamson.png";
