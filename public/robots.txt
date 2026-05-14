@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://hearseek.lovable.app/sitemap.xml
+Sitemap: https://hearseek.com/sitemap.xml
