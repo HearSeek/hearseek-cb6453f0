@@ -12,6 +12,7 @@ export const CollectionCard = ({ collection }: { collection: Collection }) => {
         src={collection.logo}
         alt={collection.name}
         size="lg"
+        padding={collection.logoPadding}
         className="transition-shadow duration-300 group-hover:shadow-[0_0_24px_2px_hsl(var(--sonar)/0.55)]"
       />
       <h3 className="mt-4 text-center font-sans text-base font-bold text-white">
