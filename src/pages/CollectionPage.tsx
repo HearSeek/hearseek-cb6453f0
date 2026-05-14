@@ -4,11 +4,12 @@ import { Search, Play, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoMark from "@/assets/hearseek-logo-mark-white.png";
 import { youtubeThumbnail } from "@/lib/hearseek";
-import { getPilot } from "@/lib/pilots";
+import { getCollection, tierLabel } from "@/lib/registry";
+import { CollectionLogo } from "@/components/site/CollectionLogo";
 
-const PilotPage = () => {
+const CollectionPage = () => {
   const { slug } = useParams<{ slug: string }>();
-  const pilot = getPilot(slug);
+  const collection = getCollection(slug);
   const navigate = useNavigate();
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
@@ -18,13 +19,13 @@ const PilotPage = () => {
     inputRef.current?.focus();
   }, []);
 
-  if (!pilot) return <Navigate to="/" replace />;
+  if (!collection) return <Navigate to="/" replace />;
 
   const submitQuery = (q: string) => {
     const trimmed = q.trim();
     if (!trimmed) return;
     const params = new URLSearchParams({ q: trimmed });
-    navigate(`/pilots/${pilot.key}/results?${params.toString()}`);
+    navigate(`/collections/${collection.key}/results?${params.toString()}`);
   };
 
   const onSubmit = (e: React.FormEvent) => {
@@ -34,14 +35,12 @@ const PilotPage = () => {
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-background text-foreground">
-      {/* Ambient gradient */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute -left-32 -top-32 h-[520px] w-[520px] rounded-full bg-primary/20 blur-3xl" />
         <div className="absolute -right-32 bottom-0 h-[520px] w-[520px] rounded-full bg-accent/15 blur-3xl" />
         <div className="absolute left-1/2 top-[38%] h-[520px] w-[760px] -translate-x-1/2 rounded-full bg-gradient-waveform opacity-[0.18] blur-3xl" />
       </div>
 
-      {/* Top nav */}
       <div className="relative mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-5 pt-6 md:px-8">
         <Link
           to="/"
@@ -64,24 +63,24 @@ const PilotPage = () => {
       </div>
 
       <main className="relative mx-auto flex w-full max-w-4xl flex-1 flex-col items-center px-5 py-12 md:px-8">
-        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-          Pilot Microsite
-        </div>
-        {pilot.logo && (
-          <img
-            src={pilot.logo}
-            alt={`${pilot.name} logo`}
-            className="mt-4 h-20 w-auto object-contain md:h-24"
+        <span className="inline-flex items-center rounded-full border border-[hsl(var(--sonar)/0.6)] px-3 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-[hsl(var(--sonar))]">
+          {tierLabel(collection.tier)}
+        </span>
+        {collection.logo && (
+          <CollectionLogo
+            src={collection.logo}
+            alt={`${collection.name} logo`}
+            size="xl"
+            className="mt-5"
           />
         )}
-        <h1 className="mt-3 text-center font-display text-3xl font-bold tracking-tight md:text-4xl">
-          {pilot.name}
+        <h1 className="mt-5 text-center font-display text-3xl font-bold tracking-tight md:text-4xl">
+          {collection.name}
         </h1>
         <p className="mx-auto mt-3 max-w-2xl text-center text-base text-muted-foreground">
-          {pilot.tagline}
+          {collection.tagline}
         </p>
 
-        {/* Search */}
         <form onSubmit={onSubmit} className="mt-8 w-full max-w-2xl">
           <div
             className={cn(
@@ -98,18 +97,18 @@ const PilotPage = () => {
               onChange={(e) => setValue(e.target.value)}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
-              placeholder={`Search ${pilot.shortName}...`}
+              placeholder={`Search ${collection.shortName}...`}
               className="min-w-0 flex-1 appearance-none border-0 bg-transparent text-sm text-foreground outline-none ring-0 shadow-none placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus-visible:ring-0 md:text-base"
               style={{ boxShadow: "none", outline: "none" }}
             />
           </div>
           <p className="mx-auto mt-4 max-w-2xl text-center text-sm font-normal text-white/70">
-            {pilot.disclaimer}
+            {collection.disclaimer}
           </p>
 
-          {pilot.suggestions.length > 0 && (
+          {collection.suggestions.length > 0 && (
             <div className="mt-5 flex flex-wrap justify-center gap-2">
-              {pilot.suggestions.map((s) => (
+              {collection.suggestions.map((s) => (
                 <button
                   key={s}
                   type="button"
@@ -126,8 +125,7 @@ const PilotPage = () => {
           )}
         </form>
 
-        {/* Featured videos */}
-        {pilot.featuredVideoIds.length > 0 && (
+        {collection.featuredVideoIds.length > 0 && (
           <section className="mt-16 w-full">
             <div className="mb-6 flex items-end justify-between">
               <div>
@@ -138,7 +136,7 @@ const PilotPage = () => {
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-              {pilot.featuredVideoIds.map((id) => (
+              {collection.featuredVideoIds.map((id) => (
                 <a
                   key={id}
                   href={`https://www.youtube.com/watch?v=${id}`}
@@ -177,4 +175,4 @@ const PilotPage = () => {
   );
 };
 
-export default PilotPage;
+export default CollectionPage;

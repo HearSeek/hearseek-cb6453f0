@@ -46,7 +46,7 @@ import {
   writeFiltersToParams,
 } from "@/components/results/FilterBar";
 import { fetchVideoDurations, fetchVideoTitles } from "@/lib/youtubeDuration";
-import { type Pilot } from "@/lib/pilots";
+import { type Collection } from "@/lib/registry";
 
 const isRtl = (lang: string | null) => lang === "ur" || lang === "ar" || lang === "fa" || lang === "he";
 
@@ -462,16 +462,16 @@ const EmptyState = ({ query }: { query: string }) => {
 };
 
 type ResultsPageProps = {
-  pilot?: Pilot;
+  collection?: Collection;
 };
 
-const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
+const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const query = params.get("q") ?? "";
-  const configSlug = pilot?.configSlug ?? params.get("config") ?? "";
-  const configName = pilot?.configName ?? params.get("configName") ?? configSlug;
-  const backTo = pilot ? `/pilots/${pilot.key}` : "/demo";
+  const configSlug = collection?.configSlug ?? params.get("config") ?? "";
+  const configName = collection?.configName ?? params.get("configName") ?? configSlug;
+  const backTo = collection ? `/collections/${collection.key}` : "/demo";
 
   const [pendingQuery, setPendingQuery] = useState(query);
   const [pendingConfig, setPendingConfig] = useState<SearchConfig>({
@@ -510,7 +510,7 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
 
   useEffect(() => {
     let cancelled = false;
-    if (pilot) return; // pilot mode locks the collection — no need to fetch
+    if (collection) return; // collection mode locks the collection — no need to fetch
     (async () => {
       try {
         const data = await getSearchConfigurations();
@@ -527,7 +527,7 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
     return () => {
       cancelled = true;
     };
-  }, [configSlug, pilot]);
+  }, [configSlug, collection]);
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -568,7 +568,7 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
     const controller = new AbortController();
     setLoading(true);
     setError(null);
-    runSearch(query, configSlug, controller.signal, appliedFilters, pilot?.baseFilter)
+    runSearch(query, configSlug, controller.signal, appliedFilters, collection?.baseFilter)
       .then((res) => {
         setHits(res.hits);
         setNumHits(res.numHits);
@@ -604,7 +604,7 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
     if (!q) return;
     const next = new URLSearchParams(params);
     next.set("q", q);
-    if (!pilot) {
+    if (!collection) {
       next.set("config", pendingConfig.slug);
       next.set("configName", pendingConfig.name);
     }
@@ -650,14 +650,14 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
               alt="HearSeek"
               className="h-9 w-9 object-contain drop-shadow-[0_0_18px_hsl(var(--primary)/0.55)]"
             />
-            {pilot?.logo ? (
+            {collection?.logo ? (
               <>
                 <span className="text-base font-light text-muted-foreground/70" aria-hidden>
                   ×
                 </span>
                 <img
-                  src={pilot.logo}
-                  alt={`${pilot.name} logo`}
+                  src={collection.logo}
+                  alt={`${collection.name} logo`}
                   className="h-9 w-auto object-contain"
                 />
               </>
@@ -692,8 +692,8 @@ const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
                 className="flex-1 appearance-none border-0 bg-transparent text-sm text-foreground outline-none ring-0 shadow-none placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus:shadow-none focus-visible:outline-none focus-visible:ring-0 focus-visible:shadow-none"
                 style={{ WebkitAppearance: "none", WebkitTapHighlightColor: "transparent", boxShadow: "none", outline: "none" }}
               />
-              {/* Scope dropdown — hidden in pilot mode (collection is locked) */}
-              {!pilot && (
+              {/* Scope dropdown — hidden in collection mode (collection is locked) */}
+              {!collection && (
               <div ref={dropdownRef} className="relative shrink-0">
                 <button
                   type="button"

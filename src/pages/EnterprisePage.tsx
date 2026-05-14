@@ -78,8 +78,8 @@ const EnterprisePage = () => {
         </div>
       </Section>
 
-      {/* PILOT PROOF */}
-      <Section eyebrow="Proven At Scale" centered title="The International Iqbal Society pilot.">
+      {/* FLAGSHIP PROOF */}
+      <Section eyebrow="Proven At Scale" centered title="The International Iqbal Society flagship archive.">
         <div className="rounded-3xl border border-primary/30 bg-gradient-card p-8 md:p-12 shadow-elegant">
           <div className="grid md:grid-cols-3 gap-6 mb-10">
             <StatCard value="700+" label="Videos indexed" />
@@ -87,7 +87,7 @@ const EnterprisePage = () => {
             <StatCard value="100%" label="On-prem deployment" />
           </div>
           <div className="mb-10">
-            <VideoEmbed label="Pilot project demo · coming soon" />
+            <VideoEmbed label="Flagship project demo · coming soon" />
           </div>
           <div className="rounded-2xl bg-secondary/40 p-6 md:p-8 border border-border/40">
             <Quote className="h-8 w-8 text-primary mb-4" />

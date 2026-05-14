@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Globe, Brain, Layers, Quote, Check } from "lucide-react";
+import { ArrowRight, Globe, Brain, Layers, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/site/Section";
 import { Waveform } from "@/components/site/Waveform";
 import { FeatureCard } from "@/components/site/FeatureCard";
 import { StatCard } from "@/components/site/StatCard";
 import { VideoEmbed } from "@/components/site/VideoEmbed";
+import { CollectionMarquee } from "@/components/site/CollectionMarquee";
+import { CollectionCard } from "@/components/site/CollectionCard";
+import { COLLECTIONS } from "@/lib/registry";
 import hearseekLogo from "@/assets/hearseek-logo-mark.png";
 
 const Index = () => {
@@ -40,6 +43,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* SEARCHABLE WEB MARQUEE */}
+      <CollectionMarquee />
 
       {/* PROBLEM */}
       <Section eyebrow="The Blind Spot" centered title={<>82.5% of internet traffic is <span className="text-gradient">audio &amp; video</span> — yet unsearchable.</>}
@@ -156,66 +162,22 @@ const Index = () => {
         </div>
       </Section>
 
-      {/* PILOT */}
-      <Section eyebrow="Live Pilots" centered title="Real archives, already searchable." subtitle="Two pilots in production — one philosophy archive, one of the world's biggest podcasts.">
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* IIS */}
-          <div className="flex flex-col rounded-3xl border border-border/60 bg-gradient-card p-5 sm:p-8 md:p-10">
-            <div className="text-xs font-semibold uppercase tracking-wider text-primary">International Iqbal Society</div>
-            <h3 className="mt-2 font-display text-2xl font-bold">Decades of philosophy, instantly searchable.</h3>
-            <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
-              {[
-                { v: "700+", l: "Videos indexed" },
-                { v: "7.5M", l: "Global community" },
-                { v: "160+", l: "Languages" },
-              ].map((s) => (
-                <div key={s.l} className="rounded-2xl border border-border/60 bg-gradient-card p-3 text-center sm:p-4 md:p-6">
-                  <div className="font-display text-xl font-bold text-gradient sm:text-2xl md:text-4xl">{s.v}</div>
-                  <div className="mt-1 text-[11px] font-medium text-foreground sm:text-xs md:text-sm">{s.l}</div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-6 rounded-2xl bg-secondary/40 p-5 border border-border/40">
-              <Quote className="h-6 w-6 text-primary mb-2" />
-              <p className="text-sm md:text-base leading-relaxed">
-                "For the first time, a global audience can search through decades of Iqbal lectures by meaning — not just title."
-              </p>
-            </div>
-            <div className="mt-6 flex">
-              <Button asChild className="bg-gradient-waveform text-primary-foreground hover:opacity-90">
-                <Link to="/pilots/iis">Open IIS Search <ArrowRight className="ml-1 h-4 w-4" /></Link>
-              </Button>
-            </div>
-          </div>
-
-          {/* Diary of A CEO */}
-          <div className="flex flex-col rounded-3xl border border-border/60 bg-gradient-card p-5 sm:p-8 md:p-10">
-            <div className="text-xs font-semibold uppercase tracking-wider text-accent">The Diary of A CEO</div>
-            <h3 className="mt-2 font-display text-2xl font-bold">Every guest, every insight — by Steven Bartlett.</h3>
-            <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
-              {[
-                { v: "400+", l: "Episodes indexed" },
-                { v: "50M+", l: "Monthly listeners" },
-                { v: "160+", l: "Languages" },
-              ].map((s) => (
-                <div key={s.l} className="rounded-2xl border border-border/60 bg-gradient-card p-3 text-center sm:p-4 md:p-6">
-                  <div className="font-display text-xl font-bold text-gradient sm:text-2xl md:text-4xl">{s.v}</div>
-                  <div className="mt-1 text-[11px] font-medium text-foreground sm:text-xs md:text-sm">{s.l}</div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-6 rounded-2xl bg-secondary/40 p-5 border border-border/40">
-              <Quote className="h-6 w-6 text-accent mb-2" />
-              <p className="text-sm md:text-base leading-relaxed">
-                "Find the exact moment a guest opens up about failure, hiring, or what really drives them — in seconds."
-              </p>
-            </div>
-            <div className="mt-6 flex">
-              <Button asChild className="bg-gradient-waveform text-primary-foreground hover:opacity-90">
-                <Link to="/pilots/diary-of-a-ceo">Open Diary Search <ArrowRight className="ml-1 h-4 w-4" /></Link>
-              </Button>
-            </div>
-          </div>
+      {/* FEATURED COLLECTIONS */}
+      <Section
+        eyebrow="Live Collections"
+        centered
+        title="Real archives, already searchable."
+        subtitle="One flagship philosophical archive, plus a growing roster of Featured Deep-Index channels — 30 videos each, indexed end-to-end."
+      >
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            COLLECTIONS["iis"],
+            COLLECTIONS["diary-of-a-ceo"],
+            COLLECTIONS["huberman-lab"],
+            COLLECTIONS["ted"],
+          ].map((c) => (
+            <CollectionCard key={c.key} collection={c} />
+          ))}
         </div>
       </Section>
 
