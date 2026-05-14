@@ -1,7 +1,7 @@
 import { writeFileSync } from "fs";
 import { resolve } from "path";
 
-const BASE_URL = "https://hearseek.lovable.app";
+const BASE_URL = "https://hearseek.com";
 
 interface SitemapEntry {
   path: string;
