@@ -7,6 +7,7 @@ import { VideoEmbed } from "@/components/site/VideoEmbed";
 import { FeatureCard } from "@/components/site/FeatureCard";
 import { toast } from "@/hooks/use-toast";
 import appScreen from "@/assets/hearseek-app-single.jpeg";
+import { SEO } from "@/components/site/SEO";
 
 const AppPage = () => {
   const [email, setEmail] = useState("");
@@ -20,6 +21,11 @@ const AppPage = () => {
 
   return (
     <>
+      <SEO
+        title="HearSeek App — Search Every Word You've Ever Heard"
+        description="The HearSeek consumer app: search voice notes, lectures, podcasts, and WhatsApp clips by meaning across 160+ languages. Join the waitlist."
+        path="/app"
+      />
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero" />
@@ -129,6 +135,7 @@ const AppPage = () => {
               <Input
                 type="email"
                 required
+                aria-label="Email address for waitlist"
                 placeholder="you@domain.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}

@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import doacResults from "@/assets/creators/doac-results.png";
 import doacShare from "@/assets/creators/doac-share.png";
 import doacCollection from "@/assets/creators/doac-collection.png";
+import { SEO } from "@/components/site/SEO";
 
 const CreatorsPage = () => {
   const features: ShowcaseFeature[] = [
@@ -167,6 +168,11 @@ const CreatorsPage = () => {
 
   return (
     <>
+      <SEO
+        title="HearSeek for Creators — Make Your YouTube Channel Searchable"
+        description="Turn your YouTube channel, podcast, and long-form interviews into an instantly searchable, clip-ready archive. Monetize your back-catalogue across 160+ languages."
+        path="/creators"
+      />
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero" />

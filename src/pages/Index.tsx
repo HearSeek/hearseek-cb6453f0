@@ -10,10 +10,16 @@ import { CollectionMarquee } from "@/components/site/CollectionMarquee";
 import { CollectionCard } from "@/components/site/CollectionCard";
 import { COLLECTIONS } from "@/lib/registry";
 import hearseekLogo from "@/assets/hearseek-logo-mark.png";
+import { SEO } from "@/components/site/SEO";
 
 const Index = () => {
   return (
     <>
+      <SEO
+        title="HearSeek — The World's First AI Search Engine for Audio"
+        description="Search every spoken moment across podcasts, lectures, and voice notes in 160+ languages. Meaning-based audio search for consumers and enterprises."
+        path="/"
+      />
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero" />

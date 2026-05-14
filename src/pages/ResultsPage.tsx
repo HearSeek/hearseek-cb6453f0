@@ -672,6 +672,9 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
 
         {/* Compact search */}
         <form onSubmit={onSubmit} className="mx-auto mt-8 max-w-2xl">
+          <h1 className="sr-only">
+            {query ? `Search results for "${query}"` : "Search Results"}
+          </h1>
           <div className="relative">
             <div
               className={cn(
