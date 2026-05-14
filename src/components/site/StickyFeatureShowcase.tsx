@@ -159,7 +159,7 @@ export const StickyFeatureShowcase = ({
         {/* DESKTOP — sticky-left, scrolling-right showcase */}
         <div className="hidden md:grid md:grid-cols-2 gap-10 md:gap-16">
           {/* LEFT — sticky intro */}
-          <div className="md:sticky md:top-20 lg:top-24 md:self-start md:h-[calc(100vh-6rem)] lg:h-[calc(100vh-7rem)] flex">
+          <div className="md:sticky md:top-20 lg:top-24 md:self-start md:min-h-[520px] md:max-h-[calc(100vh-6rem)] lg:max-h-[calc(100vh-7rem)] flex">
             <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-5 lg:p-6 shadow-elegant overflow-hidden flex flex-col justify-center">
               <div className="absolute inset-0 bg-gradient-hero opacity-40 pointer-events-none" />
               <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gradient-waveform opacity-20 blur-3xl pointer-events-none" />
@@ -241,7 +241,7 @@ export const StickyFeatureShowcase = ({
                   key={f.title}
                   data-index={i}
                   ref={(el) => (cardRefs.current[i] = el)}
-                  className="md:h-[calc(100vh-6rem)] lg:h-[calc(100vh-7rem)] flex"
+                  className="md:min-h-[520px] md:max-h-[calc(100vh-6rem)] lg:max-h-[calc(100vh-7rem)] flex"
                 >
                   <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-5 lg:p-8 shadow-elegant overflow-hidden">
                     <div
@@ -286,7 +286,7 @@ export const StickyFeatureShowcase = ({
                           ))}
                         </ul>
                       )}
-                      <div className="min-h-0 flex-1 overflow-hidden pt-1 [&_img]:max-h-[23vh] lg:[&_img]:max-h-[30vh] [&_img]:w-full [&_img]:object-contain">
+                      <div className="pt-1 [&_img]:max-h-40 lg:[&_img]:max-h-56 [&_img]:w-full [&_img]:object-contain">
                         {f.visual}
                       </div>
                     </div>
