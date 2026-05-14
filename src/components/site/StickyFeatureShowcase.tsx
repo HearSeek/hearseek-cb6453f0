@@ -156,11 +156,11 @@ export const StickyFeatureShowcase = ({
           )}
         </div>
 
-        {/* DESKTOP — sticky-left, scrolling-right showcase */}
-        <div className="hidden md:grid md:grid-cols-2 gap-10 md:gap-16">
-          {/* LEFT — sticky intro */}
-          <div className="md:sticky md:top-24 md:self-start md:h-[calc(100vh-7rem)] flex">
-            <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-5 md:p-6 shadow-elegant overflow-hidden flex flex-col justify-center">
+        {/* DESKTOP — equal two-column showcase */}
+        <div className="hidden md:grid md:grid-cols-2 gap-6 lg:gap-8 items-start">
+          {/* LEFT — intro */}
+          <div className="flex">
+            <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-5 lg:p-6 shadow-elegant overflow-hidden flex flex-col justify-center">
               <div className="absolute inset-0 bg-gradient-hero opacity-40 pointer-events-none" />
               <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gradient-waveform opacity-20 blur-3xl pointer-events-none" />
               <div className="relative">
@@ -169,16 +169,16 @@ export const StickyFeatureShowcase = ({
                     {eyebrow}
                   </span>
                 )}
-                <h2 className="font-display text-2xl md:text-[26px] lg:text-3xl font-bold tracking-tight leading-[1.15]">
+                <h2 className="font-display text-2xl lg:text-3xl font-bold tracking-tight leading-[1.15]">
                   {title}
                 </h2>
                 {description && (
-                  <p className="mt-2.5 text-[13px] md:text-sm text-muted-foreground leading-relaxed">
+                  <p className="mt-2 text-[13px] lg:text-sm text-muted-foreground leading-relaxed">
                     {description}
                   </p>
                 )}
 
-                <ul className="mt-4 grid grid-cols-2 gap-1.5">
+                <ul className="mt-3.5 grid grid-cols-2 gap-1.5">
                   {features.map((f, i) => {
                     const Icon = f.icon;
                     const active = i === activeIndex;
@@ -216,7 +216,7 @@ export const StickyFeatureShowcase = ({
                 </ul>
 
                 {ctaHref && ctaLabel && (
-                  <div className="mt-4">
+                  <div className="mt-3.5">
                     <Button
                       asChild
                       size="sm"
@@ -232,8 +232,8 @@ export const StickyFeatureShowcase = ({
             </div>
           </div>
 
-          {/* RIGHT — scrolling feature cards */}
-          <div className="space-y-6 md:space-y-10">
+          {/* RIGHT — feature cards */}
+          <div className="space-y-6 lg:space-y-8">
             {features.map((f, i) => {
               const Icon = f.icon;
               return (
@@ -241,31 +241,31 @@ export const StickyFeatureShowcase = ({
                   key={f.title}
                   data-index={i}
                   ref={(el) => (cardRefs.current[i] = el)}
-                  className="md:h-[calc(100vh-7rem)] flex"
+                  className="flex"
                 >
-                  <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-6 md:p-8 shadow-elegant overflow-hidden">
+                  <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-5 lg:p-8 shadow-elegant overflow-hidden">
                     <div
                       className={cn(
                         "absolute -inset-px opacity-20 blur-2xl pointer-events-none",
                         f.accentClass ?? "bg-gradient-waveform",
                       )}
                     />
-                    <div className="relative space-y-5">
+                    <div className="relative flex h-full flex-col gap-3 lg:gap-5">
                       <div
                         className={cn(
-                          "inline-flex h-12 w-12 items-center justify-center rounded-2xl text-primary-foreground shadow-elegant",
+                          "inline-flex h-10 w-10 lg:h-12 lg:w-12 items-center justify-center rounded-2xl text-primary-foreground shadow-elegant shrink-0",
                           f.accentClass ?? "bg-gradient-waveform",
                         )}
                       >
-                        <Icon className="h-6 w-6" />
+                        <Icon className="h-5 w-5 lg:h-6 lg:w-6" />
                       </div>
                       <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
                         {f.eyebrow}
                       </div>
-                      <h3 className="font-display text-2xl md:text-3xl font-bold tracking-tight leading-tight">
+                      <h3 className="font-display text-2xl lg:text-3xl font-bold tracking-tight leading-tight">
                         {f.title}
                       </h3>
-                      <p className="text-base text-muted-foreground leading-relaxed">
+                      <p className="text-sm lg:text-base text-muted-foreground leading-relaxed">
                         {f.description}
                       </p>
                       {f.bullets && f.bullets.length > 0 && (
@@ -286,7 +286,9 @@ export const StickyFeatureShowcase = ({
                           ))}
                         </ul>
                       )}
-                      <div className="pt-2">{f.visual}</div>
+                      <div className="pt-1 [&_img]:max-h-40 lg:[&_img]:max-h-56 [&_img]:w-full [&_img]:object-contain">
+                        {f.visual}
+                      </div>
                     </div>
                   </div>
                 </div>
