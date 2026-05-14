@@ -169,7 +169,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "Tom Bilyeu · Impact Theory",
     "Tom Bilyeu",
     "tom_bilyeu",
-    hubermanLogo, // TODO replace with Tom Bilyeu headshot once asset is provided
+    tomBilyeuLogo,
     "Search a 30-episode deep-index of Tom Bilyeu's Impact Theory — find the mindset shift in seconds.",
   ),
   ted: featuredDeepIndex(
