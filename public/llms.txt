@@ -1,0 +1,27 @@
+# HearSeek
+
+> The world's first AI search engine for audio — search every spoken moment across podcasts, lectures, and voice notes in 160+ languages.
+
+HearSeek transforms silent spoken data into a searchable, intelligent layer of the internet. It powers a consumer mobile app for personal audio search and an enterprise on-prem solution for media houses, broadcasters, and academic archives.
+
+## Pages
+
+- [Home](/): Overview of HearSeek's AI audio search engine.
+- [Consumer App](/app): Personal audio search across voice notes, lectures, podcasts, and WhatsApp clips.
+- [Enterprise](/enterprise): On-prem speech intelligence for media houses, broadcasters, and institutions.
+- [Creators](/creators): Tools and monetization for podcasters and creators with audio archives.
+- [Demo](/demo): Live, interactive demo of HearSeek search.
+
+## Collections
+
+- [International Iqbal Society](/collections/iis): Flagship philosophical archive — full lecture archive, semantically searchable.
+- [Diary of A CEO](/collections/diary-of-a-ceo): Deep-index of Steven Bartlett's podcast.
+- [Huberman Lab](/collections/huberman-lab): Deep-index of Huberman Lab episodes.
+- [Lex Fridman Podcast](/collections/lex-fridman): Deep-index of Lex Fridman conversations.
+- [Modern Wisdom](/collections/chris-williamson): Deep-index of Chris Williamson's Modern Wisdom.
+- [Impact Theory](/collections/tom-bilyeu): Deep-index of Tom Bilyeu's Impact Theory.
+- [TED](/collections/ted): Deep-index of TED talks.
+- [Dhruv Rathee](/collections/dhruv-rathee): Deep-index of Dhruv Rathee explainers.
+- [Think School](/collections/think-school): Deep-index of Think School business case studies.
+- [BeerBiceps](/collections/beer-biceps): Deep-index of Ranveer Allahbadia's BeerBiceps.
+- [Raftar](/collections/raftar): Deep-index of Raftar videos.
