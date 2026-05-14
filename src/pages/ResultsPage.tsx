@@ -46,7 +46,7 @@ import {
   writeFiltersToParams,
 } from "@/components/results/FilterBar";
 import { fetchVideoDurations, fetchVideoTitles } from "@/lib/youtubeDuration";
-import { type Pilot } from "@/lib/pilots";
+import { type Collection } from "@/lib/registry";
 
 const isRtl = (lang: string | null) => lang === "ur" || lang === "ar" || lang === "fa" || lang === "he";
 
@@ -462,16 +462,16 @@ const EmptyState = ({ query }: { query: string }) => {
 };
 
 type ResultsPageProps = {
-  pilot?: Pilot;
+  collection?: Collection;
 };
 
-const ResultsPage = ({ pilot }: ResultsPageProps = {}) => {
+const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const query = params.get("q") ?? "";
-  const configSlug = pilot?.configSlug ?? params.get("config") ?? "";
-  const configName = pilot?.configName ?? params.get("configName") ?? configSlug;
-  const backTo = pilot ? `/pilots/${pilot.key}` : "/demo";
+  const configSlug = collection?.configSlug ?? params.get("config") ?? "";
+  const configName = collection?.configName ?? params.get("configName") ?? configSlug;
+  const backTo = collection ? `/collections/${collection.key}` : "/demo";
 
   const [pendingQuery, setPendingQuery] = useState(query);
   const [pendingConfig, setPendingConfig] = useState<SearchConfig>({
