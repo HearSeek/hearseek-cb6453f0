@@ -6,6 +6,7 @@ import logoMark from "@/assets/hearseek-logo-mark-white.png";
 import { youtubeThumbnail } from "@/lib/hearseek";
 import { getCollection, tierLabel } from "@/lib/registry";
 import { CollectionLogo } from "@/components/site/CollectionLogo";
+import { SEO } from "@/components/site/SEO";
 
 const CollectionPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -35,6 +36,23 @@ const CollectionPage = () => {
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-background text-foreground">
+      <SEO
+        title={`${collection.shortName} — Search the Archive on HearSeek`}
+        description={collection.tagline}
+        path={`/collections/${collection.key}`}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: collection.name,
+          description: collection.tagline,
+          url: `https://hearseek.lovable.app/collections/${collection.key}`,
+          isPartOf: {
+            "@type": "WebSite",
+            name: "HearSeek",
+            url: "https://hearseek.lovable.app",
+          },
+        }}
+      />
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute -left-32 -top-32 h-[520px] w-[520px] rounded-full bg-primary/20 blur-3xl" />
         <div className="absolute -right-32 bottom-0 h-[520px] w-[520px] rounded-full bg-accent/15 blur-3xl" />
@@ -52,7 +70,7 @@ const CollectionPage = () => {
         </Link>
         <Link to="/" className="flex flex-col items-center gap-1">
           <div className="flex items-center gap-2">
-            <img src={logoMark} alt="HearSeek" className="h-[35px] w-[35px] object-contain" />
+            <img src={logoMark} alt="HearSeek logo" className="h-[35px] w-[35px] object-contain" />
             <span className="font-display text-sm font-semibold tracking-tight md:text-base">HearSeek</span>
           </div>
           <span className="hidden text-[10px] text-muted-foreground md:block">
@@ -93,6 +111,7 @@ const CollectionPage = () => {
             <input
               ref={inputRef}
               type="text"
+              aria-label={`Search ${collection.shortName}`}
               value={value}
               onChange={(e) => setValue(e.target.value)}
               onFocus={() => setFocused(true)}

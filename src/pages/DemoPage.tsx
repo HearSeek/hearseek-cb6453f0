@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import logoMark from "@/assets/hearseek-logo-mark.png";
 import { getSearchConfigurations, type SearchConfig } from "@/lib/hearseek";
+import { SEO } from "@/components/site/SEO";
 
 const FALLBACK_CONFIGS: SearchConfig[] = [
   { name: "News Channels", slug: "news-channels" },
@@ -200,6 +201,11 @@ const DemoPage = () => {
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-background text-foreground">
+      <SEO
+        title="Try HearSeek — Live Audio Search Demo"
+        description="Search a curated collection of podcasts and news clips with HearSeek's semantic, multilingual audio search engine. Try it live."
+        path="/demo"
+      />
       {/* Ambient mesh gradient */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute -left-32 -top-32 h-[520px] w-[520px] rounded-full bg-primary/20 blur-3xl" />
@@ -211,7 +217,7 @@ const DemoPage = () => {
         {/* Logo */}
         <img
           src={logoMark}
-          alt="HearSeek"
+          alt="HearSeek logo"
           className="mb-3 h-[77px] w-[77px] object-contain drop-shadow-[0_0_28px_hsl(var(--primary)/0.6)] md:h-[97px] md:w-[97px]"
         />
         <p className="mb-8 text-center text-xs text-muted-foreground md:text-sm">
@@ -237,6 +243,7 @@ const DemoPage = () => {
               <input
                 type="text"
                 ref={placeholderRef}
+                aria-label="Search HearSeek"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 onFocus={() => setFocused(true)}
@@ -251,6 +258,7 @@ const DemoPage = () => {
                   type="button"
                   onClick={() => !collectionsLoading && setScopeOpen((o) => !o)}
                   disabled={collectionsLoading}
+                  aria-label={`Collection scope: ${activeLabel}`}
                   className={cn(
                     "inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-medium text-foreground/90 transition hover:border-primary/40 hover:bg-white/10 md:text-sm",
                     scopeOpen && "border-primary/40 bg-white/10",

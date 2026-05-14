@@ -10,6 +10,7 @@ import { VideoEmbed } from "@/components/site/VideoEmbed";
 import { FeatureCard } from "@/components/site/FeatureCard";
 import { StatCard } from "@/components/site/StatCard";
 import { toast } from "@/hooks/use-toast";
+import { SEO } from "@/components/site/SEO";
 
 const EnterprisePage = () => {
   const [form, setForm] = useState({ name: "", email: "", org: "", message: "" });
@@ -40,6 +41,11 @@ const EnterprisePage = () => {
 
   return (
     <>
+      <SEO
+        title="HearSeek Enterprise — On-Prem Search for Audio Archives"
+        description="Speech Intel for media houses, broadcasters, and academic institutions. Deploy on-prem and turn decades of recordings into a searchable, monetizable archive."
+        path="/enterprise"
+      />
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero" />
