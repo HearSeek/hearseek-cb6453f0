@@ -286,7 +286,7 @@ export const StickyFeatureShowcase = ({
                           ))}
                         </ul>
                       )}
-                      <div className="pt-1 [&_img]:max-h-40 lg:[&_img]:max-h-56 [&_img]:w-full [&_img]:object-contain">
+                      <div className="pt-1 [&_img]:w-full [&_img]:h-auto [&_img]:object-contain">
                         {f.visual}
                       </div>
                     </div>
