@@ -16,10 +16,168 @@ import { Button } from "@/components/ui/button";
 import { Section } from "@/components/site/Section";
 import { VideoEmbed } from "@/components/site/VideoEmbed";
 import { FeatureCard } from "@/components/site/FeatureCard";
-import { FeatureShowcaseRow } from "@/components/site/FeatureShowcaseRow";
+import { StickyFeatureShowcase, ShowcaseFeature } from "@/components/site/StickyFeatureShowcase";
 import { cn } from "@/lib/utils";
 
 const CreatorsPage = () => {
+  const features: ShowcaseFeature[] = [
+    {
+      icon: Search,
+      shortLabel: "Semantic Search",
+      eyebrow: "01 · Semantic Search",
+      title: "Find moments by meaning, not keywords.",
+      description:
+        "Type a thought, a vibe, a question. HearSeek understands intent and surfaces the exact second someone said it — even if they never used your words.",
+      bullets: [
+        "No more scrubbing timelines or guessing titles",
+        "Works on transcripts, captions, and raw audio",
+        "Ranks by relevance, not upload date",
+      ],
+      accentClass: "bg-gradient-waveform",
+      visual: (
+        <div className="space-y-3">
+          <div className="rounded-xl border border-border/60 bg-background/60 px-4 py-3 text-sm text-muted-foreground">
+            <span className="text-foreground">"the moment a guest broke down crying"</span>
+          </div>
+          {[
+            { t: "Ep. 142 · 32:14", c: "...and that was when she started to..." },
+            { t: "Ep. 87 · 18:02", c: "...he paused, eyes welling up..." },
+            { t: "Ep. 211 · 47:55", c: "...the room went silent as tears..." },
+          ].map((r) => (
+            <div key={r.t} className="rounded-xl border border-border/40 bg-secondary/40 p-3">
+              <div className="text-xs font-semibold text-primary">{r.t}</div>
+              <div className="text-sm text-foreground/80 mt-1">{r.c}</div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      icon: Globe,
+      shortLabel: "Cross-Language",
+      eyebrow: "02 · Cross-Language",
+      title: "Search in English. Find in Urdu, Hindi, Arabic.",
+      description:
+        "Meaning travels across scripts. Your global audience finds your content in the language they think in — even when you never spoke a word of it.",
+      accentClass: "bg-gradient-to-r from-primary to-accent",
+      visual: (
+        <div className="flex flex-wrap gap-2">
+          {["English", "اردو", "हिन्दी", "العربية", "中文", "Français", "Español", "Português", "Türkçe", "Bahasa", "বাংলা", "فارسی"].map((l) => (
+            <span key={l} className="rounded-full border border-border/60 bg-secondary/40 px-4 py-2 text-sm font-medium">
+              {l}
+            </span>
+          ))}
+        </div>
+      ),
+    },
+    {
+      icon: Languages,
+      shortLabel: "Paraphrase Matching",
+      eyebrow: "03 · Paraphrase Matching",
+      title: "Type the gist. Surface every mention.",
+      description:
+        "You don't need to remember the exact phrase. HearSeek matches paraphrases, synonyms, and the underlying idea — across your entire library.",
+      accentClass: "bg-gradient-to-r from-accent to-primary",
+      visual: (
+        <div className="space-y-3">
+          <div className="text-xs uppercase tracking-widest text-muted-foreground">You typed</div>
+          <div className="rounded-xl border border-border/60 bg-background/60 px-4 py-3 font-medium">
+            "advice for first-time founders"
+          </div>
+          <div className="text-xs uppercase tracking-widest text-muted-foreground pt-2">Also matched</div>
+          <div className="space-y-2">
+            {["tips for new entrepreneurs", "what I wish I knew when starting out", "starting your first company"].map((m) => (
+              <div key={m} className="rounded-lg border border-border/40 bg-secondary/30 px-3 py-2 text-sm">
+                {m}
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      icon: Share2,
+      shortLabel: "Embed & Share",
+      eyebrow: "04 · Embed & Share",
+      title: "Deep-link straight to the moment.",
+      description:
+        "Every result is a shareable, second-precise link to the exact timestamp on YouTube. Drop it in a tweet, an email, a Slack thread — it just works.",
+      accentClass: "bg-gradient-waveform",
+      visual: (
+        <div className="space-y-3">
+          <div className="aspect-video rounded-xl bg-gradient-hero relative overflow-hidden border border-border/60">
+            <div className="absolute bottom-3 left-3 right-3 h-1.5 rounded-full bg-white/20">
+              <div className="h-full w-2/3 rounded-full bg-gradient-waveform" />
+            </div>
+            <div className="absolute top-3 left-3 rounded-md bg-background/80 px-2 py-1 text-xs font-mono">
+              ?t=1934s
+            </div>
+          </div>
+          <div className="rounded-lg border border-border/40 bg-secondary/30 px-3 py-2 text-xs font-mono text-muted-foreground truncate">
+            youtube.com/watch?v=abc123&t=1934s
+          </div>
+        </div>
+      ),
+    },
+    {
+      icon: Film,
+      shortLabel: "Premiere Pro Plugin",
+      eyebrow: "05 · Premiere Pro Plugin",
+      title: "Search your timeline by spoken word.",
+      description:
+        "Editing a long-form cut? Find the soundbite in seconds without scrubbing. HearSeek plugs into Premiere and YouTube Studio so search lives where you work.",
+      accentClass: "bg-gradient-to-r from-primary to-accent",
+      visual: (
+        <div className="space-y-2">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex items-center gap-2">
+              <div className="text-[10px] font-mono text-muted-foreground w-10">
+                {String(i * 5).padStart(2, "0")}:00
+              </div>
+              <div className="flex-1 h-6 rounded bg-secondary/40 relative overflow-hidden">
+                <div
+                  className={cn(
+                    "absolute top-0 bottom-0 rounded bg-gradient-waveform",
+                    i === 2 ? "left-[20%] w-[35%] opacity-100" : "left-[10%] w-[60%] opacity-30",
+                  )}
+                />
+              </div>
+            </div>
+          ))}
+          <div className="text-xs text-muted-foreground pt-2">Highlighted: matched clip on track 03</div>
+        </div>
+      ),
+    },
+    {
+      icon: DollarSign,
+      shortLabel: "Monetize Archive",
+      eyebrow: "06 · Monetize Your Archive",
+      title: "Turn your library into a discoverable asset.",
+      description:
+        "Old uploads keep earning. When viewers can find every moment, watch-time on legacy content compounds — and your back-catalogue becomes a revenue engine.",
+      accentClass: "bg-gradient-to-r from-accent to-primary",
+      visual: (
+        <div className="space-y-4">
+          <div className="flex items-end gap-2 h-40">
+            {[20, 28, 24, 36, 32, 48, 56, 52, 70, 82, 78, 96].map((h, i) => (
+              <div key={i} className="flex-1 rounded-t bg-gradient-waveform" style={{ height: `${h}%` }} />
+            ))}
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <div>
+              <div className="text-2xl font-display font-bold text-gradient">+312%</div>
+              <div className="text-xs text-muted-foreground">Avg. archive watch-time</div>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-display font-bold text-gradient">$$$</div>
+              <div className="text-xs text-muted-foreground">Long-tail revenue</div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <>
       {/* HERO */}
@@ -62,182 +220,15 @@ const CreatorsPage = () => {
         <VideoEmbed label="Creator demo · coming soon" />
       </Section>
 
-      {/* FEATURES — full-width scroll showcase */}
-      <section className="relative">
-        <div className="container py-20 md:py-28 text-center">
-          <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
-            Features
-          </span>
-          <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight">
-            Built for how creators actually search.
-          </h2>
-        </div>
-
-        <FeatureShowcaseRow
-          icon={Search}
-          eyebrow="01 · Semantic Search"
-          title="Find moments by meaning, not keywords."
-          description="Type a thought, a vibe, a question. HearSeek understands intent and surfaces the exact second someone said it — even if they never used your words."
-          bullets={[
-            "No more scrubbing timelines or guessing titles",
-            "Works on transcripts, captions, and raw audio",
-            "Ranks by relevance, not upload date",
-          ]}
-          accentClass="bg-gradient-waveform"
-          visual={
-            <div className="space-y-3">
-              <div className="rounded-xl border border-border/60 bg-background/60 px-4 py-3 text-sm text-muted-foreground">
-                <span className="text-foreground">"the moment a guest broke down crying"</span>
-              </div>
-              {[
-                { t: "Ep. 142 · 32:14", c: "...and that was when she started to..." },
-                { t: "Ep. 87 · 18:02", c: "...he paused, eyes welling up..." },
-                { t: "Ep. 211 · 47:55", c: "...the room went silent as tears..." },
-              ].map((r) => (
-                <div key={r.t} className="rounded-xl border border-border/40 bg-secondary/40 p-3">
-                  <div className="text-xs font-semibold text-primary">{r.t}</div>
-                  <div className="text-sm text-foreground/80 mt-1">{r.c}</div>
-                </div>
-              ))}
-            </div>
-          }
-        />
-
-        <FeatureShowcaseRow
-          icon={Globe}
-          eyebrow="02 · Cross-Language"
-          title="Search in English. Find in Urdu, Hindi, Arabic."
-          description="Meaning travels across scripts. Your global audience finds your content in the language they think in — even when you never spoke a word of it."
-          reverse
-          accentClass="bg-gradient-to-r from-primary to-accent"
-          visual={
-            <div className="flex flex-wrap gap-2">
-              {["English", "اردو", "हिन्दी", "العربية", "中文", "Français", "Español", "Português", "Türkçe", "Bahasa", "বাংলা", "فارسی"].map(
-                (l) => (
-                  <span
-                    key={l}
-                    className="rounded-full border border-border/60 bg-secondary/40 px-4 py-2 text-sm font-medium"
-                  >
-                    {l}
-                  </span>
-                ),
-              )}
-            </div>
-          }
-        />
-
-        <FeatureShowcaseRow
-          icon={Languages}
-          eyebrow="03 · Paraphrase Matching"
-          title="Type the gist. Surface every mention."
-          description="You don't need to remember the exact phrase. HearSeek matches paraphrases, synonyms, and the underlying idea — across your entire library."
-          accentClass="bg-gradient-to-r from-accent to-primary"
-          visual={
-            <div className="space-y-3">
-              <div className="text-xs uppercase tracking-widest text-muted-foreground">You typed</div>
-              <div className="rounded-xl border border-border/60 bg-background/60 px-4 py-3 font-medium">
-                "advice for first-time founders"
-              </div>
-              <div className="text-xs uppercase tracking-widest text-muted-foreground pt-2">Also matched</div>
-              <div className="space-y-2">
-                {[
-                  "tips for new entrepreneurs",
-                  "what I wish I knew when starting out",
-                  "starting your first company",
-                ].map((m) => (
-                  <div key={m} className="rounded-lg border border-border/40 bg-secondary/30 px-3 py-2 text-sm">
-                    {m}
-                  </div>
-                ))}
-              </div>
-            </div>
-          }
-        />
-
-        <FeatureShowcaseRow
-          icon={Share2}
-          eyebrow="04 · Embed & Share"
-          title="Deep-link straight to the moment."
-          description="Every result is a shareable, second-precise link to the exact timestamp on YouTube. Drop it in a tweet, an email, a Slack thread — it just works."
-          reverse
-          accentClass="bg-gradient-waveform"
-          visual={
-            <div className="space-y-3">
-              <div className="aspect-video rounded-xl bg-gradient-hero relative overflow-hidden border border-border/60">
-                <div className="absolute bottom-3 left-3 right-3 h-1.5 rounded-full bg-white/20">
-                  <div className="h-full w-2/3 rounded-full bg-gradient-waveform" />
-                </div>
-                <div className="absolute top-3 left-3 rounded-md bg-background/80 px-2 py-1 text-xs font-mono">
-                  ?t=1934s
-                </div>
-              </div>
-              <div className="rounded-lg border border-border/40 bg-secondary/30 px-3 py-2 text-xs font-mono text-muted-foreground truncate">
-                youtube.com/watch?v=abc123&t=1934s
-              </div>
-            </div>
-          }
-        />
-
-        <FeatureShowcaseRow
-          icon={Film}
-          eyebrow="05 · Premiere Pro Plugin"
-          title="Search your timeline by spoken word."
-          description="Editing a long-form cut? Find the soundbite in seconds without scrubbing. HearSeek plugs into Premiere and YouTube Studio so search lives where you work."
-          accentClass="bg-gradient-to-r from-primary to-accent"
-          visual={
-            <div className="space-y-2">
-              {[0, 1, 2, 3, 4].map((i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <div className="text-[10px] font-mono text-muted-foreground w-10">
-                    {String(i * 5).padStart(2, "0")}:00
-                  </div>
-                  <div className="flex-1 h-6 rounded bg-secondary/40 relative overflow-hidden">
-                    <div
-                      className={cn(
-                        "absolute top-0 bottom-0 rounded bg-gradient-waveform",
-                        i === 2 ? "left-[20%] w-[35%] opacity-100" : "left-[10%] w-[60%] opacity-30",
-                      )}
-                    />
-                  </div>
-                </div>
-              ))}
-              <div className="text-xs text-muted-foreground pt-2">Highlighted: matched clip on track 03</div>
-            </div>
-          }
-        />
-
-        <FeatureShowcaseRow
-          icon={DollarSign}
-          eyebrow="06 · Monetize Your Archive"
-          title="Turn your library into a discoverable asset."
-          description="Old uploads keep earning. When viewers can find every moment, watch-time on legacy content compounds — and your back-catalogue becomes a revenue engine."
-          reverse
-          accentClass="bg-gradient-to-r from-accent to-primary"
-          visual={
-            <div className="space-y-4">
-              <div className="flex items-end gap-2 h-40">
-                {[20, 28, 24, 36, 32, 48, 56, 52, 70, 82, 78, 96].map((h, i) => (
-                  <div
-                    key={i}
-                    className="flex-1 rounded-t bg-gradient-waveform"
-                    style={{ height: `${h}%` }}
-                  />
-                ))}
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <div>
-                  <div className="text-2xl font-display font-bold text-gradient">+312%</div>
-                  <div className="text-xs text-muted-foreground">Avg. archive watch-time</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl font-display font-bold text-gradient">$$$</div>
-                  <div className="text-xs text-muted-foreground">Long-tail revenue</div>
-                </div>
-              </div>
-            </div>
-          }
-        />
-      </section>
+      {/* FEATURES — sticky-left, scrolling-right showcase */}
+      <StickyFeatureShowcase
+        eyebrow="Features"
+        title="Built for how creators actually search."
+        description="Six ways HearSeek turns your back-catalogue into an instantly searchable, clip-ready archive."
+        ctaHref="/demo"
+        ctaLabel="Experience the magic"
+        features={features}
+      />
 
       {/* CTA */}
       <section className="container pb-24">

@@ -1,60 +1,49 @@
-# Results card refinements
+# Sticky Feature Showcase — Creators Page
 
-Three focused changes to `src/pages/ResultsPage.tsx`. No business-logic changes.
+Replace the current stacked `FeatureShowcaseRow` section on `/creators` with a "Built to be Found"–style layout: a left column that stays pinned while the user scrolls through the 6 features on the right.
 
-## 1. Replace inline ShareRow with a "Share this clip" popover button
+## Layout
 
-Today `ShareRow` renders a label plus 4 inline icon buttons under the thumbnail. Replace with a single button that opens a popover containing all share options. Same component is used on desktop and mobile (it already renders below the thumbnail in both layouts).
-
-- Use the existing shadcn `Popover` (`@/components/ui/popover`) — already in the project.
-- Trigger button: full-width under the thumbnail, outline style, label "Share this clip", `Share2` icon on the left. Sized to match the thumbnail block (`w-full`).
-- Popover content (~w-64, anchored to trigger):
-  - Header: "Share this clip" (small, muted).
-  - Vertical list of options, each a row with icon + label, hover state, full-width click target:
-    - Copy link (`Link2`) — calls existing `copyLink` (clipboard + toast).
-    - WhatsApp (`WhatsAppIcon`) — opens `https://wa.me/?text=…`.
-    - Facebook (`Facebook`) — opens FB sharer.
-    - X (`Twitter`) — opens tweet intent.
-  - External links open in new tab (`target="_blank"`, `rel="noopener noreferrer"`); after activation the popover closes (controlled `open` state).
-- Keep all visuals on design tokens (`border-white/10`, `bg-card/...`, `text-muted-foreground`, `hover:text-foreground`, `hover:border-primary/40`).
-- Mobile parity is automatic — same button, same popover. Popover already handles small-viewport positioning.
-
-## 2. Update share metadata text
-
-Currently `SHARE_TAGLINE = "Found this exact moment using HearSeek – The World's First AI Search Engine for Audio. 🔍🎧"` is reused for all platforms.
-
-Replace with a per-hit composer that uses the current query (already available in `ResultsPage` as `query`, will be threaded into `ShareRow` via a new `query` prop):
-
-```
-I searched "<query>" on HearSeek and found this exact moment.
-HearSeek - The World's First AI Search Engine for Audio
-<link>
+```text
+┌──────────────────────────────────────────────────────────┐
+│  FEATURES (eyebrow)                │   ┌──────────────┐  │
+│                                    │   │  01 Search   │  │
+│  Built for how creators            │   │   visual     │  │
+│  actually search.                  │   └──────────────┘  │
+│                                    │   ┌──────────────┐  │
+│  One short supporting paragraph.   │   │  02 Cross-   │  │
+│                                    │   │  language    │  │
+│  • Semantic search                 │   └──────────────┘  │
+│  • Cross-language               →  │   ┌──────────────┐  │
+│  • Paraphrase matching             │   │  03 Para-    │  │
+│  • Embed & share                   │   │  phrase      │  │
+│  • Premiere plugin                 │   └──────────────┘  │
+│  • Monetize archive                │   …4, 5, 6           │
+│                                    │                      │
+│  [ Experience the magic → ]        │                      │
+└──────────────────────────────────────────────────────────┘
+   ^ position: sticky                  ^ normal flow
 ```
 
-- WhatsApp: full 3-line text (newline-encoded).
-- Copy link: still copies just the URL (matches user expectation when they pick "Copy link"). Toast unchanged.
-- Facebook: `u=<link>&quote=<first two lines>` (FB ignores `quote` for most pages now but we keep parity).
-- X: `text=<first two lines>&url=<link>` (X auto-appends URL, so we omit it from `text` to avoid duplication).
-- If `query` is empty, fall back to: `Found this exact moment on HearSeek.\nHearSeek - The World's First AI Search Engine for Audio\n<link>`.
+- Two-column grid on `md+`. Left column uses `position: sticky; top: ~6rem` and fills the viewport height so it stays pinned for the entire scroll of the right column.
+- Right column is a normal vertical stack of 6 feature cards, each ~min-h-[70vh] so the user gets a clear "next feature" beat while scrolling.
+- Active-feature tracking: the bullet list on the left highlights the feature currently in view (IntersectionObserver). The active item gets the gradient accent (`bg-gradient-waveform` / `text-gradient`); inactive items stay muted.
+- On mobile (`<md`), drop the sticky behavior — render as a single column: intro block, then the 6 feature cards stacked normally. No layout regression on small screens.
 
-`SHARE_TAGLINE` constant is removed; replaced by an inline `buildShareText(query, link)` helper inside `ResultsPage.tsx`.
+## Visual / branding
 
-## 3. Show video title below the pills row
+- Reuse existing tokens only: `bg-gradient-card`, `bg-gradient-waveform`, `border-border/60`, `shadow-elegant`, `text-gradient`, `font-display`. No new colors.
+- Each right-side card keeps the same icon + eyebrow + title + description + bullets + visual content currently in `FeatureShowcaseRow`, but rendered in a more compact "panel" form (rounded-3xl card, gradient halo, icon badge top-left).
+- Subtle fade/slide-in on each card as it enters the viewport (reuse `useInView` + existing `animate-fade-in`).
+- Left column gets a soft gradient backdrop (`bg-gradient-hero` at low opacity) so the pinned area reads as its own surface.
 
-Currently the `ResultCard` header row (line ~275) puts ChannelPill, then the title as a small truncated inline text, then the language pill on the right. Refactor:
+## Files
 
-- Top row: ChannelPill (left) + Language pill (right, `ml-auto`). No title here.
-- New second row: video title rendered as a single-line element below the pills and above the snippet.
-  - Element: `<h3>` for semantics, `font-display text-sm font-medium text-foreground/90 truncate` (RTL-aware via `dir` when language is RTL).
-  - Margin: `mt-1.5 mb-1` to sit between pills and snippet.
-  - Only rendered when `hit.title` exists.
+- `src/pages/CreatorsPage.tsx` — remove the current `FeatureShowcaseRow` stack; render the new section instead. Keep hero, use-cases, demo, and CTA sections untouched.
+- `src/components/site/StickyFeatureShowcase.tsx` (new) — the two-column sticky layout. Accepts `features: { icon, eyebrow, title, description, bullets, visual }[]` and an intro block (`eyebrow`, `title`, `description`, `ctaHref`, `ctaLabel`). Encapsulates the IntersectionObserver active-index logic and the mobile fallback.
+- `FeatureShowcaseRow.tsx` stays in the repo (used nowhere else after this change, but harmless to keep; can be deleted later if you'd like — say the word and I'll remove it).
 
-No other layout changes.
+## Out of scope
 
-## Technical notes
-
-- File touched: `src/pages/ResultsPage.tsx` only.
-- New imports from `@/components/ui/popover`: `Popover`, `PopoverTrigger`, `PopoverContent`.
-- `ShareRow` signature becomes `({ hit, query }: { hit: SearchHit; query: string })`; `ResultCard` gains a `query` prop forwarded from the parent map (`hits.map(...)`).
-- No changes to `hearseek.ts`, filter logic, routing, or pilot config.
-- Existing toast + clipboard behavior preserved.
+- No changes to results page, share row, video titles, or other pages.
+- No new dependencies.
