@@ -19,6 +19,9 @@ import { FeatureCard } from "@/components/site/FeatureCard";
 import { StickyFeatureShowcase, ShowcaseFeature } from "@/components/site/StickyFeatureShowcase";
 import { CollectionMarquee } from "@/components/site/CollectionMarquee";
 import { cn } from "@/lib/utils";
+import doacResults from "@/assets/creators/doac-results.png";
+import doacShare from "@/assets/creators/doac-share.png";
+import doacCollection from "@/assets/creators/doac-collection.png";
 
 const CreatorsPage = () => {
   const features: ShowcaseFeature[] = [
@@ -36,20 +39,8 @@ const CreatorsPage = () => {
       ],
       accentClass: "bg-gradient-waveform",
       visual: (
-        <div className="space-y-3">
-          <div className="rounded-xl border border-border/60 bg-background/60 px-4 py-3 text-sm text-muted-foreground">
-            <span className="text-foreground">"the moment a guest broke down crying"</span>
-          </div>
-          {[
-            { t: "Ep. 142 · 32:14", c: "...and that was when she started to..." },
-            { t: "Ep. 87 · 18:02", c: "...he paused, eyes welling up..." },
-            { t: "Ep. 211 · 47:55", c: "...the room went silent as tears..." },
-          ].map((r) => (
-            <div key={r.t} className="rounded-xl border border-border/40 bg-secondary/40 p-3">
-              <div className="text-xs font-semibold text-primary">{r.t}</div>
-              <div className="text-sm text-foreground/80 mt-1">{r.c}</div>
-            </div>
-          ))}
+        <div className="rounded-xl overflow-hidden border border-border/60 bg-background/60">
+          <img src={doacResults} alt="HearSeek search results on Diary of A CEO" className="w-full h-auto" loading="lazy" />
         </div>
       ),
     },
@@ -62,12 +53,17 @@ const CreatorsPage = () => {
         "Meaning travels across scripts. Your global audience finds your content in the language they think in — even when you never spoke a word of it.",
       accentClass: "bg-gradient-to-r from-primary to-accent",
       visual: (
-        <div className="flex flex-wrap gap-2">
-          {["English", "اردو", "हिन्दी", "العربية", "中文", "Français", "Español", "Português", "Türkçe", "Bahasa", "বাংলা", "فارسی"].map((l) => (
-            <span key={l} className="rounded-full border border-border/60 bg-secondary/40 px-4 py-2 text-sm font-medium">
-              {l}
-            </span>
-          ))}
+        <div className="space-y-3">
+          <div className="rounded-xl overflow-hidden border border-border/60 bg-background/60">
+            <img src={doacCollection} alt="Diary of A CEO collection page on HearSeek" className="w-full h-auto" loading="lazy" />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {["English", "اردو", "हिन्दी", "العربية", "中文", "Français", "Español"].map((l) => (
+              <span key={l} className="rounded-full border border-border/60 bg-secondary/40 px-3 py-1.5 text-xs font-medium">
+                {l}
+              </span>
+            ))}
+          </div>
         </div>
       ),
     },
@@ -105,18 +101,8 @@ const CreatorsPage = () => {
         "Every result is a shareable, second-precise link to the exact timestamp on YouTube. Drop it in a tweet, an email, a Slack thread — it just works.",
       accentClass: "bg-gradient-waveform",
       visual: (
-        <div className="space-y-3">
-          <div className="aspect-video rounded-xl bg-gradient-hero relative overflow-hidden border border-border/60">
-            <div className="absolute bottom-3 left-3 right-3 h-1.5 rounded-full bg-white/20">
-              <div className="h-full w-2/3 rounded-full bg-gradient-waveform" />
-            </div>
-            <div className="absolute top-3 left-3 rounded-md bg-background/80 px-2 py-1 text-xs font-mono">
-              ?t=1934s
-            </div>
-          </div>
-          <div className="rounded-lg border border-border/40 bg-secondary/30 px-3 py-2 text-xs font-mono text-muted-foreground truncate">
-            youtube.com/watch?v=abc123&t=1934s
-          </div>
+        <div className="rounded-xl overflow-hidden border border-border/60 bg-background/60">
+          <img src={doacShare} alt="Share and embed clip from Diary of A CEO" className="w-full h-auto" loading="lazy" />
         </div>
       ),
     },
