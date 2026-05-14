@@ -18,7 +18,7 @@ export const CollectionMarquee = () => {
       <div className="group relative mt-8 overflow-hidden">
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-background to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-background to-transparent" />
-        <div className="flex w-max animate-marquee gap-6 group-hover:[animation-play-state:paused]">
+        <div className="flex w-max animate-marquee gap-6 md:gap-10 lg:gap-12 group-hover:[animation-play-state:paused]">
           {items.map((c, i) => (
             <Link
               key={`${c.key}-${i}`}
@@ -30,7 +30,7 @@ export const CollectionMarquee = () => {
                 src={c.logo}
                 alt={c.name}
                 size="md"
-                className="opacity-40 grayscale transition-all duration-300 group-hover/item:opacity-100 group-hover/item:grayscale-0 group-hover/item:shadow-[0_0_24px_2px_hsl(var(--sonar)/0.55)] group-hover/item:border-[hsl(var(--sonar)/0.6)]"
+                className="md:!h-32 md:!w-32 lg:!h-36 lg:!w-36 opacity-40 grayscale transition-all duration-300 group-hover/item:opacity-100 group-hover/item:grayscale-0 group-hover/item:shadow-[0_0_24px_2px_hsl(var(--sonar)/0.55)] group-hover/item:border-[hsl(var(--sonar)/0.6)]"
               />
             </Link>
           ))}

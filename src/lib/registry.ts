@@ -84,7 +84,7 @@ export const COLLECTIONS: Record<string, Collection> = {
   iis: {
     key: "iis",
     name: "International Iqbal Society",
-    shortName: "IIS",
+    shortName: "International Iqbal Society",
     tagline:
       "Search decades of philosophical lectures from the International Iqbal Society — by meaning, not just keywords.",
     configSlug: "iis",

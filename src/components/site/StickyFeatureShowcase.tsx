@@ -4,6 +4,12 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export interface ShowcaseFeature {
   icon: LucideIcon;
@@ -56,7 +62,102 @@ export const StickyFeatureShowcase = ({
   return (
     <section className="relative">
       <div className="container py-20 md:py-28">
-        <div className="grid md:grid-cols-2 gap-10 md:gap-16">
+        {/* MOBILE — accordion */}
+        <div className="md:hidden">
+          {eyebrow && (
+            <span className="inline-block text-[11px] font-semibold uppercase tracking-[0.2em] text-primary mb-3">
+              {eyebrow}
+            </span>
+          )}
+          <h2 className="font-display text-3xl font-bold tracking-tight leading-[1.15]">
+            {title}
+          </h2>
+          {description && (
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+              {description}
+            </p>
+          )}
+
+          <Accordion
+            type="single"
+            collapsible
+            defaultValue="feat-0"
+            className="mt-6 rounded-2xl border border-border/60 bg-gradient-card overflow-hidden"
+          >
+            {features.map((f, i) => {
+              const Icon = f.icon;
+              return (
+                <AccordionItem
+                  key={f.title}
+                  value={`feat-${i}`}
+                  className="border-border/60 last:border-b-0"
+                >
+                  <AccordionTrigger className="px-4 hover:no-underline">
+                    <div className="flex items-center gap-3 text-left">
+                      <span
+                        className={cn(
+                          "inline-flex h-8 w-8 items-center justify-center rounded-lg text-primary-foreground shrink-0",
+                          f.accentClass ?? "bg-gradient-waveform",
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <span className="text-sm font-semibold">{f.shortLabel}</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4">
+                    <div className="space-y-4">
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+                        {f.eyebrow}
+                      </div>
+                      <h3 className="font-display text-xl font-bold tracking-tight leading-tight">
+                        {f.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {f.description}
+                      </p>
+                      {f.bullets && f.bullets.length > 0 && (
+                        <ul className="space-y-2">
+                          {f.bullets.map((b) => (
+                            <li
+                              key={b}
+                              className="flex items-start gap-3 text-sm text-foreground/90"
+                            >
+                              <span
+                                className={cn(
+                                  "mt-1.5 h-1.5 w-1.5 rounded-full shrink-0",
+                                  f.accentClass ?? "bg-gradient-waveform",
+                                )}
+                              />
+                              <span>{b}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <div>{f.visual}</div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
+
+          {ctaHref && ctaLabel && (
+            <div className="mt-6">
+              <Button
+                asChild
+                className="bg-gradient-waveform text-primary-foreground hover:opacity-90"
+              >
+                <Link to={ctaHref}>
+                  {ctaLabel} <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* DESKTOP — sticky-left, scrolling-right showcase */}
+        <div className="hidden md:grid md:grid-cols-2 gap-10 md:gap-16">
           {/* LEFT — sticky intro */}
           <div className="md:sticky md:top-24 md:self-start md:h-[calc(100vh-7rem)] flex">
             <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-5 md:p-6 shadow-elegant overflow-hidden flex flex-col justify-center">
