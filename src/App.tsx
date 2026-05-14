@@ -10,8 +10,8 @@ import EnterprisePage from "./pages/EnterprisePage.tsx";
 import DemoPage from "./pages/DemoPage.tsx";
 import ResultsPage from "./pages/ResultsPage.tsx";
 import CreatorsPage from "./pages/CreatorsPage.tsx";
-import PilotPage from "./pages/PilotPage.tsx";
-import PilotResultsPage from "./pages/PilotResultsPage.tsx";
+import CollectionPage from "./pages/CollectionPage.tsx";
+import CollectionResultsPage from "./pages/CollectionResultsPage.tsx";
 import { Layout } from "./components/site/Layout";
 
 const queryClient = new QueryClient();
@@ -31,8 +31,8 @@ const App = () => (
           </Route>
           <Route path="/demo" element={<DemoPage />} />
           <Route path="/results" element={<ResultsPage />} />
-          <Route path="/pilots/:slug" element={<PilotPage />} />
-          <Route path="/pilots/:slug/results" element={<PilotResultsPage />} />
+          <Route path="/collections/:slug" element={<CollectionPage />} />
+          <Route path="/collections/:slug/results" element={<CollectionResultsPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
