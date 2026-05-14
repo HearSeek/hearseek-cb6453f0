@@ -19,12 +19,15 @@ export const CollectionLogo = ({
   size = "md",
   className,
   innerClassName,
+  padding = 0,
 }: {
   src?: string;
   alt: string;
   size?: Size;
   className?: string;
   innerClassName?: string;
+  /** Inset percentage on each side (e.g. 5 = 10% total padding). */
+  padding?: number;
 }) => {
   return (
     <div
@@ -34,7 +37,10 @@ export const CollectionLogo = ({
         className,
       )}
     >
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div
+        className="absolute flex items-center justify-center"
+        style={{ inset: `${padding}%` }}
+      >
         {src ? (
           <img
             src={src}

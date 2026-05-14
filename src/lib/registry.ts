@@ -23,6 +23,8 @@ export type Collection = {
   suggestions: string[];
   featuredVideoIds: string[];
   logo?: string;
+  /** Per-side inset % to inset the logo within its frame (e.g. 5 = 10% total padding). */
+  logoPadding?: number;
 };
 
 import iisLogo from "@/assets/collections/iis.png";
@@ -107,6 +109,7 @@ export const COLLECTIONS: Record<string, Collection> = {
       "JvXlzN3k9YQ",
     ],
     logo: iisLogo,
+    logoPadding: 5,
   },
   "diary-of-a-ceo": {
     key: "diary-of-a-ceo",
