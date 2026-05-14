@@ -12,7 +12,7 @@ export const CollectionMarquee = () => {
           The Searchable Web
         </div>
         <h2 className="mt-2 font-display text-2xl md:text-3xl font-semibold tracking-tight">
-          Channels &amp; archives, indexed end-to-end.
+          Channels &amp; archives, made searchable.
         </h2>
       </div>
       <div className="group relative mt-8 overflow-hidden">

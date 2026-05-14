@@ -34,13 +34,13 @@ export const CollectionLogo = ({
         className,
       )}
     >
-      <div className="absolute inset-[10%] flex items-center justify-center">
+      <div className="absolute inset-0 flex items-center justify-center">
         {src ? (
           <img
             src={src}
             alt={alt}
             loading="lazy"
-            className={cn("max-h-full max-w-full object-contain", innerClassName)}
+            className={cn("h-full w-full object-contain", innerClassName)}
           />
         ) : (
           <div className="h-full w-full rounded-md bg-white/5" aria-hidden />

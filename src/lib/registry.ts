@@ -30,6 +30,7 @@ import doacLogo from "@/assets/collections/diary-of-a-ceo.png";
 import hubermanLogo from "@/assets/collections/huberman-lab.png";
 import lexLogo from "@/assets/collections/lex-fridman.png";
 import chrisLogo from "@/assets/collections/chris-williamson.png";
+import tomBilyeuLogo from "@/assets/collections/tom-bilyeu.png";
 import tedLogo from "@/assets/collections/ted.png";
 import dhruvLogo from "@/assets/collections/dhruv-rathee.png";
 import thinkSchoolLogo from "@/assets/collections/think-school.png";
@@ -169,7 +170,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "Tom Bilyeu · Impact Theory",
     "Tom Bilyeu",
     "tom_bilyeu",
-    hubermanLogo, // TODO replace with Tom Bilyeu headshot once asset is provided
+    tomBilyeuLogo,
     "Search a 30-episode deep-index of Tom Bilyeu's Impact Theory — find the mindset shift in seconds.",
   ),
   ted: featuredDeepIndex(
