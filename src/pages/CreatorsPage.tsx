@@ -178,7 +178,7 @@ const CreatorsPage = () => {
             <Sparkles className="h-3 w-3 text-primary" /> Creators · Find every moment
           </span>
           <h1 className="mt-6 font-display text-5xl md:text-7xl font-bold tracking-tight leading-[1.02]">
-            Search every word in <br /> your <span className="text-gradient">YouTube Content.</span>
+            Make every word in your <span className="text-gradient">YouTube Channel Discoverable.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
             HearSeek turns your YouTube channel, podcast feed, and long-form interviews into
