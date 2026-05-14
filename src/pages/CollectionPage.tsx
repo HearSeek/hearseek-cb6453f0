@@ -45,11 +45,11 @@ const CollectionPage = () => {
           "@type": "CollectionPage",
           name: collection.name,
           description: collection.tagline,
-          url: `https://hearseek.lovable.app/collections/${collection.key}`,
+          url: `https://hearseek.com/collections/${collection.key}`,
           isPartOf: {
             "@type": "WebSite",
             name: "HearSeek",
-            url: "https://hearseek.lovable.app",
+            url: "https://hearseek.com",
           },
         }}
       />
