@@ -59,25 +59,25 @@ export const StickyFeatureShowcase = ({
         <div className="grid md:grid-cols-2 gap-10 md:gap-16">
           {/* LEFT — sticky intro */}
           <div className="md:sticky md:top-24 md:self-start md:max-h-[calc(100vh-7rem)] flex">
-            <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-6 md:p-8 shadow-elegant overflow-y-auto flex flex-col justify-start">
+            <div className="relative w-full rounded-3xl border border-border/60 bg-gradient-card p-5 md:p-6 shadow-elegant overflow-hidden flex flex-col justify-center">
               <div className="absolute inset-0 bg-gradient-hero opacity-40 pointer-events-none" />
               <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gradient-waveform opacity-20 blur-3xl pointer-events-none" />
               <div className="relative">
                 {eyebrow && (
-                  <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
+                  <span className="inline-block text-[11px] font-semibold uppercase tracking-[0.2em] text-primary mb-3">
                     {eyebrow}
                   </span>
                 )}
-                <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1]">
+                <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-[1.1]">
                   {title}
                 </h2>
                 {description && (
-                  <p className="mt-5 text-base md:text-lg text-muted-foreground leading-relaxed">
+                  <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed">
                     {description}
                   </p>
                 )}
 
-                <ul className="mt-8 space-y-3">
+                <ul className="mt-5 space-y-1.5">
                   {features.map((f, i) => {
                     const Icon = f.icon;
                     const active = i === activeIndex;
@@ -85,7 +85,7 @@ export const StickyFeatureShowcase = ({
                       <li
                         key={f.title}
                         className={cn(
-                          "flex items-center gap-3 rounded-xl border px-3 py-2 transition-all",
+                          "flex items-center gap-2.5 rounded-lg border px-2.5 py-1.5 transition-all",
                           active
                             ? "border-primary/40 bg-secondary/60"
                             : "border-transparent text-muted-foreground",
@@ -93,17 +93,17 @@ export const StickyFeatureShowcase = ({
                       >
                         <span
                           className={cn(
-                            "inline-flex h-8 w-8 items-center justify-center rounded-lg shrink-0 transition-colors",
+                            "inline-flex h-7 w-7 items-center justify-center rounded-md shrink-0 transition-colors",
                             active
                               ? "bg-gradient-waveform text-primary-foreground"
                               : "bg-secondary text-foreground/70",
                           )}
                         >
-                          <Icon className="h-4 w-4" />
+                          <Icon className="h-3.5 w-3.5" />
                         </span>
                         <span
                           className={cn(
-                            "text-sm font-medium",
+                            "text-[13px] font-medium",
                             active && "text-foreground",
                           )}
                         >
@@ -115,9 +115,10 @@ export const StickyFeatureShowcase = ({
                 </ul>
 
                 {ctaHref && ctaLabel && (
-                  <div className="mt-8">
+                  <div className="mt-5">
                     <Button
                       asChild
+                      size="sm"
                       className="bg-gradient-waveform text-primary-foreground hover:opacity-90"
                     >
                       <Link to={ctaHref}>

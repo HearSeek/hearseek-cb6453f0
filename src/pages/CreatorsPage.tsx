@@ -17,6 +17,7 @@ import { Section } from "@/components/site/Section";
 import { VideoEmbed } from "@/components/site/VideoEmbed";
 import { FeatureCard } from "@/components/site/FeatureCard";
 import { StickyFeatureShowcase, ShowcaseFeature } from "@/components/site/StickyFeatureShowcase";
+import { CollectionMarquee } from "@/components/site/CollectionMarquee";
 import { cn } from "@/lib/utils";
 
 const CreatorsPage = () => {
@@ -214,6 +215,9 @@ const CreatorsPage = () => {
           <FeatureCard icon={Scissors} title="Clip & Shorts Mining" description="Spot quotable moments fast — feed your shorts pipeline." />
         </div>
       </Section>
+
+      {/* LIVE CREATOR COLLECTIONS */}
+      <CollectionMarquee />
 
       {/* DEMO */}
       <Section eyebrow="See It In Action" centered title="Watch HearSeek search live.">
