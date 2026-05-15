@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import logoMark from "@/assets/hearseek-logo-mark.png";
 import { getSearchConfigurations, type SearchConfig } from "@/lib/hearseek";
 import { SEO } from "@/components/site/SEO";
+import { trackEvent } from "@/lib/analytics";
 
 const FALLBACK_CONFIGS: SearchConfig[] = [
   { name: "News Channels", slug: "news-channels" },
@@ -186,6 +187,11 @@ const DemoPage = () => {
   const submitQuery = (q: string) => {
     const trimmed = q.trim();
     if (!trimmed) return;
+    trackEvent("demo_search", {
+      query_length: trimmed.length,
+      collection_slug: scope.slug,
+      collection_name: scope.name,
+    });
     const params = new URLSearchParams({
       q: trimmed,
       config: scope.slug,

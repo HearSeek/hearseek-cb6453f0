@@ -7,6 +7,7 @@ import { youtubeThumbnail } from "@/lib/hearseek";
 import { getCollection, tierLabel } from "@/lib/registry";
 import { CollectionLogo } from "@/components/site/CollectionLogo";
 import { SEO } from "@/components/site/SEO";
+import { trackEvent } from "@/lib/analytics";
 
 const CollectionPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -22,9 +23,21 @@ const CollectionPage = () => {
 
   if (!collection) return <Navigate to="/" replace />;
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    trackEvent("collection_view", {
+      collection_key: collection.key,
+      collection_name: collection.name,
+    });
+  }, [collection.key, collection.name]);
+
   const submitQuery = (q: string) => {
     const trimmed = q.trim();
     if (!trimmed) return;
+    trackEvent("collection_search", {
+      collection_key: collection.key,
+      query_length: trimmed.length,
+    });
     const params = new URLSearchParams({ q: trimmed });
     navigate(`/collections/${collection.key}/results?${params.toString()}`);
   };
