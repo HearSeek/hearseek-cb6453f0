@@ -21,15 +21,15 @@ const CollectionPage = () => {
     inputRef.current?.focus();
   }, []);
 
-  if (!collection) return <Navigate to="/" replace />;
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
+    if (!collection) return;
     trackEvent("collection_view", {
       collection_key: collection.key,
       collection_name: collection.name,
     });
-  }, [collection.key, collection.name]);
+  }, [collection?.key, collection?.name]);
+
+  if (!collection) return <Navigate to="/" replace />;
 
   const submitQuery = (q: string) => {
     const trimmed = q.trim();
