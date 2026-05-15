@@ -7,6 +7,7 @@ import { youtubeThumbnail } from "@/lib/hearseek";
 import { getCollection, tierLabel } from "@/lib/registry";
 import { CollectionLogo } from "@/components/site/CollectionLogo";
 import { SEO } from "@/components/site/SEO";
+import { trackEvent } from "@/lib/analytics";
 
 const CollectionPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -20,11 +21,23 @@ const CollectionPage = () => {
     inputRef.current?.focus();
   }, []);
 
+  useEffect(() => {
+    if (!collection) return;
+    trackEvent("collection_view", {
+      collection_key: collection.key,
+      collection_name: collection.name,
+    });
+  }, [collection?.key, collection?.name]);
+
   if (!collection) return <Navigate to="/" replace />;
 
   const submitQuery = (q: string) => {
     const trimmed = q.trim();
     if (!trimmed) return;
+    trackEvent("collection_search", {
+      collection_key: collection.key,
+      query_length: trimmed.length,
+    });
     const params = new URLSearchParams({ q: trimmed });
     navigate(`/collections/${collection.key}/results?${params.toString()}`);
   };

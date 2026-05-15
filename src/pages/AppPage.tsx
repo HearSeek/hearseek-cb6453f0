@@ -8,6 +8,7 @@ import { FeatureCard } from "@/components/site/FeatureCard";
 import { toast } from "@/hooks/use-toast";
 import appScreen from "@/assets/hearseek-app-single.jpeg";
 import { SEO } from "@/components/site/SEO";
+import { trackEvent } from "@/lib/analytics";
 
 const AppPage = () => {
   const [email, setEmail] = useState("");
@@ -15,6 +16,8 @@ const AppPage = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!email) return;
+    const domain = email.split("@")[1]?.toLowerCase() ?? "";
+    trackEvent("waitlist_signup", { email_domain: domain, source: "app_page" });
     toast({ title: "You're on the list!", description: `We'll email ${email} when the app launches.` });
     setEmail("");
   };
@@ -46,12 +49,20 @@ const AppPage = () => {
                 <a href="#waitlist">Join the Waitlist</a>
               </Button>
               <div className="flex items-center gap-3">
-                <div className="flex h-12 items-center gap-2 rounded-xl border border-border/60 bg-card px-4 text-sm">
+                <a
+                  href="#waitlist"
+                  onClick={() => trackEvent("outbound_click", { destination: "app_store", placement: "hero" })}
+                  className="flex h-12 items-center gap-2 rounded-xl border border-border/60 bg-card px-4 text-sm transition hover:border-primary/40"
+                >
                   <Apple className="h-5 w-5" /> App Store
-                </div>
-                <div className="flex h-12 items-center gap-2 rounded-xl border border-border/60 bg-card px-4 text-sm">
+                </a>
+                <a
+                  href="#waitlist"
+                  onClick={() => trackEvent("outbound_click", { destination: "google_play", placement: "hero" })}
+                  className="flex h-12 items-center gap-2 rounded-xl border border-border/60 bg-card px-4 text-sm transition hover:border-primary/40"
+                >
                   <Play className="h-5 w-5" /> Google Play
-                </div>
+                </a>
               </div>
             </div>
           </div>
