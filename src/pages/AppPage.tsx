@@ -6,7 +6,7 @@ import { Section } from "@/components/site/Section";
 import { VideoEmbed } from "@/components/site/VideoEmbed";
 import { FeatureCard } from "@/components/site/FeatureCard";
 import { toast } from "@/hooks/use-toast";
-import appScreen from "@/assets/hearseek-app-single.jpeg";
+import appScreen from "@/assets/hearseek-app-single-v2.jpg";
 import { SEO } from "@/components/site/SEO";
 import { trackEvent } from "@/lib/analytics";
 
