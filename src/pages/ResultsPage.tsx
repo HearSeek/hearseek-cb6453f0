@@ -465,11 +465,18 @@ type ResultsPageProps = {
   collection?: Collection;
 };
 
+const CONFIG_SLUG_ALIASES: Record<string, string> = {
+  "news-channels": "news_channels",
+};
+
+const normalizeConfigSlug = (slug: string): string => CONFIG_SLUG_ALIASES[slug] ?? slug;
+
 const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const query = params.get("q") ?? "";
-  const configSlug = collection?.configSlug ?? params.get("config") ?? "";
+  const rawConfigSlug = collection?.configSlug ?? params.get("config") ?? "";
+  const configSlug = normalizeConfigSlug(rawConfigSlug);
   const configName = collection?.configName ?? params.get("configName") ?? configSlug;
   const backTo = collection ? `/collections/${collection.key}` : "/demo";
 
@@ -491,6 +498,13 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
   const appliedFilters = filtersFromUrl(params);
   const appliedFiltersKey = JSON.stringify(appliedFilters);
   const [stagedFilters, setStagedFilters] = useState<SearchFilters>(appliedFilters);
+
+  useEffect(() => {
+    if (collection || !rawConfigSlug || rawConfigSlug === configSlug) return;
+    const next = new URLSearchParams(params);
+    next.set("config", configSlug);
+    setParams(next, { replace: true });
+  }, [collection, rawConfigSlug, configSlug, params, setParams]);
 
   // Re-sync staged filters when the URL changes (back/forward, clear, etc.)
   // unless the user already has unapplied edits matching the new applied set.
