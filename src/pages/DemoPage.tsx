@@ -19,7 +19,7 @@ import { SEO } from "@/components/site/SEO";
 import { trackEvent } from "@/lib/analytics";
 
 const FALLBACK_CONFIGS: SearchConfig[] = [
-  { name: "News Channels", slug: "news-channels" },
+  { name: "News Channels", slug: "news_channels" },
   { name: "Podcasts", slug: "podcasts" },
 ];
 
