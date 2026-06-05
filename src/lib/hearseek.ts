@@ -282,7 +282,7 @@ export const runSearch = async (
     );
   }
   const qdrant = buildQdrantFilter(filters ?? EMPTY_FILTERS, extraMust);
-  const body: Record<string, unknown> = { texts: query };
+  const body: Record<string, unknown> = { query };
   if (qdrant) body.filters = qdrant;
 
   if (qdrant && import.meta.env.DEV) {
