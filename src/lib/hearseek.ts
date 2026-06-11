@@ -2,7 +2,9 @@
 // NOTE: VITE_HEARSEEK_DEMO_KEY is a public demo key, intentionally exposed in
 // the frontend bundle. Do not put a production-grade enterprise key here.
 
-const API_BASE = "https://server.hearseek.com/api";
+const API_BASE =
+  (import.meta.env.VITE_HEARSEEK_API_BASE as string | undefined) ??
+  "https://django-public.taile5bf31.ts.net/api";
 const DEMO_KEY = (import.meta.env.VITE_HEARSEEK_DEMO_KEY as string | undefined) ?? "";
 
 const CONFIGS_CACHE_KEY = "hearseek:search_configs:v2";
