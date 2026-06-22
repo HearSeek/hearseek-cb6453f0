@@ -216,6 +216,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "huberman_lab",
     hubermanLogo,
     "Search a 30-episode deep-index of Huberman Lab — find the exact protocol, study, or insight you remember.",
+    HUBERMAN_SUGGESTIONS,
   ),
   "lex-fridman": featuredDeepIndex(
     "lex-fridman",
@@ -224,6 +225,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "lex_fridman",
     lexLogo,
     "Search a 30-episode deep-index of the Lex Fridman Podcast — surface any conversation by meaning.",
+    LEX_FRIDMAN_SUGGESTIONS,
   ),
   "chris-williamson": featuredDeepIndex(
     "chris-williamson",
@@ -232,6 +234,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "chris_williamson",
     chrisLogo,
     "Search a 30-episode deep-index of Modern Wisdom with Chris Williamson — find the exact idea you're chasing.",
+    MODERN_WISDOM_SUGGESTIONS,
   ),
   "tom-bilyeu": featuredDeepIndex(
     "tom-bilyeu",
@@ -248,6 +251,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "ted",
     tedLogo,
     "Search a 30-talk deep-index from TED — jump to the exact moment an idea worth spreading lands.",
+    TED_SUGGESTIONS,
   ),
   "dhruv-rathee": featuredDeepIndex(
     "dhruv-rathee",
@@ -256,6 +260,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "dhruv_rathee",
     dhruvLogo,
     "Search a 30-video deep-index of Dhruv Rathee — find any explainer moment by meaning, in any language.",
+    DHRUV_RATHEE_SUGGESTIONS,
   ),
   "think-school": featuredDeepIndex(
     "think-school",
@@ -264,6 +269,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "think_school",
     thinkSchoolLogo,
     "Search a 30-video deep-index of Think School — find the exact business case study or framework.",
+    THINK_SCHOOL_SUGGESTIONS,
   ),
   "beer-biceps": featuredDeepIndex(
     "beer-biceps",
@@ -272,6 +278,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "beer_biceps",
     beerBicepsLogo,
     "Search a 30-episode deep-index of BeerBiceps — find any conversation by meaning.",
+    RANVEER_SUGGESTIONS,
   ),
   raftar: featuredDeepIndex(
     "raftar",
@@ -280,6 +287,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "raftar",
     raftarLogo,
     "Search a 30-video deep-index of Raftar — surface the exact moment by meaning.",
+    RAFTAR_SUGGESTIONS,
   ),
 };
 
