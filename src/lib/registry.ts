@@ -64,6 +64,7 @@ const featuredDeepIndex = (
   channelSlug: string,
   logo: string,
   tagline: string,
+  suggestions: string[] = sharedDeepIndexSuggestions,
 ): Collection => ({
   key,
   name,
@@ -75,10 +76,74 @@ const featuredDeepIndex = (
   episodeCount: "30+ Episodes Indexed",
   baseFilter: [{ key: "source_info.channel", match: { value: channelSlug } }],
   disclaimer: sharedDeepIndexDisclaimer,
-  suggestions: sharedDeepIndexSuggestions,
+  suggestions,
   featuredVideoIds: [],
   logo,
 });
+
+const HUBERMAN_SUGGESTIONS = [
+  "Growth vs optimization obsession",
+  "Why habits are hard to sustain",
+  "Loneliness vs connection — health impact",
+  "Daily behaviors for focus and energy",
+  "Sleep's impact on learning and memory",
+];
+
+const LEX_FRIDMAN_SUGGESTIONS = [
+  "What is consciousness exactly?",
+  "Meaningful life in an AI world",
+  "Is free will real?",
+  "What does understanding reality mean?",
+  "Discipline for long-term intellectual work",
+];
+
+const MODERN_WISDOM_SUGGESTIONS = [
+  "Stopping overthinking to take action",
+  "Building discipline beyond motivation",
+  "Finding purpose in meaningless times",
+  "Real hidden cost of success",
+  "Chasing vs building happiness",
+];
+
+const TED_SUGGESTIONS = [
+  "Fastest way to shift mindset",
+  "Why do people quit before succeeding?",
+  "What actually creates happiness?",
+  "Can creativity actually be learned?",
+  "Handling criticism and rejection well",
+];
+
+const RANVEER_SUGGESTIONS = [
+  "Mental prep before high-level interviews",
+  "Staying disciplined when motivation fades",
+  "What separates the top 1% performers?",
+  "Balancing money, meaning, happiness",
+  "What I'd do differently today?",
+];
+
+const RAFTAR_SUGGESTIONS = [
+  "Misconceptions about Pakistani politics",
+  "Why do Pakistani systems keep failing?",
+  "Is the media showing real reality?",
+  "First system to fix in Pakistan",
+  "Staying neutral on controversial topics",
+];
+
+const THINK_SCHOOL_SUGGESTIONS = [
+  "How to build addictive products?",
+  "How to earn ₹1 crore?",
+  "What is India's semiconductor future?",
+  "How to find market gaps?",
+  "How did Zudio beat competitors?",
+];
+
+const DHRUV_RATHEE_SUGGESTIONS = [
+  "Epstein Island mystery",
+  "Cancer industry dark secret",
+  "dark truth behind billionaires",
+  "indian politics decoded easily",
+  "what are secret societies?",
+];
 
 export const COLLECTIONS: Record<string, Collection> = {
   iis: {
