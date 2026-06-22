@@ -64,6 +64,7 @@ const featuredDeepIndex = (
   channelSlug: string,
   logo: string,
   tagline: string,
+  suggestions: string[] = sharedDeepIndexSuggestions,
 ): Collection => ({
   key,
   name,
@@ -75,10 +76,74 @@ const featuredDeepIndex = (
   episodeCount: "30+ Episodes Indexed",
   baseFilter: [{ key: "source_info.channel", match: { value: channelSlug } }],
   disclaimer: sharedDeepIndexDisclaimer,
-  suggestions: sharedDeepIndexSuggestions,
+  suggestions,
   featuredVideoIds: [],
   logo,
 });
+
+const HUBERMAN_SUGGESTIONS = [
+  "Growth vs optimization obsession",
+  "Why habits are hard to sustain",
+  "Loneliness vs connection — health impact",
+  "Daily behaviors for focus and energy",
+  "Sleep's impact on learning and memory",
+];
+
+const LEX_FRIDMAN_SUGGESTIONS = [
+  "What is consciousness exactly?",
+  "Meaningful life in an AI world",
+  "Is free will real?",
+  "What does understanding reality mean?",
+  "Discipline for long-term intellectual work",
+];
+
+const MODERN_WISDOM_SUGGESTIONS = [
+  "Stopping overthinking to take action",
+  "Building discipline beyond motivation",
+  "Finding purpose in meaningless times",
+  "Real hidden cost of success",
+  "Chasing vs building happiness",
+];
+
+const TED_SUGGESTIONS = [
+  "Fastest way to shift mindset",
+  "Why do people quit before succeeding?",
+  "What actually creates happiness?",
+  "Can creativity actually be learned?",
+  "Handling criticism and rejection well",
+];
+
+const RANVEER_SUGGESTIONS = [
+  "Mental prep before high-level interviews",
+  "Staying disciplined when motivation fades",
+  "What separates the top 1% performers?",
+  "Balancing money, meaning, happiness",
+  "What I'd do differently today?",
+];
+
+const RAFTAR_SUGGESTIONS = [
+  "Misconceptions about Pakistani politics",
+  "Why do Pakistani systems keep failing?",
+  "Is the media showing real reality?",
+  "First system to fix in Pakistan",
+  "Staying neutral on controversial topics",
+];
+
+const THINK_SCHOOL_SUGGESTIONS = [
+  "How to build addictive products?",
+  "How to earn ₹1 crore?",
+  "What is India's semiconductor future?",
+  "How to find market gaps?",
+  "How did Zudio beat competitors?",
+];
+
+const DHRUV_RATHEE_SUGGESTIONS = [
+  "Epstein Island mystery",
+  "Cancer industry dark secret",
+  "dark truth behind billionaires",
+  "indian politics decoded easily",
+  "what are secret societies?",
+];
 
 export const COLLECTIONS: Record<string, Collection> = {
   iis: {
@@ -151,6 +216,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "huberman_lab",
     hubermanLogo,
     "Search a 30-episode deep-index of Huberman Lab — find the exact protocol, study, or insight you remember.",
+    HUBERMAN_SUGGESTIONS,
   ),
   "lex-fridman": featuredDeepIndex(
     "lex-fridman",
@@ -159,6 +225,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "lex_fridman",
     lexLogo,
     "Search a 30-episode deep-index of the Lex Fridman Podcast — surface any conversation by meaning.",
+    LEX_FRIDMAN_SUGGESTIONS,
   ),
   "chris-williamson": featuredDeepIndex(
     "chris-williamson",
@@ -167,6 +234,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "chris_williamson",
     chrisLogo,
     "Search a 30-episode deep-index of Modern Wisdom with Chris Williamson — find the exact idea you're chasing.",
+    MODERN_WISDOM_SUGGESTIONS,
   ),
   "tom-bilyeu": featuredDeepIndex(
     "tom-bilyeu",
@@ -183,6 +251,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "ted",
     tedLogo,
     "Search a 30-talk deep-index from TED — jump to the exact moment an idea worth spreading lands.",
+    TED_SUGGESTIONS,
   ),
   "dhruv-rathee": featuredDeepIndex(
     "dhruv-rathee",
@@ -191,6 +260,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "dhruv_rathee",
     dhruvLogo,
     "Search a 30-video deep-index of Dhruv Rathee — find any explainer moment by meaning, in any language.",
+    DHRUV_RATHEE_SUGGESTIONS,
   ),
   "think-school": featuredDeepIndex(
     "think-school",
@@ -199,6 +269,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "think_school",
     thinkSchoolLogo,
     "Search a 30-video deep-index of Think School — find the exact business case study or framework.",
+    THINK_SCHOOL_SUGGESTIONS,
   ),
   "beer-biceps": featuredDeepIndex(
     "beer-biceps",
@@ -207,6 +278,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "beer_biceps",
     beerBicepsLogo,
     "Search a 30-episode deep-index of BeerBiceps — find any conversation by meaning.",
+    RANVEER_SUGGESTIONS,
   ),
   raftar: featuredDeepIndex(
     "raftar",
@@ -215,6 +287,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     "raftar",
     raftarLogo,
     "Search a 30-video deep-index of Raftar — surface the exact moment by meaning.",
+    RAFTAR_SUGGESTIONS,
   ),
 };
 
