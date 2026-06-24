@@ -1,29 +1,39 @@
-## Swap HearSeek demo key
+## Goal
+Switch the deep-index channel filters from the human-readable `source_info.channel` slug to the immutable YouTube channel ID under `source_info.author`.
 
-Update `.env`:
-```
-VITE_HEARSEEK_DEMO_KEY=monarch_XO46O2Ymxu6ZXRUU5mTMCn3xciYWYkutSxur3Dg5SqA
-```
+## Coverage check
+You listed all 10 non-IIS collections currently in the registry — nothing missing:
 
-## Also fix the real 401 cause: slug mismatch
+| Collection | YouTube channel ID |
+|---|---|
+| Huberman Lab | UC2D2CMWXMOVWx7giW1n3LIg |
+| Lex Fridman | UCSHZKyawb77ixDdsGog4iWA |
+| Modern Wisdom (Chris Williamson) | UCIaH-gZIVC432YRjNVvnyCA |
+| Impact Theory (Tom Bilyeu) | UCnYMOamNKLGVlJgRUbamveA |
+| TED | UCAuUUnT6oDeKwE6v1NGQxug |
+| BeerBiceps | UCPxMZIFE856tbTfdkdjzTSQ |
+| Dhruv Rathee | UC-CSyyi47VX1lD9zyeABW3w |
+| Think School | UCKZozRVHRYsYHGEyNKuhhdA |
+| Raftar | UC6zIImBjDqtEsVZfQLPoQSw |
+| Diary of A CEO | UCGq-a57w-aPwyi3pW7XLiHw |
 
-Looking at the network log, the 401 is not actually the key — `/enterprise/search_configurations` returns 200 with that same key in the same session. The failing search sends:
+IIS stays untouched (flagship, its own `iis` configSlug, no channel filter).
 
-```
-x-search-config: news-channels   ← hyphen
-```
+## Changes (single file)
+**`src/lib/registry.ts`**
+1. Update the `featuredDeepIndex(...)` helper signature: rename the `channelSlug` parameter to `channelId` and change its `baseFilter` to:
+   ```ts
+   baseFilter: [{ key: "source_info.author", match: { value: channelId } }]
+   ```
+2. Update the inline `diary-of-a-ceo` entry's `baseFilter` to the same shape with `UCGq-a57w-aPwyi3pW7XLiHw`.
+3. Replace each call-site's slug arg with the YouTube ID from the table above.
+4. Remove the stale `TODO confirm channel slug values…` comment above the helper.
 
-But the API returned slug `news_channels` (underscore). The server rejects the unknown config with 401.
+No other files need to change — `hearseek.ts` already passes `baseFilter` straight through into the Qdrant `must` array, and nothing else in the app reads these values.
 
-The bad slug is coming from a hardcoded/cached value in the app — likely `src/pages/DemoPage.tsx` or wherever the demo CTA builds the `?config=...` URL. Need to:
+## Verification
+- Type-check passes (no signature consumers outside `registry.ts`).
+- Open one collection (e.g. Huberman) → run a search → confirm in the dev console that the logged `[hearseek] search filters payload` now contains `{ key: "source_info.author", match: { value: "UC2D2CMWXMOVWx7giW1n3LIg" } }` and that results come back.
 
-1. Grep for `news-channels` across the codebase and replace with `news_channels` (or, better, drive it from the live `getSearchConfigurations()` response so it can't drift again).
-2. Bump `CONFIGS_CACHE_KEY` is not needed this time — configs already load fine.
-
-## Steps
-
-1. Update `.env` with the new key.
-2. Grep `news-channels` / hardcoded slugs and fix them to match API slugs.
-3. Republish so the new `.env` value is baked into the deployed bundle.
-
-After republish, test a search on the live site and confirm 200.
+## Open questions
+None on my side — IDs are unambiguous and `source_info.author` is clearly specified. Ready to implement on your go-ahead.
