@@ -543,13 +543,15 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
       try {
         const data = await getSearchConfigurations();
         if (!cancelled && data.length > 0) {
-          setCollections(data);
+          setCollections([ALL_SCOPE, ...data]);
           // Hydrate pending config name from server if we only had the slug.
           const match = data.find((c) => c.slug === configSlug);
           if (match) setPendingConfig(match);
         }
       } catch {
         /* keep fallback */
+      } finally {
+        if (!cancelled) setConfigsLoaded(true);
       }
     })();
     return () => {
