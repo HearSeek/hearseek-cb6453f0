@@ -811,14 +811,22 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
               {loading ? (
                 <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
                   <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
-                  Searching {configName}…
+                  {configSlug === "all"
+                    ? "Searching all collections…"
+                    : `Searching ${configName}…`}
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground">
                   Found <span className="font-semibold text-foreground">{numHits}</span> relevant insight
                   {numHits === 1 ? "" : "s"} for{" "}
-                  <span className="font-semibold text-foreground">"{query}"</span> in{" "}
-                  <span className="text-foreground">{configName}</span>.
+                  <span className="font-semibold text-foreground">"{query}"</span>{" "}
+                  {configSlug === "all" ? (
+                    <span>across all collections.</span>
+                  ) : (
+                    <>
+                      in <span className="text-foreground">{configName}</span>.
+                    </>
+                  )}
                 </p>
               )}
             </div>
