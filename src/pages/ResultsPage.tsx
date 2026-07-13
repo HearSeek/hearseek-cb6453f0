@@ -501,6 +501,9 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
   const [error, setError] = useState<string | null>(null);
   const [durations, setDurations] = useState<Record<string, number>>({});
   const [videoTitles, setVideoTitles] = useState<Record<string, string>>({});
+  const [configsLoaded, setConfigsLoaded] = useState<boolean>(
+    !!collection || configSlug !== "all",
+  );
 
   // Applied filters mirror what's in the URL and drive the search effect.
   // Staged filters live only in local state until the user hits Apply.
