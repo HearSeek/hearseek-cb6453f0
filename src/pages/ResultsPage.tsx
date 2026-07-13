@@ -30,11 +30,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import logoMark from "@/assets/hearseek-logo-mark.png";
 import {
   runSearch,
+  runSearchAcrossConfigs,
   buildJumpLink,
   youtubeThumbnail,
   formatTimestamp,
   prettifyChannel,
   getSearchConfigurations,
+  FALLBACK_CONFIGS,
   type SearchHit,
   type SearchConfig,
   type SearchFilters,
