@@ -159,8 +159,7 @@ const DemoPage = () => {
         const data = await getSearchConfigurations();
         if (cancelled) return;
         if (data.length > 0) {
-          setCollections(data);
-          setScope(data[0]);
+          setCollections([ALL_SCOPE, ...data]);
           setUsedFallback(false);
         } else {
           setUsedFallback(true);
