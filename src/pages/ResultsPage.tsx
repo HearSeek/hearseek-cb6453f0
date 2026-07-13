@@ -125,8 +125,11 @@ const RelevanceMeter = ({ value }: { value: number }) => {
 };
 
 type IconType = typeof Newspaper;
+const ALL_SCOPE: SearchConfig = { name: "All", slug: "all" };
+
 const iconForCollection = (name: string): IconType => {
   const n = name.toLowerCase();
+  if (n === "all") return Layers;
   if (n.includes("news")) return Newspaper;
   if (n.includes("podcast")) return Mic;
   if (n.includes("demo")) return PlayCircle;
