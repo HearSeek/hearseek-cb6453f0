@@ -483,7 +483,10 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
   const query = params.get("q") ?? "";
   const rawConfigSlug = collection?.configSlug ?? params.get("config") ?? "";
   const configSlug = normalizeConfigSlug(rawConfigSlug);
-  const configName = collection?.configName ?? params.get("configName") ?? configSlug;
+  const configName =
+    collection?.configName ??
+    params.get("configName") ??
+    (configSlug === "all" ? "All" : configSlug);
   const backTo = collection ? `/collections/${collection.key}` : "/demo";
 
   const [pendingQuery, setPendingQuery] = useState(query);
