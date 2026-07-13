@@ -11,22 +11,25 @@ import {
   Users,
   Library,
   Loader2,
+  Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoMark from "@/assets/hearseek-logo-mark.png";
-import { getSearchConfigurations, type SearchConfig } from "@/lib/hearseek";
+import {
+  getSearchConfigurations,
+  FALLBACK_CONFIGS,
+  type SearchConfig,
+} from "@/lib/hearseek";
 import { SEO } from "@/components/site/SEO";
 import { trackEvent } from "@/lib/analytics";
 
-const FALLBACK_CONFIGS: SearchConfig[] = [
-  { name: "News Channels", slug: "news_channels" },
-  { name: "Podcasts", slug: "podcasts" },
-];
-
 type IconType = typeof Newspaper;
+
+const ALL_SCOPE: SearchConfig = { name: "All", slug: "all" };
 
 const iconForCollection = (name: string): IconType => {
   const n = name.toLowerCase();
+  if (n === "all") return Layers;
   if (n.includes("news")) return Newspaper;
   if (n.includes("podcast")) return Mic;
   if (n.includes("demo")) return PlayCircle;
@@ -59,6 +62,7 @@ const NEWS_SUGGESTIONS = [
 ];
 const suggestionsForScope = (scopeSlug: string): string[] => {
   const s = scopeSlug.toLowerCase();
+  if (s === "all") return [...NEWS_SUGGESTIONS, ...PODCAST_SUGGESTIONS];
   if (s.includes("podcast")) return PODCAST_SUGGESTIONS;
   if (s.includes("news")) return NEWS_SUGGESTIONS;
   return [];
@@ -133,10 +137,13 @@ const useTypingPlaceholder = (phrases: string[], active: boolean) => {
 
 const DemoPage = () => {
   const navigate = useNavigate();
-  const [collections, setCollections] = useState<SearchConfig[]>(FALLBACK_CONFIGS);
+  const [collections, setCollections] = useState<SearchConfig[]>([
+    ALL_SCOPE,
+    ...FALLBACK_CONFIGS,
+  ]);
   const [collectionsLoading, setCollectionsLoading] = useState(true);
   const [usedFallback, setUsedFallback] = useState(false);
-  const [scope, setScope] = useState<SearchConfig>(FALLBACK_CONFIGS[0]);
+  const [scope, setScope] = useState<SearchConfig>(ALL_SCOPE);
   const [scopeOpen, setScopeOpen] = useState(false);
   const [focused, setFocused] = useState(false);
   const [value, setValue] = useState("");
@@ -152,8 +159,7 @@ const DemoPage = () => {
         const data = await getSearchConfigurations();
         if (cancelled) return;
         if (data.length > 0) {
-          setCollections(data);
-          setScope(data[0]);
+          setCollections([ALL_SCOPE, ...data]);
           setUsedFallback(false);
         } else {
           setUsedFallback(true);

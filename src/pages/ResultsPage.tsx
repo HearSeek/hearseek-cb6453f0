@@ -16,6 +16,7 @@ import {
   Video,
   Users,
   Library,
+  Layers,
   Share2,
   Link2,
   Facebook,
@@ -29,11 +30,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import logoMark from "@/assets/hearseek-logo-mark.png";
 import {
   runSearch,
+  runSearchAcrossConfigs,
   buildJumpLink,
   youtubeThumbnail,
   formatTimestamp,
   prettifyChannel,
   getSearchConfigurations,
+  FALLBACK_CONFIGS,
   type SearchHit,
   type SearchConfig,
   type SearchFilters,
@@ -122,8 +125,11 @@ const RelevanceMeter = ({ value }: { value: number }) => {
 };
 
 type IconType = typeof Newspaper;
+const ALL_SCOPE: SearchConfig = { name: "All", slug: "all" };
+
 const iconForCollection = (name: string): IconType => {
   const n = name.toLowerCase();
+  if (n === "all") return Layers;
   if (n.includes("news")) return Newspaper;
   if (n.includes("podcast")) return Mic;
   if (n.includes("demo")) return PlayCircle;
@@ -477,7 +483,10 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
   const query = params.get("q") ?? "";
   const rawConfigSlug = collection?.configSlug ?? params.get("config") ?? "";
   const configSlug = normalizeConfigSlug(rawConfigSlug);
-  const configName = collection?.configName ?? params.get("configName") ?? configSlug;
+  const configName =
+    collection?.configName ??
+    params.get("configName") ??
+    (configSlug === "all" ? "All" : configSlug);
   const backTo = collection ? `/collections/${collection.key}` : "/demo";
 
   const [pendingQuery, setPendingQuery] = useState(query);
@@ -492,6 +501,9 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
   const [error, setError] = useState<string | null>(null);
   const [durations, setDurations] = useState<Record<string, number>>({});
   const [videoTitles, setVideoTitles] = useState<Record<string, string>>({});
+  const [configsLoaded, setConfigsLoaded] = useState<boolean>(
+    !!collection || configSlug !== "all",
+  );
 
   // Applied filters mirror what's in the URL and drive the search effect.
   // Staged filters live only in local state until the user hits Apply.
@@ -516,9 +528,11 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
   }, [appliedFiltersKey]);
 
   // Collection dropdown — re-selectable from results page
-  const [collections, setCollections] = useState<SearchConfig[]>([
-    { name: configName, slug: configSlug },
-  ]);
+  const [collections, setCollections] = useState<SearchConfig[]>(() => {
+    if (collection) return [{ name: configName, slug: configSlug }];
+    if (configSlug === "all") return [ALL_SCOPE, ...FALLBACK_CONFIGS];
+    return [ALL_SCOPE, { name: configName, slug: configSlug }];
+  });
   const [scopeOpen, setScopeOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -529,13 +543,15 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
       try {
         const data = await getSearchConfigurations();
         if (!cancelled && data.length > 0) {
-          setCollections(data);
+          setCollections([ALL_SCOPE, ...data]);
           // Hydrate pending config name from server if we only had the slug.
           const match = data.find((c) => c.slug === configSlug);
           if (match) setPendingConfig(match);
         }
       } catch {
         /* keep fallback */
+      } finally {
+        if (!cancelled) setConfigsLoaded(true);
       }
     })();
     return () => {
@@ -579,10 +595,25 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
       setNumHits(0);
       return;
     }
+    if (configSlug === "all" && !configsLoaded) {
+      setLoading(true);
+      setError(null);
+      return;
+    }
     const controller = new AbortController();
     setLoading(true);
     setError(null);
-    runSearch(query, configSlug, controller.signal, appliedFilters, collection?.baseFilter)
+
+    const isAll = configSlug === "all";
+    const targetConfigs = isAll
+      ? collections.filter((c) => c.slug !== "all")
+      : [];
+
+    const searchPromise = isAll
+      ? runSearchAcrossConfigs(query, targetConfigs, controller.signal, appliedFilters)
+      : runSearch(query, configSlug, controller.signal, appliedFilters, collection?.baseFilter);
+
+    searchPromise
       .then((res) => {
         setHits(res.hits);
         setNumHits(res.numHits);
@@ -610,7 +641,7 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
     return () => controller.abort();
     // appliedFiltersKey captures the filter state cheaply for the dep array.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, configSlug, appliedFiltersKey]);
+  }, [query, configSlug, appliedFiltersKey, configsLoaded, collections]);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -780,14 +811,22 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
               {loading ? (
                 <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
                   <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
-                  Searching {configName}…
+                  {configSlug === "all"
+                    ? "Searching all collections…"
+                    : `Searching ${configName}…`}
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground">
                   Found <span className="font-semibold text-foreground">{numHits}</span> relevant insight
                   {numHits === 1 ? "" : "s"} for{" "}
-                  <span className="font-semibold text-foreground">"{query}"</span> in{" "}
-                  <span className="text-foreground">{configName}</span>.
+                  <span className="font-semibold text-foreground">"{query}"</span>{" "}
+                  {configSlug === "all" ? (
+                    <span>across all collections.</span>
+                  ) : (
+                    <>
+                      in <span className="text-foreground">{configName}</span>.
+                    </>
+                  )}
                 </p>
               )}
             </div>

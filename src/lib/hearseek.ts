@@ -12,6 +12,11 @@ const CONFIGS_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 export type SearchConfig = { name: string; slug: string };
 
+export const FALLBACK_CONFIGS: SearchConfig[] = [
+  { name: "News Channels", slug: "news_channels" },
+  { name: "Podcasts", slug: "podcasts" },
+];
+
 export type SearchHit = {
   id: string;
   score: number;
@@ -52,6 +57,12 @@ const writeSessionCache = (entry: { at: number; data: SearchConfig[] }) => {
   }
 };
 
+// Display-name overrides for API configs where the backend name differs from
+// the preferred UI label.
+const CONFIG_NAME_OVERRIDES: Record<string, string> = {
+  iis: "International Iqbal Society",
+};
+
 const normalizeConfigs = (raw: unknown): SearchConfig[] => {
   if (!Array.isArray(raw)) return [];
   const out: SearchConfig[] = [];
@@ -60,7 +71,9 @@ const normalizeConfigs = (raw: unknown): SearchConfig[] => {
     const obj = item as Record<string, unknown>;
     const name = typeof obj.name === "string" ? obj.name : null;
     const slug = typeof obj.slug === "string" ? obj.slug : null;
-    if (name && slug) out.push({ name, slug });
+    if (name && slug) {
+      out.push({ name: CONFIG_NAME_OVERRIDES[slug] ?? name, slug });
+    }
   }
   return out;
 };
@@ -322,4 +335,31 @@ export const buildJumpLink = (hit: SearchHit): string | null => {
   if (hit.timestampedUrl) return hit.timestampedUrl;
   if (hit.videoId) return `https://www.youtube.com/watch?v=${hit.videoId}&t=${hit.start}`;
   return hit.youtubeUrl;
+};
+
+// Run the same query across every provided search configuration and merge the
+// results by relevance score. Used for the "All" scope on the demo page.
+export const runSearchAcrossConfigs = async (
+  query: string,
+  configs: SearchConfig[],
+  signal?: AbortSignal,
+  filters?: SearchFilters,
+): Promise<SearchResponse> => {
+  const results = await Promise.all(
+    configs.map((cfg) =>
+      runSearch(query, cfg.slug, signal, filters).catch((err: unknown) => {
+        if ((err as { name?: string })?.name === "AbortError") throw err;
+        console.error(`[hearseek] search failed for config ${cfg.slug}:`, err);
+        return { query, numHits: 0, hits: [] };
+      }),
+    ),
+  );
+
+  const allHits = results
+    .flatMap((r) => r.hits)
+    .sort((a, b) => b.score - a.score);
+
+  const totalNumHits = results.reduce((sum, r) => sum + r.numHits, 0);
+
+  return { query, numHits: totalNumHits, hits: allHits };
 };
