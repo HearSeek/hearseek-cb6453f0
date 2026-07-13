@@ -16,6 +16,7 @@ import {
   Video,
   Users,
   Library,
+  Layers,
   Share2,
   Link2,
   Facebook,
