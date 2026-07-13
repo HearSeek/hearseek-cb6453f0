@@ -137,10 +137,13 @@ const useTypingPlaceholder = (phrases: string[], active: boolean) => {
 
 const DemoPage = () => {
   const navigate = useNavigate();
-  const [collections, setCollections] = useState<SearchConfig[]>(FALLBACK_CONFIGS);
+  const [collections, setCollections] = useState<SearchConfig[]>([
+    ALL_SCOPE,
+    ...FALLBACK_CONFIGS,
+  ]);
   const [collectionsLoading, setCollectionsLoading] = useState(true);
   const [usedFallback, setUsedFallback] = useState(false);
-  const [scope, setScope] = useState<SearchConfig>(FALLBACK_CONFIGS[0]);
+  const [scope, setScope] = useState<SearchConfig>(ALL_SCOPE);
   const [scopeOpen, setScopeOpen] = useState(false);
   const [focused, setFocused] = useState(false);
   const [value, setValue] = useState("");
