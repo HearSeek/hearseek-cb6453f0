@@ -528,9 +528,11 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
   }, [appliedFiltersKey]);
 
   // Collection dropdown — re-selectable from results page
-  const [collections, setCollections] = useState<SearchConfig[]>([
-    { name: configName, slug: configSlug },
-  ]);
+  const [collections, setCollections] = useState<SearchConfig[]>(() => {
+    if (collection) return [{ name: configName, slug: configSlug }];
+    if (configSlug === "all") return [ALL_SCOPE, ...FALLBACK_CONFIGS];
+    return [ALL_SCOPE, { name: configName, slug: configSlug }];
+  });
   const [scopeOpen, setScopeOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
