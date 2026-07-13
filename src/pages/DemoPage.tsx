@@ -23,12 +23,9 @@ import {
 import { SEO } from "@/components/site/SEO";
 import { trackEvent } from "@/lib/analytics";
 
-const FALLBACK_CONFIGS: SearchConfig[] = [
-  { name: "News Channels", slug: "news_channels" },
-  { name: "Podcasts", slug: "podcasts" },
-];
-
 type IconType = typeof Newspaper;
+
+const ALL_SCOPE: SearchConfig = { name: "All", slug: "all" };
 
 const iconForCollection = (name: string): IconType => {
   const n = name.toLowerCase();
