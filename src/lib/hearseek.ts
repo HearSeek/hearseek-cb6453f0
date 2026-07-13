@@ -57,6 +57,12 @@ const writeSessionCache = (entry: { at: number; data: SearchConfig[] }) => {
   }
 };
 
+// Display-name overrides for API configs where the backend name differs from
+// the preferred UI label.
+const CONFIG_NAME_OVERRIDES: Record<string, string> = {
+  iis: "International Iqbal Society",
+};
+
 const normalizeConfigs = (raw: unknown): SearchConfig[] => {
   if (!Array.isArray(raw)) return [];
   const out: SearchConfig[] = [];
@@ -65,7 +71,9 @@ const normalizeConfigs = (raw: unknown): SearchConfig[] => {
     const obj = item as Record<string, unknown>;
     const name = typeof obj.name === "string" ? obj.name : null;
     const slug = typeof obj.slug === "string" ? obj.slug : null;
-    if (name && slug) out.push({ name, slug });
+    if (name && slug) {
+      out.push({ name: CONFIG_NAME_OVERRIDES[slug] ?? name, slug });
+    }
   }
   return out;
 };
