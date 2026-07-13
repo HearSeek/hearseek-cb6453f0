@@ -15,7 +15,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logoMark from "@/assets/hearseek-logo-mark.png";
-import { getSearchConfigurations, type SearchConfig } from "@/lib/hearseek";
+import {
+  getSearchConfigurations,
+  FALLBACK_CONFIGS,
+  type SearchConfig,
+} from "@/lib/hearseek";
 import { SEO } from "@/components/site/SEO";
 import { trackEvent } from "@/lib/analytics";
 
