@@ -12,6 +12,11 @@ const CONFIGS_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 export type SearchConfig = { name: string; slug: string };
 
+export const FALLBACK_CONFIGS: SearchConfig[] = [
+  { name: "News Channels", slug: "news_channels" },
+  { name: "Podcasts", slug: "podcasts" },
+];
+
 export type SearchHit = {
   id: string;
   score: number;
