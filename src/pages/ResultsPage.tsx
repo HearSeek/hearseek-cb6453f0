@@ -595,10 +595,25 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
       setNumHits(0);
       return;
     }
+    if (configSlug === "all" && !configsLoaded) {
+      setLoading(true);
+      setError(null);
+      return;
+    }
     const controller = new AbortController();
     setLoading(true);
     setError(null);
-    runSearch(query, configSlug, controller.signal, appliedFilters, collection?.baseFilter)
+
+    const isAll = configSlug === "all";
+    const targetConfigs = isAll
+      ? collections.filter((c) => c.slug !== "all")
+      : [];
+
+    const searchPromise = isAll
+      ? runSearchAcrossConfigs(query, targetConfigs, controller.signal, appliedFilters)
+      : runSearch(query, configSlug, controller.signal, appliedFilters, collection?.baseFilter);
+
+    searchPromise
       .then((res) => {
         setHits(res.hits);
         setNumHits(res.numHits);
@@ -626,7 +641,7 @@ const ResultsPage = ({ collection }: ResultsPageProps = {}) => {
     return () => controller.abort();
     // appliedFiltersKey captures the filter state cheaply for the dep array.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, configSlug, appliedFiltersKey]);
+  }, [query, configSlug, appliedFiltersKey, configsLoaded, collections]);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
