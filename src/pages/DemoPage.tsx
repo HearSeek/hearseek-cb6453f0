@@ -62,6 +62,7 @@ const NEWS_SUGGESTIONS = [
 ];
 const suggestionsForScope = (scopeSlug: string): string[] => {
   const s = scopeSlug.toLowerCase();
+  if (s === "all") return [...NEWS_SUGGESTIONS, ...PODCAST_SUGGESTIONS];
   if (s.includes("podcast")) return PODCAST_SUGGESTIONS;
   if (s.includes("news")) return NEWS_SUGGESTIONS;
   return [];
