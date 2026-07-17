@@ -101,8 +101,8 @@ const CollectionPage = () => {
           <CollectionLogo
             src={collection.logo}
             alt={`${collection.name} logo`}
-            size={collection.logoSize ?? "xl"}
-            noBackground={collection.logoNoBackground}
+            size={collection.logoSize ?? "lg"}
+            noBackground={collection.logoNoBackground ?? true}
             className="mt-5"
           />
         )}
