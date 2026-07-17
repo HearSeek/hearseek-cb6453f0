@@ -7,6 +7,8 @@
 
 export type CollectionTier = "flagship" | "featured-deep-index";
 
+
+
 export type Collection = {
   key: string;
   name: string;
@@ -25,6 +27,12 @@ export type Collection = {
   logo?: string;
   /** Per-side inset % to inset the logo within its frame (e.g. 5 = 10% total padding). */
   logoPadding?: number;
+  /** Logo frame size on the collection page. */
+  logoSize?: "sm" | "md" | "lg" | "xl";
+  /** Remove the dark card background behind the logo. */
+  logoNoBackground?: boolean;
+  /** Custom placeholder text for the collection search input. */
+  searchPlaceholder?: string;
 };
 
 import iisLogo from "@/assets/collections/iis.png";
@@ -149,7 +157,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     name: "International Iqbal Society",
     shortName: "International Iqbal Society",
     tagline:
-      "Search decades of philosophical lectures from the International Iqbal Society — by meaning, not just keywords.",
+      "Search decades of philosophical lectures from the International Iqbal Society — by meaning, not just keywords, in any language.",
     configSlug: "iis",
     configName: "IIS Lectures",
     tier: "flagship",
@@ -173,6 +181,9 @@ export const COLLECTIONS: Record<string, Collection> = {
     ],
     logo: iisLogo,
     logoPadding: 5,
+    logoSize: "lg",
+    logoNoBackground: true,
+    searchPlaceholder: "Search anything related to Allama Iqbal",
   },
   "diary-of-a-ceo": {
     key: "diary-of-a-ceo",

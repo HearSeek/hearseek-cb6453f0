@@ -20,6 +20,7 @@ export const CollectionLogo = ({
   className,
   innerClassName,
   padding = 0,
+  noBackground,
 }: {
   src?: string;
   alt: string;
@@ -28,11 +29,14 @@ export const CollectionLogo = ({
   innerClassName?: string;
   /** Inset percentage on each side (e.g. 5 = 10% total padding). */
   padding?: number;
+  /** Remove the dark card background and border. */
+  noBackground?: boolean;
 }) => {
   return (
     <div
       className={cn(
-        "relative aspect-square overflow-hidden rounded-2xl bg-[#1C1C1C] border border-[#262626]",
+        "relative aspect-square overflow-hidden rounded-2xl",
+        !noBackground && "bg-[#1C1C1C] border border-[#262626]",
         SIZE[size],
         className,
       )}
