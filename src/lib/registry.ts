@@ -7,7 +7,7 @@
 
 export type CollectionTier = "flagship" | "featured-deep-index";
 
-import type { Size } from "@/components/site/CollectionLogo";
+
 
 export type Collection = {
   key: string;
@@ -28,7 +28,7 @@ export type Collection = {
   /** Per-side inset % to inset the logo within its frame (e.g. 5 = 10% total padding). */
   logoPadding?: number;
   /** Logo frame size on the collection page. */
-  logoSize?: Size;
+  logoSize?: "sm" | "md" | "lg" | "xl";
   /** Remove the dark card background behind the logo. */
   logoNoBackground?: boolean;
   /** Custom placeholder text for the collection search input. */
