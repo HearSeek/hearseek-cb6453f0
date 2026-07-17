@@ -83,10 +83,10 @@ const CollectionPage = () => {
         </Link>
         <Link to="/" className="flex flex-col items-center gap-1">
           <div className="flex items-center gap-2">
-            <img src={logoMark} alt="HearSeek logo" className="h-[35px] w-[35px] object-contain" />
-            <span className="font-display text-sm font-semibold tracking-tight md:text-base">HearSeek</span>
+            <img src={logoMark} alt="HearSeek logo" className="h-[42px] w-[42px] object-contain" />
+            <span className="font-display text-base font-semibold tracking-tight md:text-lg">HearSeek</span>
           </div>
-          <span className="hidden text-[10px] text-muted-foreground md:block">
+          <span className="hidden text-xs text-muted-foreground md:block">
             The World's First AI Search Engine for Audio
           </span>
         </Link>
@@ -101,7 +101,8 @@ const CollectionPage = () => {
           <CollectionLogo
             src={collection.logo}
             alt={`${collection.name} logo`}
-            size="xl"
+            size={collection.logoSize ?? "xl"}
+            noBackground={collection.logoNoBackground}
             className="mt-5"
           />
         )}
@@ -129,7 +130,7 @@ const CollectionPage = () => {
               onChange={(e) => setValue(e.target.value)}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
-              placeholder={`Search ${collection.shortName}...`}
+              placeholder={collection.searchPlaceholder ?? `Search ${collection.shortName}...`}
               className="min-w-0 flex-1 appearance-none border-0 bg-transparent text-sm text-foreground outline-none ring-0 shadow-none placeholder:text-muted-foreground focus:outline-none focus:ring-0 focus-visible:ring-0 md:text-base"
               style={{ boxShadow: "none", outline: "none" }}
             />

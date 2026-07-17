@@ -157,7 +157,7 @@ export const COLLECTIONS: Record<string, Collection> = {
     name: "International Iqbal Society",
     shortName: "International Iqbal Society",
     tagline:
-      "Search decades of philosophical lectures from the International Iqbal Society — by meaning, not just keywords.",
+      "Search decades of philosophical lectures from the International Iqbal Society — by meaning, not just keywords, in any language.",
     configSlug: "iis",
     configName: "IIS Lectures",
     tier: "flagship",
@@ -181,6 +181,9 @@ export const COLLECTIONS: Record<string, Collection> = {
     ],
     logo: iisLogo,
     logoPadding: 5,
+    logoSize: "lg",
+    logoNoBackground: true,
+    searchPlaceholder: "Search anything related to Allama Iqbal",
   },
   "diary-of-a-ceo": {
     key: "diary-of-a-ceo",
