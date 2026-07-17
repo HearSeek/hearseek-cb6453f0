@@ -7,6 +7,8 @@
 
 export type CollectionTier = "flagship" | "featured-deep-index";
 
+import type { Size } from "@/components/site/CollectionLogo";
+
 export type Collection = {
   key: string;
   name: string;
@@ -25,6 +27,12 @@ export type Collection = {
   logo?: string;
   /** Per-side inset % to inset the logo within its frame (e.g. 5 = 10% total padding). */
   logoPadding?: number;
+  /** Logo frame size on the collection page. */
+  logoSize?: Size;
+  /** Remove the dark card background behind the logo. */
+  logoNoBackground?: boolean;
+  /** Custom placeholder text for the collection search input. */
+  searchPlaceholder?: string;
 };
 
 import iisLogo from "@/assets/collections/iis.png";
