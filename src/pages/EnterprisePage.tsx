@@ -93,7 +93,7 @@ const EnterprisePage = () => {
             <StatCard value="100%" label="On-prem deployment" />
           </div>
           <div className="mb-10">
-            <VideoEmbed label="Flagship project demo · coming soon" />
+            <VideoEmbed src="https://www.youtube.com/embed/BkYHKs7zfSs" title="International Iqbal Society flagship demo" />
           </div>
           <div className="rounded-2xl bg-secondary/40 p-6 md:p-8 border border-border/40">
             <Quote className="h-8 w-8 text-primary mb-4" />
