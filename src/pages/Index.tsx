@@ -92,6 +92,43 @@ const Index = () => {
       </Section>
 
       {/* TWO REVENUE STREAMS */}
+      <Section eyebrow="Enterprise · media.hearseek.com" title="Unlock your private audio archives.">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+          <div className="lg:order-1 order-2">
+            <VideoEmbed src="https://www.youtube.com/embed/BkYHKs7zfSs" title="HearSeek Enterprise demo" />
+          </div>
+          <div className="lg:order-2 order-1">
+            <p className="text-lg text-muted-foreground">
+              Speech Intel for media houses, broadcasters, and academic institutions.
+              Turn decades of recordings into a searchable, monetizable knowledge base.
+            </p>
+            <ul className="mt-6 space-y-3">
+              {[
+                "On-prem deployment & data sovereignty",
+                "Semantic archive search across back-catalogues",
+                "Monetize legacy audio & video libraries",
+                "Institutional licensing & SLAs",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3 text-sm">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent/20 text-accent">
+                    <Check className="h-3 w-3" />
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild className="bg-gradient-waveform text-primary-foreground hover:opacity-90">
+                <Link to="/enterprise#demo">Book a Demo <ArrowRight className="ml-1 h-4 w-4" /></Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/enterprise">See Enterprise</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Section>
+
       <Section eyebrow="Consumer App · app.hearseek.com" title="Search every word you've ever heard.">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
           <div>
@@ -128,43 +165,6 @@ const Index = () => {
             </div>
           </div>
           <VideoEmbed label="App demo coming soon" />
-        </div>
-      </Section>
-
-      <Section eyebrow="Enterprise · media.hearseek.com" title="Unlock your private audio archives.">
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
-          <div className="lg:order-1 order-2">
-            <VideoEmbed label="Enterprise demo coming soon" />
-          </div>
-          <div className="lg:order-2 order-1">
-            <p className="text-lg text-muted-foreground">
-              Speech Intel for media houses, broadcasters, and academic institutions.
-              Turn decades of recordings into a searchable, monetizable knowledge base.
-            </p>
-            <ul className="mt-6 space-y-3">
-              {[
-                "On-prem deployment & data sovereignty",
-                "Semantic archive search across back-catalogues",
-                "Monetize legacy audio & video libraries",
-                "Institutional licensing & SLAs",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-3 text-sm">
-                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent/20 text-accent">
-                    <Check className="h-3 w-3" />
-                  </span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild className="bg-gradient-waveform text-primary-foreground hover:opacity-90">
-                <Link to="/enterprise#demo">Book a Demo <ArrowRight className="ml-1 h-4 w-4" /></Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link to="/enterprise">See Enterprise</Link>
-              </Button>
-            </div>
-          </div>
         </div>
       </Section>
 
