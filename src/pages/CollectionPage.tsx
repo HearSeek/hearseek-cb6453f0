@@ -54,6 +54,7 @@ const CollectionPage = () => {
         title={`${collection.shortName} — Search the Archive on HearSeek`}
         description={collection.tagline}
         path={`/collections/${collection.key}`}
+        image={`/og/${collection.key}.png`}
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "CollectionPage",
