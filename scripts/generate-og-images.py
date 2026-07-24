@@ -3,7 +3,7 @@ Uses scripts/og-template/background.png (uploaded reference) as the source, tile
 its top strip to cleanly erase the right-half IIS logo, then overlays each
 collection's logo. IIS output re-uses the original template unchanged.
 """
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
 import re
 
@@ -48,13 +48,26 @@ def clean_right_half(bg):
     """Cover right half with the top pattern strip tiled — erases the IIS logo."""
     strip_h = 110  # top strip height in resized image (pattern-only)
     strip = bg.crop((0, 0, W, strip_h))
-    right = Image.new("RGB", (W // 2, H))
+    # Start cover a bit before the midline to cleanly remove the reference "×"
+    cover_x = W // 2 - 60
+    cover_w = W - cover_x
+    right = Image.new("RGB", (cover_w, H))
     y = 0
     while y < H:
         right.paste(strip, (0, y))
         y += strip_h
-    # Blend edges with the surrounding: also cover a bit past midline to hide seam
-    bg.paste(right, (W // 2, 0))
+    bg.paste(right, (cover_x, 0))
+    return bg
+
+def draw_x_glyph(bg):
+    """Draw a clean white × between HearSeek and the collection logo."""
+    draw = ImageDraw.Draw(bg)
+    cx, cy = W // 2 + 20, H // 2
+    size = 34
+    w = 10
+    # Two diagonal strokes
+    draw.line((cx - size, cy - size, cx + size, cy + size), fill="white", width=w)
+    draw.line((cx - size, cy + size, cx + size, cy - size), fill="white", width=w)
     return bg
 
 def paste_logo(bg, logo_path: Path, box):
@@ -78,9 +91,9 @@ def make_og(slug: str, logo_file: Path, out: Path):
         return
     bg = load_template()
     bg = clean_right_half(bg)
-    # Right-half logo box with generous padding
-    pad = 60
-    box = (W // 2 + pad, pad, W - pad, H - pad)
+    bg = draw_x_glyph(bg)
+    # Right-half logo box with generous padding, shifted right to clear the ×
+    box = (W // 2 + 100, 60, W - 60, H - 60)
     paste_logo(bg, logo_file, box)
     bg.save(out, "PNG", optimize=True)
 
