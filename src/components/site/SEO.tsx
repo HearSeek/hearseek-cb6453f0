@@ -8,10 +8,16 @@ type SEOProps = {
   path: string;
   type?: "website" | "article";
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  image?: string;
 };
 
-export const SEO = ({ title, description, path, type = "website", jsonLd }: SEOProps) => {
+export const SEO = ({ title, description, path, type = "website", jsonLd, image }: SEOProps) => {
   const url = `${SITE_URL}${path}`;
+  const absoluteImage = image
+    ? image.startsWith("http")
+      ? image
+      : `${SITE_URL}${image.startsWith("/") ? image : `/${image}`}`
+    : undefined;
   const schemas = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
   return (
     <Helmet>
@@ -24,6 +30,13 @@ export const SEO = ({ title, description, path, type = "website", jsonLd }: SEOP
       <meta property="og:type" content={type} />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
+      {absoluteImage && (
+        <meta name="twitter:card" content="summary_large_image" />
+      )}
+      {absoluteImage && <meta property="og:image" content={absoluteImage} />}
+      {absoluteImage && <meta property="og:image:width" content="1200" />}
+      {absoluteImage && <meta property="og:image:height" content="630" />}
+      {absoluteImage && <meta name="twitter:image" content={absoluteImage} />}
       {schemas.map((s, i) => (
         <script key={i} type="application/ld+json">{JSON.stringify(s)}</script>
       ))}
