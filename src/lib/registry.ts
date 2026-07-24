@@ -302,7 +302,7 @@ export const COLLECTIONS: Record<string, Collection> = {
 
 export const getCollection = (slug: string | undefined): Collection | null => {
   if (!slug) return null;
-  return COLLECTIONS[slug] ?? null;
+  return COLLECTIONS[slug.toLowerCase()] ?? null;
 };
 
 export const ALL_COLLECTIONS: Collection[] = Object.values(COLLECTIONS);

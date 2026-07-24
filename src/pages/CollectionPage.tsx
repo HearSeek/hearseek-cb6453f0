@@ -30,6 +30,7 @@ const CollectionPage = () => {
   }, [collection?.key, collection?.name]);
 
   if (!collection) return <Navigate to="/" replace />;
+  if (slug !== collection.key) return <Navigate to={`/collections/${collection.key}`} replace />;
 
   const submitQuery = (q: string) => {
     const trimmed = q.trim();
