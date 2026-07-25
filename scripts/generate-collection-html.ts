@@ -27,13 +27,23 @@ while ((m = deepRe.exec(REG))) {
   collections.push({ key: m[1], title: m[3], description: m[4] });
 }
 
-// Explicit entries: iis + diary-of-a-ceo. Match block { key: "...", ..., shortName: "...", tagline: "..." }
-const explicitRe =
-  /key:\s*"([^"]+)",[\s\S]*?shortName:\s*"([^"]+)",[\s\S]*?tagline:\s*\n?\s*"([^"]+)"/g;
-while ((m = explicitRe.exec(REG))) {
-  const key = m[1];
-  if (collections.some((c) => c.key === key)) continue;
-  collections.push({ key, title: m[2], description: m[3] });
+// Explicit entries (not created via featuredDeepIndex).
+const EXPLICIT: Meta[] = [
+  {
+    key: "iis",
+    title: "International Iqbal Society",
+    description:
+      "Search decades of philosophical lectures from the International Iqbal Society — by meaning, not just keywords, in any language.",
+  },
+  {
+    key: "diary-of-a-ceo",
+    title: "Diary of A CEO",
+    description:
+      "Search a 30-episode deep-index of Steven Bartlett's Diary of A CEO — find the exact moment any guest said what you're looking for.",
+  },
+];
+for (const e of EXPLICIT) {
+  if (!collections.some((c) => c.key === e.key)) collections.push(e);
 }
 
 if (collections.length < 11) {
