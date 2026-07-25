@@ -96,6 +96,16 @@ function renderHtml(opts: {
     /<meta name="twitter:image"[^>]*>/,
     `<meta name="twitter:image" content="${esc(image)}">`,
   );
+  // Strip the site-wide canonical + og:url that index.html carries, since we
+  // just injected route-specific ones above.
+  html = html.replace(/\n\s*<meta property="og:url"[^>]*>/g, "");
+  html = html.replace(/\n\s*<link rel="canonical"[^>]*>/g, "");
+  // Re-add the route-specific pair (removed by the strip above since it
+  // matched them too).
+  html = html.replace(
+    /<meta property="og:image:height"[^>]*>/,
+    `<meta property="og:image:height" content="630">\n    <meta property="og:url" content="${esc(url)}">\n    <link rel="canonical" href="${esc(url)}">`,
+  );
   return html;
 }
 
