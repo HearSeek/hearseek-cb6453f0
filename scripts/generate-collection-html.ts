@@ -90,21 +90,20 @@ function renderHtml(opts: {
   );
   html = html.replace(
     /<meta property="og:image"[^>]*>/,
-    `<meta property="og:image" content="${esc(image)}">\n    <meta property="og:image:width" content="1200">\n    <meta property="og:image:height" content="630">\n    <meta property="og:url" content="${esc(url)}">\n    <link rel="canonical" href="${esc(url)}">`,
+    `<meta property="og:image" content="${esc(image)}">`,
   );
   html = html.replace(
     /<meta name="twitter:image"[^>]*>/,
     `<meta name="twitter:image" content="${esc(image)}">`,
   );
-  // Strip the site-wide canonical + og:url that index.html carries, since we
-  // just injected route-specific ones above.
-  html = html.replace(/\n\s*<meta property="og:url"[^>]*>/g, "");
-  html = html.replace(/\n\s*<link rel="canonical"[^>]*>/g, "");
-  // Re-add the route-specific pair (removed by the strip above since it
-  // matched them too).
+  // Point og:url + canonical (from the site-wide index.html) at THIS route.
   html = html.replace(
-    /<meta property="og:image:height"[^>]*>/,
-    `<meta property="og:image:height" content="630">\n    <meta property="og:url" content="${esc(url)}">\n    <link rel="canonical" href="${esc(url)}">`,
+    /<meta property="og:url"[^>]*>/,
+    `<meta property="og:url" content="${esc(url)}">`,
+  );
+  html = html.replace(
+    /<link rel="canonical"[^>]*>/,
+    `<link rel="canonical" href="${esc(url)}">`,
   );
   return html;
 }
