@@ -50,19 +50,18 @@ if (collections.length < 11) {
   console.warn(`Only parsed ${collections.length} collections; expected 11.`);
 }
 
-const template = readFileSync(resolve("index.html"), "utf8");
-
 function esc(s: string) {
   return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 }
 
 function renderHtml(opts: {
+  template: string;
   title: string;
   description: string;
   url: string;
   image: string;
 }) {
-  const { title, description, url, image } = opts;
+  const { template, title, description, url, image } = opts;
   let html = template;
   // Replace <title>
   html = html.replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`);
@@ -114,27 +113,37 @@ function writeAt(path: string, contents: string) {
   writeFileSync(abs, contents);
 }
 
-let count = 0;
-for (const c of collections) {
-  const image = `${SITE}/og/${c.key}.png`;
-  const url = `${SITE}/collections/${c.key}`;
-  const html = renderHtml({
-    title: `${c.title} — Search the Archive on HearSeek`,
-    description: c.description,
-    url,
-    image,
-  });
-  writeAt(`public/collections/${c.key}/index.html`, html);
-  writeAt(
-    `public/collections/${c.key}/results/index.html`,
-    renderHtml({
-      title: `${c.title} — Results on HearSeek`,
-      description: c.description,
-      url: `${SITE}/collections/${c.key}/results`,
-      image,
-    }),
-  );
-  count += 2;
+/**
+ * Writes one static HTML file per collection route into `outDir`, using the
+ * already-built `index.html` as the template so the bundled asset <script>/<link>
+ * tags are preserved (a raw `/src/main.tsx` reference would 404 in production).
+ */
+export function generateCollectionHtml(outDir: string, templateHtml: string) {
+  let count = 0;
+  for (const c of collections) {
+    const image = `${SITE}/og/${c.key}.png`;
+    const url = `${SITE}/collections/${c.key}`;
+    writeAt(
+      resolve(outDir, `collections/${c.key}/index.html`),
+      renderHtml({
+        template: templateHtml,
+        title: `${c.title} — Search the Archive on HearSeek`,
+        description: c.description,
+        url,
+        image,
+      }),
+    );
+    writeAt(
+      resolve(outDir, `collections/${c.key}/results/index.html`),
+      renderHtml({
+        template: templateHtml,
+        title: `${c.title} — Results on HearSeek`,
+        description: c.description,
+        url: `${SITE}/collections/${c.key}/results`,
+        image,
+      }),
+    );
+    count += 2;
+  }
+  return count;
 }
-
-console.log(`generated ${count} collection HTML files under public/collections/`);
