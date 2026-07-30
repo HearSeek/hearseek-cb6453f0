@@ -50,19 +50,18 @@ if (collections.length < 11) {
   console.warn(`Only parsed ${collections.length} collections; expected 11.`);
 }
 
-const template = readFileSync(resolve("index.html"), "utf8");
-
 function esc(s: string) {
   return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 }
 
 function renderHtml(opts: {
+  template: string;
   title: string;
   description: string;
   url: string;
   image: string;
 }) {
-  const { title, description, url, image } = opts;
+  const { template, title, description, url, image } = opts;
   let html = template;
   // Replace <title>
   html = html.replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`);
