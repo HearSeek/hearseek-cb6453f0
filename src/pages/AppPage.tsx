@@ -169,13 +169,30 @@ const AppPage = () => {
                 type="email"
                 required
                 aria-label="Email address for waitlist"
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? "waitlist-email-error" : undefined}
                 placeholder="you@domain.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                maxLength={254}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (error) setError(null);
+                }}
                 className="h-12"
               />
-              <Button type="submit" size="lg" className="bg-gradient-waveform text-primary-foreground hover:opacity-90">
-                Join the Waitlist
+              {error && (
+                <p id="waitlist-email-error" role="alert" className="text-sm text-destructive">
+                  {error}
+                </p>
+              )}
+              <Button
+                type="submit"
+                size="lg"
+                disabled={submitting}
+                className="bg-gradient-waveform text-primary-foreground hover:opacity-90"
+              >
+                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {submitting ? "Joining…" : "Join the Waitlist"}
               </Button>
               <p className="text-xs text-muted-foreground">
                 No spam. We'll email you only when there's news.
