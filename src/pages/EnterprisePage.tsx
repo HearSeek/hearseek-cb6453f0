@@ -1,6 +1,6 @@
 import { useState, useEffect, FormEvent } from "react";
 import { useLocation } from "react-router-dom";
-import { Building2, Lock, Database, Search, DollarSign, GraduationCap, ShieldCheck, Server, ArrowRight, Quote } from "lucide-react";
+import { Building2, Lock, Database, Search, DollarSign, GraduationCap, ShieldCheck, Server, ArrowRight, Quote, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,9 +11,14 @@ import { FeatureCard } from "@/components/site/FeatureCard";
 import { StatCard } from "@/components/site/StatCard";
 import { toast } from "@/hooks/use-toast";
 import { SEO } from "@/components/site/SEO";
+import { requestEnterpriseDemo } from "@/lib/hearseek";
+import { enterpriseWaitlistSchema } from "@/lib/validation";
+import { trackEvent } from "@/lib/analytics";
 
 const EnterprisePage = () => {
   const [form, setForm] = useState({ name: "", email: "", org: "", message: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -27,17 +32,58 @@ const EnterprisePage = () => {
     }
   }, [location.pathname, location.hash]);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Demo request received",
-      description: `Thanks ${form.name || "—"}, we'll be in touch within 1 business day.`,
+    const parsed = enterpriseWaitlistSchema.safeParse({
+      name: form.name,
+      email: form.email,
+      enterprise_name: form.org,
+      details: form.message,
     });
-    setForm({ name: "", email: "", org: "", message: "" });
+    if (!parsed.success) {
+      const next: Record<string, string> = {};
+      for (const issue of parsed.error.issues) {
+        const key = issue.path[0] === "enterprise_name" ? "org" : String(issue.path[0]);
+        const uiKey = key === "details" ? "message" : key;
+        if (!next[uiKey]) next[uiKey] = issue.message;
+      }
+      setErrors(next);
+      return;
+    }
+    setErrors({});
+    setSubmitting(true);
+    try {
+      const payload = {
+        name: parsed.data.name,
+        email: parsed.data.email,
+        enterprise_name: parsed.data.enterprise_name,
+        details: parsed.data.details ?? "",
+      };
+      await requestEnterpriseDemo(payload);
+      trackEvent("demo_request", {
+        email_domain: payload.email.split("@")[1]?.toLowerCase() ?? "",
+        source: "enterprise_page",
+      });
+      toast({
+        title: "Demo request received",
+        description: `Thanks ${payload.name}, we'll be in touch within 1 business day.`,
+      });
+      setForm({ name: "", email: "", org: "", message: "" });
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "Something went wrong",
+        description: "We couldn't submit your request. Please try again in a moment.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const update = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+  const update = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [k]: e.target.value });
+    if (errors[k]) setErrors((prev) => ({ ...prev, [k]: "" }));
+  };
 
   return (
     <>
@@ -161,23 +207,55 @@ const EnterprisePage = () => {
           <div className="grid md:grid-cols-2 gap-5">
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
-              <Input id="name" required value={form.name} onChange={update("name")} />
+              <Input
+                id="name"
+                required
+                maxLength={100}
+                aria-invalid={errors.name ? true : undefined}
+                value={form.name}
+                onChange={update("name")}
+              />
+              {errors.name && <p role="alert" className="text-sm text-destructive">{errors.name}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Work email</Label>
-              <Input id="email" type="email" required value={form.email} onChange={update("email")} />
+              <Input
+                id="email"
+                type="email"
+                required
+                maxLength={254}
+                aria-invalid={errors.email ? true : undefined}
+                value={form.email}
+                onChange={update("email")}
+              />
+              {errors.email && <p role="alert" className="text-sm text-destructive">{errors.email}</p>}
             </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="org">Organization</Label>
-            <Input id="org" required value={form.org} onChange={update("org")} />
+            <Input
+              id="org"
+              required
+              maxLength={150}
+              aria-invalid={errors.org ? true : undefined}
+              value={form.org}
+              onChange={update("org")}
+            />
+            {errors.org && <p role="alert" className="text-sm text-destructive">{errors.org}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="message">What would you like to search?</Label>
-            <Textarea id="message" rows={4} value={form.message} onChange={update("message")} placeholder="E.g. 20 years of broadcast archives in Arabic and English…" />
+            <Textarea id="message" rows={4} maxLength={1000} value={form.message} onChange={update("message")} placeholder="E.g. 20 years of broadcast archives in Arabic and English…" />
+            {errors.message && <p role="alert" className="text-sm text-destructive">{errors.message}</p>}
           </div>
-          <Button type="submit" size="lg" className="w-full bg-gradient-waveform text-primary-foreground hover:opacity-90">
-            Request Demo
+          <Button
+            type="submit"
+            size="lg"
+            disabled={submitting}
+            className="w-full bg-gradient-waveform text-primary-foreground hover:opacity-90"
+          >
+            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {submitting ? "Sending…" : "Request Demo"}
           </Button>
         </form>
       </Section>

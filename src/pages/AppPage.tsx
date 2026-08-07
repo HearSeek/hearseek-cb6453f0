@@ -1,5 +1,5 @@
 import { useState, FormEvent } from "react";
-import { Apple, Check, Globe, Languages, MessageSquare, Mic, Play, Smartphone, Youtube, Film } from "lucide-react";
+import { Apple, Check, Globe, Languages, Loader2, MessageSquare, Mic, Play, Smartphone, Youtube, Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Section } from "@/components/site/Section";
@@ -9,17 +9,39 @@ import { toast } from "@/hooks/use-toast";
 import appScreen from "@/assets/hearseek-app-single-v2.jpg";
 import { SEO } from "@/components/site/SEO";
 import { trackEvent } from "@/lib/analytics";
+import { joinConsumerWaitlist } from "@/lib/hearseek";
+import { consumerWaitlistSchema } from "@/lib/validation";
 
 const AppPage = () => {
   const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-    const domain = email.split("@")[1]?.toLowerCase() ?? "";
-    trackEvent("waitlist_signup", { email_domain: domain, source: "app_page" });
-    toast({ title: "You're on the list!", description: `We'll email ${email} when the app launches.` });
-    setEmail("");
+    const parsed = consumerWaitlistSchema.safeParse({ email });
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Enter a valid email address");
+      return;
+    }
+    setError(null);
+    setSubmitting(true);
+    const cleanEmail = parsed.data.email;
+    try {
+      await joinConsumerWaitlist(cleanEmail);
+      const domain = cleanEmail.split("@")[1]?.toLowerCase() ?? "";
+      trackEvent("waitlist_signup", { email_domain: domain, source: "app_page" });
+      toast({ title: "You're on the list!", description: `We'll email ${cleanEmail} when the app launches.` });
+      setEmail("");
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "Something went wrong",
+        description: "We couldn't add you to the waitlist. Please try again in a moment.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -147,13 +169,30 @@ const AppPage = () => {
                 type="email"
                 required
                 aria-label="Email address for waitlist"
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? "waitlist-email-error" : undefined}
                 placeholder="you@domain.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                maxLength={254}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (error) setError(null);
+                }}
                 className="h-12"
               />
-              <Button type="submit" size="lg" className="bg-gradient-waveform text-primary-foreground hover:opacity-90">
-                Join the Waitlist
+              {error && (
+                <p id="waitlist-email-error" role="alert" className="text-sm text-destructive">
+                  {error}
+                </p>
+              )}
+              <Button
+                type="submit"
+                size="lg"
+                disabled={submitting}
+                className="bg-gradient-waveform text-primary-foreground hover:opacity-90"
+              >
+                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {submitting ? "Joining…" : "Join the Waitlist"}
               </Button>
               <p className="text-xs text-muted-foreground">
                 No spam. We'll email you only when there's news.
