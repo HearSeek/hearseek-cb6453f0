@@ -7,6 +7,7 @@ type EventParams = Record<string, string | number | boolean | undefined>;
 export type AnalyticsEvent =
   | "page_view"
   | "waitlist_signup"
+  | "demo_request"
   | "demo_search"
   | "outbound_click"
   | "collection_view"
