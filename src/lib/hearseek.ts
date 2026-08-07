@@ -392,12 +392,6 @@ export const requestEnterpriseDemo = (
   payload: EnterpriseWaitlistPayload,
 ): Promise<void> => putJson("/enterprise/waitlist", payload);
 
-const _unusedBuildJumpLink = (hit: SearchHit): string | null => {
-  if (hit.timestampedUrl) return hit.timestampedUrl;
-  if (hit.videoId) return `https://www.youtube.com/watch?v=${hit.videoId}&t=${hit.start}`;
-  return hit.youtubeUrl;
-};
-
 // Run the same query across every provided search configuration and merge the
 // results by relevance score. Used for the "All" scope on the demo page.
 export const runSearchAcrossConfigs = async (
