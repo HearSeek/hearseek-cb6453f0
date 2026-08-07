@@ -1,40 +1,28 @@
-## Goal
+# Wire the two waitlist endpoints into the live forms
 
-For every collection page (`/collections/:key`), generate a 1200×630 social-share thumbnail in the "HearSeek × [Collection Logo]" layout matching the uploaded reference, and expose it as `og:image` / `twitter:image` so links unfurl correctly on WhatsApp, X, LinkedIn, iMessage, Slack, etc.
+Both forms currently only fire an analytics event and show a toast — nothing is stored. This connects them to the new HearSeek waitlist endpoints, with proper client-side validation and states.
 
-## Approach
+## App waitlist (`/app`)
 
-Pre-generate one PNG per collection at build/author time and commit them under `public/og/<slug>.png`. Static PNGs are the only reliable option because social crawlers don't execute JS and this project is a SPA.
+- On submit, `PUT /api/consumer/waitlist` with `{ email }`, no auth header (per your confirmation).
+- Client-side validation before sending: email required, trimmed, must match a standard email pattern. Inline error under the field, submit blocked while invalid.
+- Button shows a spinner and is disabled during the request; on success the field clears and the existing "You're on the list!" toast fires, plus the current `waitlist_signup` analytics event (kept as-is).
+- Failures show an error toast asking the user to retry.
 
-## Steps
+## Enterprise demo request (`/enterprise`)
 
-1. **Build a Node generator script** `scripts/generate-og-images.ts`:
-   - Uses `sharp` (already lightweight, no headless browser needed) to composite:
-     - The exact reference background (navy `#1C1C1C` / deep blue with the audio-icon pattern) from the uploaded image, saved once as `scripts/og-template/background.png`.
-     - The HearSeek wordmark + logomark (reuse `src/assets/hearseek-logo-mark-white.png` + text rendered via SVG for crisp typography, or a pre-baked left half).
-     - A centered `×` glyph.
-     - The collection logo from `src/assets/collections/<slug>.png`, contained in a right-side square area with the same padding rules already used on the collection pages (respecting `logoNoBackground` — IIS keeps transparent, others sit on their own tile).
-   - Iterates over the `COLLECTIONS` registry (imported from `src/lib/registry.ts`) and writes `public/og/<slug>.png` for each of the 11.
-   - Output size: **1200×630** (standard `summary_large_image`).
+- On submit, `PUT /api/enterprise/waitlist` with `{ email, name, enterprise_name, details }`.
+- Field mapping: Name -> `name`, Work email -> `email`, Organization -> `enterprise_name`, "What would you like to search?" -> `details` (stays optional in the UI, sent as `""` when blank).
+- Client-side validation: name and organization required and at least 2 non-whitespace characters; email required and pattern-valid. Inline errors per field, submit blocked while invalid.
+- Loading state on the button, success toast on 200, error toast on failure. Adds a `demo_request` analytics event on success for parity with the app form.
 
-2. **Wire into build**: add an `npm run og` script and call it from `prebuild` (alongside the existing sitemap generation) so previews stay in sync with the registry.
+## Duplicate / conflict handling
 
-3. **Extend `SEO` component** (`src/components/site/SEO.tsx`) to accept an optional `image` prop that emits absolute `og:image`, `og:image:width`, `og:image:height`, and `twitter:image` (+ set `twitter:card` to `summary_large_image`).
+The backend will return an empty 200 for repeat emails, so no special 409 branch is needed. A defensive fallback treats a 409 as success ("You're already on the list.") in case an older server version is deployed.
 
-4. **Use it on collection routes**:
-   - `CollectionPage.tsx` — pass `image={\`https://hearseek.com/og/${collection.key}.png\`}`.
-   - `CollectionResultsPage.tsx` — same image (shared per collection).
+## Technical notes
 
-5. **Assets**:
-   - Save the uploaded reference as `scripts/og-template/background.png` (source of truth for the background pattern).
-   - Reuse existing collection logos from `src/assets/collections/`.
-
-## Out of scope
-
-- No changes to homepage, /app, /demo, /creators, /enterprise OG images (can be a follow-up).
-- No dynamic/runtime OG generation service.
-- No changes to registry data or route structure.
-
-## Notes for the user
-
-Once deployed, social platforms cache previews aggressively. To force a refresh after publish, use each platform's link debugger (e.g. Facebook Sharing Debugger, LinkedIn Post Inspector, X Card Validator).
+- Two new functions in `src/lib/hearseek.ts`: `joinConsumerWaitlist(email)` and `requestEnterpriseDemo(payload)`, both `PUT` against the existing `API_BASE`, with an 8s abort timeout and a helper that surfaces the server's `error` message from `ErrorResponse` bodies.
+- A small shared validation helper (email regex + required-text check) lives in `src/lib/validation.ts` and is used by both forms.
+- `src/pages/AppPage.tsx` and `src/pages/EnterprisePage.tsx` become async submit handlers with `submitting` and `errors` state; no visual redesign, only inline error text and disabled/loading button styling using existing tokens.
+- `AnalyticsEvent` in `src/lib/analytics.ts` gains `"demo_request"`.
