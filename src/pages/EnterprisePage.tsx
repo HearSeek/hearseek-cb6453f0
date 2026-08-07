@@ -1,6 +1,6 @@
 import { useState, useEffect, FormEvent } from "react";
 import { useLocation } from "react-router-dom";
-import { Building2, Lock, Database, Search, DollarSign, GraduationCap, ShieldCheck, Server, ArrowRight, Quote } from "lucide-react";
+import { Building2, Lock, Database, Search, DollarSign, GraduationCap, ShieldCheck, Server, ArrowRight, Quote, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,9 +11,14 @@ import { FeatureCard } from "@/components/site/FeatureCard";
 import { StatCard } from "@/components/site/StatCard";
 import { toast } from "@/hooks/use-toast";
 import { SEO } from "@/components/site/SEO";
+import { requestEnterpriseDemo } from "@/lib/hearseek";
+import { enterpriseWaitlistSchema } from "@/lib/validation";
+import { trackEvent } from "@/lib/analytics";
 
 const EnterprisePage = () => {
   const [form, setForm] = useState({ name: "", email: "", org: "", message: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -27,17 +32,52 @@ const EnterprisePage = () => {
     }
   }, [location.pathname, location.hash]);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Demo request received",
-      description: `Thanks ${form.name || "—"}, we'll be in touch within 1 business day.`,
+    const parsed = enterpriseWaitlistSchema.safeParse({
+      name: form.name,
+      email: form.email,
+      enterprise_name: form.org,
+      details: form.message,
     });
-    setForm({ name: "", email: "", org: "", message: "" });
+    if (!parsed.success) {
+      const next: Record<string, string> = {};
+      for (const issue of parsed.error.issues) {
+        const key = issue.path[0] === "enterprise_name" ? "org" : String(issue.path[0]);
+        const uiKey = key === "details" ? "message" : key;
+        if (!next[uiKey]) next[uiKey] = issue.message;
+      }
+      setErrors(next);
+      return;
+    }
+    setErrors({});
+    setSubmitting(true);
+    try {
+      await requestEnterpriseDemo(parsed.data);
+      trackEvent("demo_request", {
+        email_domain: parsed.data.email.split("@")[1]?.toLowerCase() ?? "",
+        source: "enterprise_page",
+      });
+      toast({
+        title: "Demo request received",
+        description: `Thanks ${parsed.data.name}, we'll be in touch within 1 business day.`,
+      });
+      setForm({ name: "", email: "", org: "", message: "" });
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "Something went wrong",
+        description: "We couldn't submit your request. Please try again in a moment.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const update = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+  const update = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [k]: e.target.value });
+    if (errors[k]) setErrors((prev) => ({ ...prev, [k]: "" }));
+  };
 
   return (
     <>
