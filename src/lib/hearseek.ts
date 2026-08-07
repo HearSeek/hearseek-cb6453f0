@@ -337,6 +337,67 @@ export const buildJumpLink = (hit: SearchHit): string | null => {
   return hit.youtubeUrl;
 };
 
+// ---- Waitlists --------------------------------------------------------------
+
+const WAITLIST_TIMEOUT_MS = 8000;
+
+/** Pulls the server's `error` message out of an ErrorResponse body, if present. */
+const readErrorMessage = async (res: Response): Promise<string> => {
+  try {
+    const text = await res.text();
+    if (!text) return res.statusText;
+    try {
+      const json = JSON.parse(text) as { error?: string; details?: string };
+      return json.error ?? json.details ?? text;
+    } catch {
+      return text;
+    }
+  } catch {
+    return res.statusText;
+  }
+};
+
+const putJson = async (path: string, body: unknown): Promise<void> => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), WAITLIST_TIMEOUT_MS);
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    // 409 = already on the list; the backend now returns 200 for repeats, but
+    // treat a conflict as success so older deployments still behave well.
+    if (res.ok || res.status === 409) return;
+    throw new Error(await readErrorMessage(res));
+  } finally {
+    clearTimeout(timeout);
+  }
+};
+
+/** PUT /api/consumer/waitlist — consumer app waitlist signup. */
+export const joinConsumerWaitlist = (email: string): Promise<void> =>
+  putJson("/consumer/waitlist", { email });
+
+export type EnterpriseWaitlistPayload = {
+  email: string;
+  name: string;
+  enterprise_name: string;
+  details: string;
+};
+
+/** PUT /api/enterprise/waitlist — enterprise demo request. */
+export const requestEnterpriseDemo = (
+  payload: EnterpriseWaitlistPayload,
+): Promise<void> => putJson("/enterprise/waitlist", payload);
+
+const _unusedBuildJumpLink = (hit: SearchHit): string | null => {
+  if (hit.timestampedUrl) return hit.timestampedUrl;
+  if (hit.videoId) return `https://www.youtube.com/watch?v=${hit.videoId}&t=${hit.start}`;
+  return hit.youtubeUrl;
+};
+
 // Run the same query across every provided search configuration and merge the
 // results by relevance score. Used for the "All" scope on the demo page.
 export const runSearchAcrossConfigs = async (
