@@ -66,7 +66,7 @@ const EnterprisePage = () => {
       });
       toast({
         title: "Demo request received",
-        description: `Thanks ${payload.name}, we'll be in touch within 1 business day.`,
+        description: `Thanks ${payload.name}, we'll be in touch within 3 business days.`,
       });
       setForm({ name: "", email: "", org: "", message: "" });
     } catch {
