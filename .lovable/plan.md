@@ -37,7 +37,18 @@ A small helper module reads `utm_source`/`utm_medium` from the URL into `acq_sou
 
 Per-route head tags: title "HearSeek: Find Anything Inside Your Videos", description "Search your videos and podcasts by meaning and jump to the exact moment. Try it free.", author HearSeek, canonical and og:url pointing at this page, and a HearSeek OG image (existing HearSeek social image, no builder default). Because the live site serves the last published build, this page reaches the public URL on the next publish.
 
+## Domain: services.hearseek.com
+
+`services.hearseek.com` is **not connected** to this project yet (no custom domains are connected at all — the published URL is still the Lovable URL). The root `hearseek.com` is hosted elsewhere (Siteground nameservers), so connecting the subdomain here won't affect the main site. To make the page resolve at `services.hearseek.com/search-videos`:
+
+1. In Lovable: Project Settings → Domains → Connect Domain, enter `services.hearseek.com` (the full subdomain, typed directly).
+2. At Siteground DNS: add an A record for `services` pointing to `185.158.133.1` and the TXT record `_lovable` shown by the connect dialog.
+3. Publish after the domain turns Active — a connected domain serves nothing until the project is published.
+
+Note: a connected domain serves this whole project, so the entire app (home, /app, /demo, collections...) becomes reachable at `services.hearseek.com` — not just this page. If only the landing page should live there, the alternative is a separate Lovable project for service pages with the domain connected to that. Worth deciding before connecting.
+
 ## Technical notes
+
 
 - New `src/pages/SearchVideosPage.tsx` rendered by a `/search-videos` route registered outside the shared `Layout` wrapper in `App.tsx`, so the page carries none of the site nav/footer.
 - New `src/lib/persona-analytics.ts` holding the `hs()` helper and UTM/session capture, used only by this page; the existing site analytics and consent setup stay untouched.
