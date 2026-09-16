@@ -3,17 +3,17 @@ import { ClipboardPaste, AudioWaveform, Search } from "lucide-react";
 const STEPS = [
   {
     icon: ClipboardPaste,
-    title: "Step 1 — Paste",
+    title: "Step 1: Paste",
     body: "Paste your channel or playlist link.",
   },
   {
     icon: AudioWaveform,
-    title: "Step 2 — We make it searchable",
+    title: "Step 2: We make it searchable",
     body: "We transcribe and index every spoken word, in any language.",
   },
   {
     icon: Search,
-    title: "Step 3 — Search and jump",
+    title: "Step 3: Search and jump",
     body: "Search by meaning and jump straight to the exact moment.",
   },
 ];

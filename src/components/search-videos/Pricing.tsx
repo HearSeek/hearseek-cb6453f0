@@ -19,7 +19,7 @@ export const PLANS: {
     price: "$0",
     pricePoint: "0",
     hours: "3 hours of video",
-    blurb: "Try HearSeek on your first archive — no card needed.",
+    blurb: "Try HearSeek on your first archive. No card needed.",
   },
   {
     id: "starter",
@@ -54,7 +54,7 @@ export function Pricing({
         Simple pricing
       </h2>
       <p className="mt-3 text-center text-sm text-[hsl(var(--sv-muted))]">
-        Pick a plan — you can change it later.
+        Pick a plan. You can change it later.
       </p>
 
       <div className="mt-10 grid gap-5 md:grid-cols-3">
