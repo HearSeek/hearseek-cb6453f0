@@ -17,7 +17,7 @@ export function PageFooter() {
             href="mailto:hello@hearseek.com"
             className="mt-1 inline-block text-sm text-[hsl(var(--sv-muted))] underline-offset-4 hover:text-[hsl(var(--sv-fg))] hover:underline"
           >
-            hello@hearseek.com
+            inquiries@hearseek.com
           </a>
         </div>
         <button
