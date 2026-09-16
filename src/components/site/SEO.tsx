@@ -9,9 +9,10 @@ type SEOProps = {
   type?: "website" | "article";
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   image?: string;
+  author?: string;
 };
 
-export const SEO = ({ title, description, path, type = "website", jsonLd, image }: SEOProps) => {
+export const SEO = ({ title, description, path, type = "website", jsonLd, image, author }: SEOProps) => {
   const url = `${SITE_URL}${path}`;
   const absoluteImage = image
     ? image.startsWith("http")
