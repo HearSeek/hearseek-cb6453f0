@@ -10,6 +10,7 @@ import EnterprisePage from "./pages/EnterprisePage.tsx";
 import DemoPage from "./pages/DemoPage.tsx";
 import ResultsPage from "./pages/ResultsPage.tsx";
 import CreatorsPage from "./pages/CreatorsPage.tsx";
+import SearchVideosPage from "./pages/SearchVideosPage.tsx";
 import CollectionPage from "./pages/CollectionPage.tsx";
 import CollectionResultsPage from "./pages/CollectionResultsPage.tsx";
 import { Layout } from "./components/site/Layout";
@@ -30,6 +31,7 @@ const RouterShell = () => {
           <Route path="/creators" element={<CreatorsPage />} />
         </Route>
         <Route path="/demo" element={<DemoPage />} />
+        <Route path="/search-videos" element={<SearchVideosPage />} />
         <Route path="/results" element={<ResultsPage />} />
         <Route path="/collections/:slug" element={<CollectionPage />} />
         <Route path="/collections/:slug/results" element={<CollectionResultsPage />} />
