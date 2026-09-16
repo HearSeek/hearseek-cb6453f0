@@ -114,6 +114,26 @@ function writeAt(path: string, contents: string) {
 }
 
 /**
+ * Writes the /search-videos landing page as a static HTML file into `outDir`,
+ * using the already-built `index.html` as the template so bundled assets load.
+ */
+export function generateSearchVideosHtml(outDir: string, templateHtml: string) {
+  writeAt(
+    resolve(outDir, "search-videos/index.html"),
+    renderHtml({
+      template: templateHtml,
+      title: "HearSeek: Find Anything Inside Your Videos",
+      description:
+        "Search your videos and podcasts by meaning and jump to the exact moment. Try it free.",
+      // Placeholder pending the final domain (services.hearseek.com).
+      url: `${SITE}/search-videos`,
+      image: `${SITE}/og/search-videos.png`,
+    }),
+  );
+  return 1;
+}
+
+/**
  * Writes one static HTML file per collection route into `outDir`, using the
  * already-built `index.html` as the template so the bundled asset <script>/<link>
  * tags are preserved (a raw `/src/main.tsx` reference would 404 in production).

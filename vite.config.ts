@@ -13,11 +13,13 @@ const collectionPrerender = () => ({
     const outDir = path.resolve(__dirname, "dist");
     const templatePath = path.join(outDir, "index.html");
     if (!existsSync(templatePath)) return;
-    const { generateCollectionHtml } = await import(
+    const { generateCollectionHtml, generateSearchVideosHtml } = await import(
       "./scripts/generate-collection-html"
     );
     const count = generateCollectionHtml(outDir, readFileSync(templatePath, "utf8"));
+    const extra = generateSearchVideosHtml(outDir, readFileSync(templatePath, "utf8"));
     console.log(`prerendered ${count} collection HTML files into dist/collections/`);
+    console.log(`prerendered ${extra} route HTML file into dist/search-videos/`);
   },
 });
 
