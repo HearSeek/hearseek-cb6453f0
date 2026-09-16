@@ -82,7 +82,7 @@ export function Onboarding({ plan }: { plan: PlanId }) {
         Make your archive searchable
       </h2>
       <p className="mt-3 text-center text-sm text-[hsl(var(--sv-muted))]">
-        Paste a link — we'll take it from there.
+        Paste a link. We'll take it from there.
       </p>
 
       <form

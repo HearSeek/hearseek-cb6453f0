@@ -3,7 +3,7 @@ import { ClipboardPaste, AudioWaveform, Search } from "lucide-react";
 const STEPS = [
   {
     icon: ClipboardPaste,
-    title: "Step 1 — Paste",
+    title: "Step 1: Paste",
     body: "Paste your channel or playlist link.",
   },
   {
