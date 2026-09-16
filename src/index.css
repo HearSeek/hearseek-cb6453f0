@@ -177,3 +177,34 @@ All colors MUST be HSL.
 .animate-marquee { animation: marquee 60s linear infinite; }
 
 html { scroll-behavior: smooth; }
+
+/* ============ Creator landing page (/search-videos) ============
+   Page-scoped palette so it never touches the main site theme. */
+.sv-page {
+  --sv-bg: 228 49% 8%;        /* #0B1020 very dark navy */
+  --sv-surface: 228 38% 11%;
+  --sv-surface-2: 228 30% 14%;
+  --sv-border: 228 28% 20%;
+  --sv-fg: 228 45% 94%;       /* #E7EAF6 near-white */
+  --sv-muted: 229 22% 67%;    /* #99A0BE secondary grey */
+  --sv-violet: 256 100% 65%;  /* #7C4DFF */
+  --sv-cyan: 188 86% 53%;     /* #22D3EE */
+  --sv-grad: linear-gradient(135deg, #7C4DFF, #22D3EE);
+}
+.sv-grad-btn { background-image: var(--sv-grad); }
+.sv-grad-text {
+  background-image: var(--sv-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.sv-glow {
+  box-shadow:
+    0 16px 48px -16px hsl(256 100% 65% / 0.55),
+    0 16px 48px -16px hsl(188 86% 53% / 0.35);
+}
+.sv-hero-glow {
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 0%, hsl(256 100% 65% / 0.18), transparent 70%),
+    radial-gradient(ellipse 45% 35% at 70% 30%, hsl(188 86% 53% / 0.10), transparent 70%);
+}
