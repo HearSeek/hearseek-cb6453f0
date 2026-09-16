@@ -49,9 +49,11 @@ Note: a connected domain serves this whole project, so the entire app (home, /ap
 
 ## Technical notes
 
-
 - New `src/pages/SearchVideosPage.tsx` rendered by a `/search-videos` route registered outside the shared `Layout` wrapper in `App.tsx`, so the page carries none of the site nav/footer.
 - New `src/lib/persona-analytics.ts` holding the `hs()` helper and UTM/session capture, used only by this page; the existing site analytics and consent setup stay untouched.
 - Page-scoped palette via CSS custom properties on the page wrapper (mapped to Tailwind through arbitrary-value classes off those variables) so the new colours don't alter the existing site theme.
 - Section components live in `src/components/search-videos/` (hero, demo, how-it-works, selectors, pricing, onboarding, footer) for readability; state (query, selected chip, band, plan, submitted flag) is held in the page component.
-- Head tags via the existing `SEO` component / `react-helmet-async` setup, plus a static route entry so the page's metadata is crawlable in the build output like the collection routes.
+- Head tags via the existing `SEO` component / `react-helmet-async` setup, plus a static route entry so the page's metadata is crawlable in the build output like the collection routes.  
+  
+  
+leave domain/custom-domain settings alone (dev handles routing) and treat the canonical/og:url as a placeholder pending the final domain.
