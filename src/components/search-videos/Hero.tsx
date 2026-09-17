@@ -30,7 +30,7 @@ export function Hero() {
           <div className="mt-10 flex flex-col items-center gap-3">
             <CtaButton location="hero">Create my searchable library</CtaButton>
             <p className="text-sm text-[hsl(var(--sv-muted))]">
-              Free on up to 3 hours of video
+              Try for free up to 3 hours of video.
             </p>
           </div>
         </div>
