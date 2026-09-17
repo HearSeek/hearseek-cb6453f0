@@ -9,7 +9,7 @@ const STEPS = [
   {
     icon: AudioWaveform,
     title: "Step 2: We make it searchable",
-    body: "We transcribe and index every spoken word, in any language.",
+    body: "We index every spoken word, in any language.",
   },
   {
     icon: Search,

@@ -11,15 +11,15 @@ export const PLANS: {
   pricePoint: string;
   period?: string;
   hours: string;
-  blurb: string;
+  perks: string[];
 }[] = [
   {
     id: "free",
     name: "Free",
     price: "$0",
     pricePoint: "0",
-    hours: "3 hours of video",
-    blurb: "Try HearSeek on your first archive. No card needed.",
+    hours: "3 hours",
+    perks: ["1 collection"],
   },
   {
     id: "starter",
@@ -28,7 +28,11 @@ export const PLANS: {
     pricePoint: "9.99",
     period: "/mo",
     hours: "50 hours",
-    blurb: "For growing channels and new podcasts.",
+    perks: [
+      "3 collections",
+      "Optional public shareable search page",
+      "Additional indexing ~$0.25/hour",
+    ],
   },
   {
     id: "pro",
@@ -37,7 +41,12 @@ export const PLANS: {
     pricePoint: "29.99",
     period: "/mo",
     hours: "200 hours",
-    blurb: "For deep archives and multi-show creators.",
+    perks: [
+      "10 collections",
+      "Public shareable search page included",
+      "Additional indexing ~$0.17/hour",
+      "For deep archives and multi-show creators",
+    ],
   },
 ];
 
@@ -76,7 +85,7 @@ export function Pricing({
                   : "border-[hsl(var(--sv-border))] hover:border-[hsl(var(--sv-violet)/0.5)]",
               )}
             >
-              {p.id === "starter" && !active && (
+              {p.id === "starter" && (
                 <span className="sv-grad-text absolute right-5 top-5 text-xs font-semibold uppercase tracking-wider">
                   Most popular
                 </span>
@@ -95,10 +104,15 @@ export function Pricing({
                   <Check className="h-4 w-4 text-[hsl(var(--sv-cyan))]" aria-hidden />
                   {p.hours} searchable
                 </li>
-                <li className="flex items-start gap-2 text-[hsl(var(--sv-muted))]">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[hsl(var(--sv-cyan))]" aria-hidden />
-                  {p.blurb}
-                </li>
+                {p.perks.map((perk) => (
+                  <li
+                    key={perk}
+                    className="flex items-start gap-2 text-[hsl(var(--sv-muted))]"
+                  >
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-[hsl(var(--sv-cyan))]" aria-hidden />
+                    {perk}
+                  </li>
+                ))}
               </ul>
             </button>
           );

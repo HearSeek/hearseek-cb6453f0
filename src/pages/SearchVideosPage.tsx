@@ -10,12 +10,11 @@ import {
   type Usecase,
 } from "@/components/search-videos/Selectors";
 import { Pricing, type PlanId } from "@/components/search-videos/Pricing";
-import { CtaButton } from "@/components/search-videos/CtaButton";
 import { Onboarding } from "@/components/search-videos/Onboarding";
 import { PageFooter } from "@/components/search-videos/PageFooter";
 
 export default function SearchVideosPage() {
-  const [usecase, setUsecase] = useState<Usecase | null>(null);
+  const [usecases, setUsecases] = useState<Usecase[]>([]);
   const [sizeBand, setSizeBand] = useState<SizeBand | null>(null);
   const [plan, setPlan] = useState<PlanId>("free");
 
@@ -37,26 +36,12 @@ export default function SearchVideosPage() {
       <LiveDemo />
       <HowItWorks />
       <Selectors
-        usecase={usecase}
-        onUsecase={setUsecase}
+        usecases={usecases}
+        onUsecases={setUsecases}
         sizeBand={sizeBand}
         onSizeBand={setSizeBand}
       />
       <Pricing plan={plan} onPlan={setPlan} />
-
-      {/* Mid-page CTA */}
-      <section className="mx-auto w-full max-w-3xl px-6 pb-24 text-center md:pb-32">
-        <h2 className="text-balance text-2xl font-bold tracking-tight md:text-3xl">
-          Ready to search your own archive?
-        </h2>
-        <div className="mt-8 flex flex-col items-center gap-3">
-          <CtaButton location="mid">Create my searchable library</CtaButton>
-          <p className="text-sm text-[hsl(var(--sv-muted))]">
-            Free on up to 3 hours of video
-          </p>
-        </div>
-      </section>
-
       <Onboarding plan={plan} />
       <PageFooter />
     </div>

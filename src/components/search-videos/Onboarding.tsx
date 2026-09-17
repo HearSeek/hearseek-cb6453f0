@@ -135,7 +135,7 @@ export function Onboarding({ plan }: { plan: PlanId }) {
           Create my searchable library
         </button>
         <p className="mt-3 text-center text-xs text-[hsl(var(--sv-muted))]">
-          Free on up to 3 hours of video
+          Try for free up to 3 hours of video.
         </p>
       </form>
     </section>

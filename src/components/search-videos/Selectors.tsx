@@ -36,13 +36,13 @@ const chipClass = (active: boolean) =>
   );
 
 export function Selectors({
-  usecase,
-  onUsecase,
+  usecases,
+  onUsecases,
   sizeBand,
   onSizeBand,
 }: {
-  usecase: Usecase | null;
-  onUsecase: (u: Usecase) => void;
+  usecases: Usecase[];
+  onUsecases: (usecases: Usecase[]) => void;
   sizeBand: SizeBand | null;
   onSizeBand: (b: SizeBand) => void;
 }) {
@@ -56,11 +56,14 @@ export function Selectors({
           <button
             key={u.value}
             type="button"
-            aria-pressed={usecase === u.value}
-            className={chipClass(usecase === u.value)}
+            aria-pressed={usecases.includes(u.value)}
+            className={chipClass(usecases.includes(u.value))}
             onClick={() => {
-              onUsecase(u.value);
-              hs("hs_usecase_select", { usecase: u.value });
+              const nextUsecases = usecases.includes(u.value)
+                ? usecases.filter((value) => value !== u.value)
+                : [...usecases, u.value];
+              onUsecases(nextUsecases);
+              hs("hs_usecase_select", { usecases: nextUsecases });
             }}
           >
             {u.label}
