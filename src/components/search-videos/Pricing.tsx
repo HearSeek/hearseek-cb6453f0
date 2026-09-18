@@ -45,7 +45,6 @@ export const PLANS: {
       "10 collections",
       "Public shareable search page included",
       "Additional indexing ~$0.17/hour",
-      "For deep archives and multi-show creators",
     ],
   },
 ];

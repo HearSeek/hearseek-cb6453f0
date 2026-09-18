@@ -4,7 +4,7 @@ const STEPS = [
   {
     icon: ClipboardPaste,
     title: "Step 1: Paste",
-    body: "Paste your channel or playlist link.",
+    body: "Paste your channel, playlist link or individual audio/video URLs.",
   },
   {
     icon: AudioWaveform,

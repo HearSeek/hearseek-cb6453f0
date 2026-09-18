@@ -8,7 +8,7 @@ export type Usecase =
   | "lectures"
   | "work_recordings"
   | "other";
-export type SizeBand = "<5" | "5-50" | "51-100" | "101-500" | "501+";
+export type SizeBand = "<3" | "3-50" | "51-100" | "101-500" | "501+";
 
 const USECASES: { label: string; value: Usecase }[] = [
   { label: "My YouTube channel", value: "youtube_channel" },
@@ -20,8 +20,8 @@ const USECASES: { label: string; value: Usecase }[] = [
 ];
 
 const BANDS: { label: string; value: SizeBand }[] = [
-  { label: "Under 5 hours", value: "<5" },
-  { label: "5–50", value: "5-50" },
+  { label: "Under 3 hours", value: "<3" },
+  { label: "3–50", value: "3-50" },
   { label: "51–100", value: "51-100" },
   { label: "101–500", value: "101-500" },
   { label: "501+", value: "501+" },
