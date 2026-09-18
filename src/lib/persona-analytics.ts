@@ -1,8 +1,10 @@
-// Persona-page analytics for the /search-videos creator landing page.
+// Persona-page analytics for the persona landing pages.
 // Front-end only: pushes to window.dataLayer (picked up by the site-wide GTM
 // container). No data is sent anywhere else from this module.
 
-export const PERSONA = "creator";
+export type Persona = "creator" | "research" | "editor" | "educator";
+
+export const PERSONA: Persona = "creator";
 export const VARIANT = "subscription";
 
 // Capture UTM + a session identifier once, at module load.
@@ -14,15 +16,19 @@ export const ACQ_SOURCE =
 export const SESSION_ID =
   window.crypto?.randomUUID?.() || String(Date.now());
 
-export function hs(event: string, extra: Record<string, unknown> = {}) {
+export function hs(
+  event: string,
+  extra: Record<string, unknown> = {},
+  persona: Persona = PERSONA,
+) {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event,
-    persona: PERSONA,
+    persona,
     variant: VARIANT,
     acq_source: ACQ_SOURCE,
     session_id: SESSION_ID,
-    page_persona: PERSONA,
+    page_persona: persona,
     ...extra,
   });
 }

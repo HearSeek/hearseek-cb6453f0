@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import { hs } from "@/lib/persona-analytics";
+import { hs, type Persona } from "@/lib/persona-analytics";
 import { cn } from "@/lib/utils";
 
 export type PlanId = "free" | "starter" | "pro";
@@ -52,9 +52,11 @@ export const PLANS: {
 export function Pricing({
   plan,
   onPlan,
+  persona,
 }: {
   plan: PlanId;
   onPlan: (p: PlanId) => void;
+  persona?: Persona;
 }) {
   return (
     <section className="mx-auto w-full max-w-6xl px-6 pb-24 md:pb-32" aria-label="Pricing">
@@ -75,7 +77,7 @@ export function Pricing({
               aria-pressed={active}
               onClick={() => {
                 onPlan(p.id);
-                hs("hs_plan_select", { plan: p.id, price_point: p.pricePoint });
+                hs("hs_plan_select", { plan: p.id, price_point: p.pricePoint }, persona);
               }}
               className={cn(
                 "relative rounded-2xl border bg-[hsl(var(--sv-surface))] p-6 text-left transition-all duration-200",

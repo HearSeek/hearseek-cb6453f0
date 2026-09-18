@@ -1,7 +1,14 @@
 import logoMark from "@/assets/hearseek-logo-mark.png";
+import type { Persona } from "@/lib/persona-analytics";
 import { scrollToOnboarding } from "./CtaButton";
 
-export function PageFooter() {
+export function PageFooter({
+  ctaLabel = "Create my searchable library",
+  persona,
+}: {
+  ctaLabel?: string;
+  persona?: Persona;
+}) {
   return (
     <footer className="border-t border-[hsl(var(--sv-border))]">
       <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-8 px-6 py-12 md:flex-row">
@@ -14,7 +21,7 @@ export function PageFooter() {
             Making the spoken word searchable.
           </p>
           <a
-            href="mailto:hello@hearseek.com"
+            href="mailto:inquiries@hearseek.com"
             className="mt-1 inline-block text-sm text-[hsl(var(--sv-muted))] underline-offset-4 hover:text-[hsl(var(--sv-fg))] hover:underline"
           >
             inquiries@hearseek.com
@@ -22,10 +29,10 @@ export function PageFooter() {
         </div>
         <button
           type="button"
-          onClick={() => scrollToOnboarding("footer")}
+          onClick={() => scrollToOnboarding("footer", persona)}
           className="sv-grad-btn sv-glow inline-flex items-center justify-center rounded-full px-7 py-3 text-sm font-semibold text-[hsl(228_49%_8%)] transition-all duration-200 hover:brightness-110"
         >
-          Create my searchable library
+          {ctaLabel}
         </button>
       </div>
     </footer>

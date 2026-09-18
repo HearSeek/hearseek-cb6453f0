@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { hs } from "@/lib/persona-analytics";
+import { hs, type Persona } from "@/lib/persona-analytics";
 
 const DEMO_EVENT_KEY = "hs_demo_interact_video_demo_fired";
 const VIDEO_ID = "rNsLTRTzGuk";
@@ -42,16 +42,17 @@ function loadYouTubeApi(): Promise<void> {
   });
 }
 
-export function LiveDemo() {
+export function LiveDemo({ persona }: { persona?: Persona }) {
   const playerHostRef = useRef<HTMLDivElement | null>(null);
   const firedRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
     let player: { destroy?: () => void } | null = null;
+    const eventKey = persona ? `${DEMO_EVENT_KEY}_${persona}` : DEMO_EVENT_KEY;
 
     try {
-      firedRef.current = sessionStorage.getItem(DEMO_EVENT_KEY) === "true";
+      firedRef.current = sessionStorage.getItem(eventKey) === "true";
     } catch {
       // The in-memory guard still prevents duplicate events during this mount.
     }
@@ -60,19 +61,21 @@ export function LiveDemo() {
       if (firedRef.current) return;
       firedRef.current = true;
       try {
-        sessionStorage.setItem(DEMO_EVENT_KEY, "true");
+        sessionStorage.setItem(eventKey, "true");
       } catch {
         // Tracking still works when session storage is unavailable.
       }
       hs("hs_demo_interact", {
         demo_query_text: "video_demo",
         demo_result_clicked: false,
-      });
+      }, persona);
     };
 
     loadYouTubeApi().then(() => {
       if (cancelled || !playerHostRef.current) return;
-      player = new window.YT!.Player(playerHostRef.current, {
+      const Player = window.YT?.Player;
+      if (!Player) return;
+      player = new Player(playerHostRef.current, {
         videoId: VIDEO_ID,
         playerVars: {
           host: "https://www.youtube-nocookie.com",
@@ -96,7 +99,7 @@ export function LiveDemo() {
         // Player may already be gone on unmount.
       }
     };
-  }, []);
+  }, [persona]);
 
   return (
     <section

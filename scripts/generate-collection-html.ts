@@ -114,23 +114,50 @@ function writeAt(path: string, contents: string) {
 }
 
 /**
- * Writes the /search-videos landing page as a static HTML file into `outDir`,
+ * Writes the persona landing pages as static HTML files into `outDir`,
  * using the already-built `index.html` as the template so bundled assets load.
  */
 export function generateSearchVideosHtml(outDir: string, templateHtml: string) {
-  writeAt(
-    resolve(outDir, "search-videos/index.html"),
-    renderHtml({
-      template: templateHtml,
+  const pages = [
+    {
+      slug: "search-videos",
       title: "HearSeek: Find Anything Inside Your Videos",
       description:
         "Search your videos and podcasts by meaning and jump to the exact moment. Try it free.",
-      // Placeholder pending the final domain (services.hearseek.com).
-      url: `${SITE}/search-videos`,
-      image: `${SITE}/og/search-videos.png`,
-    }),
-  );
-  return 1;
+    },
+    {
+      slug: "search-interviews",
+      title: "HearSeek: Search Interviews and Recordings",
+      description:
+        "Locate every discussion of a topic across hours of interviews, news, and documentaries, even when different words were used.",
+    },
+    {
+      slug: "search-raw",
+      title: "HearSeek: Search Raw Footage",
+      description:
+        "Describe the line or topic you need and land on the source moment, without scrubbing through hours of footage.",
+    },
+    {
+      slug: "search-lectures",
+      title: "HearSeek: Search Every Lecture",
+      description:
+        "Let students search a question or concept and jump straight to where it was explained, across an entire course of recordings.",
+    },
+  ];
+
+  for (const page of pages) {
+    writeAt(
+      resolve(outDir, `${page.slug}/index.html`),
+      renderHtml({
+        template: templateHtml,
+        title: page.title,
+        description: page.description,
+        url: `${SITE}/${page.slug}`,
+        image: `${SITE}/og/search-videos.png`,
+      }),
+    );
+  }
+  return pages.length;
 }
 
 /**

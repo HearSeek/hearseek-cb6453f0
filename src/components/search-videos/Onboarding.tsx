@@ -1,12 +1,20 @@
 import { useRef, useState, type FormEvent } from "react";
 import { CheckCircle2, Link2, Mail } from "lucide-react";
-import { hs, inferInputType } from "@/lib/persona-analytics";
+import { hs, inferInputType, type Persona } from "@/lib/persona-analytics";
 import type { PlanId } from "./Pricing";
 import { PLANS } from "./Pricing";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-export function Onboarding({ plan }: { plan: PlanId }) {
+export function Onboarding({
+  plan,
+  ctaLabel = "Create my searchable library",
+  persona,
+}: {
+  plan: PlanId;
+  ctaLabel?: string;
+  persona?: Persona;
+}) {
   const [url, setUrl] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +29,7 @@ export function Onboarding({ plan }: { plan: PlanId }) {
     if (!value) return;
     if (urlSubmitFired.current === value) return;
     urlSubmitFired.current = value;
-    hs("hs_url_submit", { input_type: inferInputType(value) });
+    hs("hs_url_submit", { input_type: inferInputType(value) }, persona);
   };
 
   const onSubmit = (e: FormEvent) => {
@@ -41,18 +49,18 @@ export function Onboarding({ plan }: { plan: PlanId }) {
 
     if (urlSubmitFired.current !== trimmedUrl) {
       urlSubmitFired.current = trimmedUrl;
-      hs("hs_url_submit", { input_type: inferInputType(trimmedUrl) });
+      hs("hs_url_submit", { input_type: inferInputType(trimmedUrl) }, persona);
     }
     if (!emailSubmitFired.current) {
       emailSubmitFired.current = true;
-      hs("hs_email_submit");
+      hs("hs_email_submit", {}, persona);
     }
 
     const selected = PLANS.find((p) => p.id === plan);
     hs("hs_checkout_attempt", {
       plan: plan,
       price_point: selected?.pricePoint ?? "0",
-    });
+    }, persona);
 
     setSubmitted(true);
   };
@@ -132,7 +140,7 @@ export function Onboarding({ plan }: { plan: PlanId }) {
           type="submit"
           className="sv-grad-btn sv-glow mt-6 w-full rounded-full px-8 py-4 text-base font-semibold text-[hsl(228_49%_8%)] transition-all duration-200 hover:scale-[1.01] hover:brightness-110 active:scale-[0.99]"
         >
-          Create my searchable library
+          {ctaLabel}
         </button>
         <p className="mt-3 text-center text-xs text-[hsl(var(--sv-muted))]">
           Try for free up to 3 hours of video.

@@ -19,7 +19,7 @@ const collectionPrerender = () => ({
     const count = generateCollectionHtml(outDir, readFileSync(templatePath, "utf8"));
     const extra = generateSearchVideosHtml(outDir, readFileSync(templatePath, "utf8"));
     console.log(`prerendered ${count} collection HTML files into dist/collections/`);
-    console.log(`prerendered ${extra} route HTML file into dist/search-videos/`);
+    console.log(`prerendered ${extra} persona route HTML files into dist/`);
   },
 });
 
