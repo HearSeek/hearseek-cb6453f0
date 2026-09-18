@@ -26,26 +26,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://hearseek.com/search-videos</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://hearseek.com/search-interviews</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://hearseek.com/search-raw</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://hearseek.com/search-lectures</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://hearseek.com/results</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
