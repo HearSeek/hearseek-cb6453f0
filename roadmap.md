@@ -1,1 +1,1 @@
-- [ ] Add three cloned persona pages for research, editor, and educator with only requested copy/persona changes.
+- [x] Add three cloned persona pages for research, editor, and educator with only requested copy/persona changes.
