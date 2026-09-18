@@ -1,4 +1,4 @@
-import { hs } from "@/lib/persona-analytics";
+import { hs, type Persona } from "@/lib/persona-analytics";
 import { cn } from "@/lib/utils";
 
 export type Usecase =
@@ -40,11 +40,13 @@ export function Selectors({
   onUsecases,
   sizeBand,
   onSizeBand,
+  persona,
 }: {
   usecases: Usecase[];
   onUsecases: (usecases: Usecase[]) => void;
   sizeBand: SizeBand | null;
   onSizeBand: (b: SizeBand) => void;
+  persona?: Persona;
 }) {
   return (
     <section className="mx-auto w-full max-w-4xl px-6 pb-24 md:pb-32" aria-label="Tell us about your content">
@@ -63,7 +65,7 @@ export function Selectors({
                 ? usecases.filter((value) => value !== u.value)
                 : [...usecases, u.value];
               onUsecases(nextUsecases);
-              hs("hs_usecase_select", { usecases: nextUsecases });
+              hs("hs_usecase_select", { usecases: nextUsecases }, persona);
             }}
           >
             {u.label}
@@ -83,7 +85,7 @@ export function Selectors({
             className={chipClass(sizeBand === b.value)}
             onClick={() => {
               onSizeBand(b.value);
-              hs("hs_archive_size", { size_band: b.value });
+              hs("hs_archive_size", { size_band: b.value }, persona);
             }}
           >
             {b.label}

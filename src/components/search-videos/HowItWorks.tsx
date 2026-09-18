@@ -18,14 +18,35 @@ const STEPS = [
   },
 ];
 
-export function HowItWorks() {
+export type HowItWorksCopy = {
+  step1Title?: string;
+  step1Body?: string;
+  step3Title?: string;
+  step3Body?: string;
+};
+
+export function HowItWorks({ copy = {} }: { copy?: HowItWorksCopy }) {
+  const steps = [
+    {
+      ...STEPS[0],
+      title: copy.step1Title ?? STEPS[0].title,
+      body: copy.step1Body ?? STEPS[0].body,
+    },
+    STEPS[1],
+    {
+      ...STEPS[2],
+      title: copy.step3Title ?? STEPS[2].title,
+      body: copy.step3Body ?? STEPS[2].body,
+    },
+  ];
+
   return (
     <section className="mx-auto w-full max-w-6xl px-6 pb-24 md:pb-32" aria-label="How it works">
       <h2 className="text-center text-2xl font-bold tracking-tight md:text-3xl">
         How it works
       </h2>
       <div className="mt-10 grid gap-5 md:grid-cols-3">
-        {STEPS.map((s) => (
+        {steps.map((s) => (
           <div
             key={s.title}
             className="rounded-2xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface))] p-6 shadow-[0_16px_40px_-24px_hsl(228_49%_4%/0.8)]"

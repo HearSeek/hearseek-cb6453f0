@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
-import { hs } from "@/lib/persona-analytics";
+import { hs, type Persona } from "@/lib/persona-analytics";
 import { cn } from "@/lib/utils";
 
 export type CtaLocation = "hero" | "mid" | "footer";
 
-export function scrollToOnboarding(location: CtaLocation) {
-  hs("hs_try_free_click", { cta_location: location });
+export function scrollToOnboarding(location: CtaLocation, persona?: Persona) {
+  hs("hs_try_free_click", { cta_location: location }, persona);
   document
     .getElementById("sv-onboarding")
     ?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -15,15 +15,17 @@ export function CtaButton({
   location,
   className,
   children,
+  persona,
 }: {
   location: CtaLocation;
   className?: string;
   children: ReactNode;
+  persona?: Persona;
 }) {
   return (
     <button
       type="button"
-      onClick={() => scrollToOnboarding(location)}
+      onClick={() => scrollToOnboarding(location, persona)}
       className={cn(
         "sv-grad-btn sv-glow inline-flex items-center justify-center rounded-full px-8 py-4",
         "text-base font-semibold text-[hsl(228_49%_8%)]",
