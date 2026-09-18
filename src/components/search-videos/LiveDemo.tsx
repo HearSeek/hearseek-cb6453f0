@@ -75,6 +75,7 @@ export function LiveDemo() {
       player = new window.YT!.Player(playerHostRef.current, {
         videoId: VIDEO_ID,
         playerVars: {
+          host: "https://www.youtube-nocookie.com",
           rel: 0,
           modestbranding: 1,
           playsinline: 1,
