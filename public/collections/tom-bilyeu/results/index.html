@@ -6,15 +6,20 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       window.gtag = gtag;
-      gtag('consent', 'default', {
-        ad_storage: 'denied',
-        ad_user_data: 'denied',
-        ad_personalization: 'denied',
-        analytics_storage: 'denied',
-        functionality_storage: 'granted',
-        security_storage: 'granted',
-        wait_for_update: 500
-      });
+      (function(){
+        var personaPaths = ['/search-videos','/search-interviews','/search-raw','/search-lectures'];
+        var path = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
+        var granted = personaPaths.indexOf(path.toLowerCase()) !== -1 ? 'granted' : 'denied';
+        gtag('consent', 'default', {
+          ad_storage: granted,
+          ad_user_data: granted,
+          ad_personalization: granted,
+          analytics_storage: granted,
+          functionality_storage: 'granted',
+          security_storage: 'granted',
+          wait_for_update: 500
+        });
+      })();
     </script>
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s);j.async=true;j.src="https://load.sst.hearseek.com/dg297vwjeyvgk.js?"+i;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','79wcfetc=AgNLPjEnWjgpVTgoPSQhUB1aRFdUTBMYVg8TGBcZEhMASRUWCA%3D%3D');</script>
