@@ -82,7 +82,7 @@ export function LiveDemo({
       const Player = window.YT?.Player;
       if (!Player) return;
       player = new Player(playerHostRef.current, {
-        videoId: VIDEO_ID,
+        videoId,
         playerVars: {
           host: "https://www.youtube-nocookie.com",
           rel: 0,
