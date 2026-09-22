@@ -105,7 +105,7 @@ export function LiveDemo({
         // Player may already be gone on unmount.
       }
     };
-  }, [persona]);
+  }, [persona, videoId]);
 
   return (
     <section
