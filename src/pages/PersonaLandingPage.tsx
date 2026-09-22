@@ -18,6 +18,7 @@ type PersonaLandingConfig = {
   path: string;
   title: string;
   description: string;
+  demoVideoId: string;
   eyebrow: string;
   headline: string;
   subhead: string;
@@ -32,6 +33,7 @@ const pages = {
     title: "HearSeek: Search Interviews and Recordings",
     description:
       "Locate every discussion of a topic across hours of interviews, news, and documentaries, even when different words were used.",
+    demoVideoId: "MUxTTTwua-M",
     eyebrow: "FOR RESEARCHERS & JOURNALISTS",
     headline: "Find Any Theme Across Your Interviews and Recordings",
     subhead:
@@ -50,6 +52,7 @@ const pages = {
     title: "HearSeek: Search Raw Footage",
     description:
       "Describe the line or topic you need and land on the source moment, without scrubbing through hours of footage.",
+    demoVideoId: "Z-UCbmzzvm4",
     eyebrow: "FOR VIDEO EDITORS",
     headline: "Find Any Moment in Your Raw Footage",
     subhead:
@@ -68,6 +71,7 @@ const pages = {
     title: "HearSeek: Search Every Lecture",
     description:
       "Let students search a question or concept and jump straight to where it was explained, across an entire course of recordings.",
+    demoVideoId: "u6j0IrXpp_o",
     eyebrow: "FOR EDUCATORS",
     headline: "Make Every Lecture Searchable",
     subhead:
@@ -108,7 +112,7 @@ function PersonaLandingPage({ config }: { config: PersonaLandingConfig }) {
         ctaLabel={config.ctaLabel}
         persona={config.persona}
       />
-      <LiveDemo persona={config.persona} />
+      <LiveDemo persona={config.persona} videoId={config.demoVideoId} />
       <HowItWorks copy={config.howItWorks} />
       <Selectors
         usecases={usecases}

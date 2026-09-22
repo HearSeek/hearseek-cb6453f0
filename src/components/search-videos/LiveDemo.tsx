@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { hs, type Persona } from "@/lib/persona-analytics";
 
 const DEMO_EVENT_KEY = "hs_demo_interact_video_demo_fired";
-const VIDEO_ID = "rNsLTRTzGuk";
+const DEFAULT_VIDEO_ID = "rNsLTRTzGuk";
 
 declare global {
   interface Window {
@@ -42,7 +42,13 @@ function loadYouTubeApi(): Promise<void> {
   });
 }
 
-export function LiveDemo({ persona }: { persona?: Persona }) {
+export function LiveDemo({
+  persona,
+  videoId = DEFAULT_VIDEO_ID,
+}: {
+  persona?: Persona;
+  videoId?: string;
+}) {
   const playerHostRef = useRef<HTMLDivElement | null>(null);
   const firedRef = useRef(false);
 
@@ -76,7 +82,7 @@ export function LiveDemo({ persona }: { persona?: Persona }) {
       const Player = window.YT?.Player;
       if (!Player) return;
       player = new Player(playerHostRef.current, {
-        videoId: VIDEO_ID,
+        videoId,
         playerVars: {
           host: "https://www.youtube-nocookie.com",
           rel: 0,
@@ -99,7 +105,7 @@ export function LiveDemo({ persona }: { persona?: Persona }) {
         // Player may already be gone on unmount.
       }
     };
-  }, [persona]);
+  }, [persona, videoId]);
 
   return (
     <section
