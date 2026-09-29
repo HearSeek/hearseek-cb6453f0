@@ -42,7 +42,7 @@ export default function SearchVideosPage() {
         onSizeBand={setSizeBand}
       />
       <Pricing plan={plan} onPlan={setPlan} />
-      <Onboarding plan={plan} />
+      <Onboarding plan={plan} usecases={usecases} sizeBand={sizeBand} />
       <PageFooter />
     </div>
   );

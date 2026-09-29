@@ -122,7 +122,13 @@ function PersonaLandingPage({ config }: { config: PersonaLandingConfig }) {
         persona={config.persona}
       />
       <Pricing plan={plan} onPlan={setPlan} persona={config.persona} />
-      <Onboarding plan={plan} ctaLabel={config.ctaLabel} persona={config.persona} />
+      <Onboarding
+        plan={plan}
+        ctaLabel={config.ctaLabel}
+        persona={config.persona}
+        usecases={usecases}
+        sizeBand={sizeBand}
+      />
       <PageFooter ctaLabel={config.ctaLabel} persona={config.persona} />
     </div>
   );
