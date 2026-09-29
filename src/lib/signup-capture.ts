@@ -57,7 +57,7 @@ async function postOnce(endpoint: string, payload: SignupPayload) {
   if (!res.ok) throw new Error(`status ${res.status}`);
 }
 
-// Notification email set in Formspree dashboard: [UMER TO FILL IN]
+// Notification email set in Formspree dashboard: inquiries@hearseek.com
 export async function submitSignup(payload: SignupPayload): Promise<boolean> {
   if (alreadySent(payload.session_id, payload.stage)) return true;
   const endpoint = import.meta.env.VITE_SIGNUP_ENDPOINT as string | undefined;
