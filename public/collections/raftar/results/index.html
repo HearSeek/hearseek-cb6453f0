@@ -9,12 +9,23 @@
       (function(){
         var personaPaths = ['/search-videos','/search-interviews','/search-raw','/search-lectures'];
         var path = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
-        var granted = personaPaths.indexOf(path.toLowerCase()) !== -1 ? 'granted' : 'denied';
+        var personaDefault = personaPaths.indexOf(path.toLowerCase()) !== -1 ? 'granted' : 'denied';
+        // A stored banner choice always wins over the path-based default,
+        // so a returning visitor's reject is honored before GTM loads.
+        var analytics = personaDefault, ads = personaDefault;
+        try {
+          var raw = window.localStorage.getItem('hs_consent_v1');
+          if (raw) {
+            var choice = JSON.parse(raw);
+            analytics = choice && choice.analytics ? 'granted' : 'denied';
+            ads = choice && choice.ads ? 'granted' : 'denied';
+          }
+        } catch (e) { /* storage blocked: keep path-based default */ }
         gtag('consent', 'default', {
-          ad_storage: granted,
-          ad_user_data: granted,
-          ad_personalization: granted,
-          analytics_storage: granted,
+          ad_storage: ads,
+          ad_user_data: ads,
+          ad_personalization: ads,
+          analytics_storage: analytics,
           functionality_storage: 'granted',
           security_storage: 'granted',
           wait_for_update: 500
@@ -29,11 +40,16 @@
     <!-- TODO: Set the document title to the name of your application -->
     <title>Raftar — Results on HearSeek</title>
     <meta name="description" content="Search a 30-video deep-index of Raftar — surface the exact moment by meaning.">
-    <meta name="author" content="Lovable" />
+    <meta name="author" content="HearSeek" />
 
+    <link rel="preconnect" href="https://load.sst.hearseek.com" />
+    <link rel="dns-prefetch" href="https://load.sst.hearseek.com" />
+    <link rel="preconnect" href="https://sst.hearseek.com" />
+    <link rel="dns-prefetch" href="https://sst.hearseek.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet" /></noscript>
 
     <!-- TODO: Update og:title to match your application name -->
     
