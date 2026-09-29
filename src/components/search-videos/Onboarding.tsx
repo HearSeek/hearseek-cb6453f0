@@ -195,6 +195,22 @@ export function Onboarding({
             className="w-full bg-transparent py-3.5 text-sm outline-none placeholder:text-[hsl(var(--sv-muted))]"
           />
         </div>
+        <p className="mt-2 text-xs text-[hsl(var(--sv-muted))]">
+          We'll only use your email to contact you about HearSeek access.
+        </p>
+
+        <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
+          <label htmlFor="sv-gotcha">Leave this field empty</label>
+          <input
+            id="sv-gotcha"
+            type="text"
+            name="_gotcha"
+            tabIndex={-1}
+            autoComplete="off"
+            value={gotcha}
+            onChange={(e) => setGotcha(e.target.value)}
+          />
+        </div>
 
         {error && (
           <p role="alert" className="mt-4 text-sm text-[hsl(0_84%_68%)]">
@@ -204,7 +220,8 @@ export function Onboarding({
 
         <button
           type="submit"
-          className="sv-grad-btn sv-glow mt-6 w-full rounded-full px-8 py-4 text-base font-semibold text-[hsl(228_49%_8%)] transition-all duration-200 hover:scale-[1.01] hover:brightness-110 active:scale-[0.99]"
+          disabled={sending}
+          className="sv-grad-btn sv-glow mt-6 w-full rounded-full px-8 py-4 text-base font-semibold text-[hsl(228_49%_8%)] transition-all duration-200 hover:scale-[1.01] hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
         >
           {ctaLabel}
         </button>
