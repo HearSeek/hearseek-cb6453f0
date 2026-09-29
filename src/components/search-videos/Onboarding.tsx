@@ -1,27 +1,62 @@
 import { useRef, useState, type FormEvent } from "react";
 import { CheckCircle2, Link2, Mail } from "lucide-react";
-import { hs, inferInputType, type Persona } from "@/lib/persona-analytics";
+import {
+  hs,
+  inferInputType,
+  PERSONA,
+  VARIANT,
+  ACQ_SOURCE,
+  SESSION_ID,
+  type Persona,
+} from "@/lib/persona-analytics";
+import { submitSignup } from "@/lib/signup-capture";
 import type { PlanId } from "./Pricing";
 import { PLANS } from "./Pricing";
+import type { SizeBand, Usecase } from "./Selectors";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+// Fire the submit analytics only once per session, even across retries.
+const eventsFiredMemory = new Set<string>();
+const eventsKey = () => `hs_signup_events_fired_${SESSION_ID}`;
+function submitEventsFired(): boolean {
+  if (eventsFiredMemory.has(eventsKey())) return true;
+  try {
+    return window.sessionStorage.getItem(eventsKey()) === "1";
+  } catch {
+    return false;
+  }
+}
+function markSubmitEventsFired() {
+  eventsFiredMemory.add(eventsKey());
+  try {
+    window.sessionStorage.setItem(eventsKey(), "1");
+  } catch {
+    /* ignore */
+  }
+}
 
 export function Onboarding({
   plan,
   ctaLabel = "Create my searchable library",
   persona,
+  usecases = [],
+  sizeBand = null,
 }: {
   plan: PlanId;
   ctaLabel?: string;
   persona?: Persona;
+  usecases?: Usecase[];
+  sizeBand?: SizeBand | null;
 }) {
   const [url, setUrl] = useState("");
   const [email, setEmail] = useState("");
+  const [gotcha, setGotcha] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const urlSubmitFired = useRef<string | null>(null);
-  const emailSubmitFired = useRef(false);
 
   // "Submitted / pasted" — classify the URL as soon as it's pasted in.
   const onUrlPaste = () => {
@@ -32,8 +67,9 @@ export function Onboarding({
     hs("hs_url_submit", { input_type: inferInputType(value) }, persona);
   };
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (sending) return;
     const trimmedUrl = url.trim();
     const trimmedEmail = email.trim();
 
@@ -47,22 +83,52 @@ export function Onboarding({
     }
     setError(null);
 
-    if (urlSubmitFired.current !== trimmedUrl) {
-      urlSubmitFired.current = trimmedUrl;
-      hs("hs_url_submit", { input_type: inferInputType(trimmedUrl) }, persona);
-    }
-    if (!emailSubmitFired.current) {
-      emailSubmitFired.current = true;
-      hs("hs_email_submit", {}, persona);
-    }
-
     const selected = PLANS.find((p) => p.id === plan);
-    hs("hs_checkout_attempt", {
-      plan: plan,
-      price_point: selected?.pricePoint ?? "0",
-    }, persona);
+    const p = persona ?? PERSONA;
 
-    setSubmitted(true);
+    if (!submitEventsFired()) {
+      markSubmitEventsFired();
+      if (urlSubmitFired.current !== trimmedUrl) {
+        urlSubmitFired.current = trimmedUrl;
+        hs("hs_url_submit", { input_type: inferInputType(trimmedUrl) }, persona);
+      }
+      hs("hs_email_submit", {}, persona);
+      hs("hs_checkout_attempt", {
+        plan: plan,
+        price_point: selected?.pricePoint ?? "0",
+      }, persona);
+    }
+
+    // Honeypot filled: pretend success, send nothing.
+    if (gotcha) {
+      setSubmitted(true);
+      return;
+    }
+
+    setSending(true);
+    const ok = await submitSignup({
+      email: trimmedEmail,
+      pasted_url: trimmedUrl,
+      input_type: inferInputType(trimmedUrl),
+      persona: p,
+      page_persona: p,
+      plan: plan ?? "",
+      price_point: selected?.pricePoint ?? "",
+      usecases: usecases.join(" | "),
+      size_band: sizeBand ?? "",
+      session_id: SESSION_ID,
+      variant: VARIANT,
+      acq_source: ACQ_SOURCE,
+      stage: "checkout_attempt",
+      submitted_at: new Date().toISOString(),
+      page_path: window.location.pathname,
+      host: window.location.host,
+      _subject: `HearSeek signup: ${p}, ${plan || "no plan"}`,
+      _gotcha: "",
+    });
+    setSending(false);
+    if (ok) setSubmitted(true);
+    else setError("Something went wrong saving your details. Please try again.");
   };
 
   if (submitted) {
