@@ -1,1 +1,3 @@
 - [x] Add three cloned persona pages for research, editor, and educator with only requested copy/persona changes.
+- [x] Stape fixes: stored-choice consent default in index.html (try/catch fallback), preconnect sst + load.sst, async font; regenerated 22 static copies via script; verified both consent paths + hs_page_view to sst.
+- [ ] Signup capture blocked: add real Formspree URL as VITE_SIGNUP_ENDPOINT in .env; notification email set in Formspree dashboard ([UMER TO FILL IN] in src/lib/signup-capture.ts).
