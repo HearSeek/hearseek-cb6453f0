@@ -9,10 +9,11 @@ type SEOProps = {
   type?: "website" | "article";
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   image?: string;
+  imageAlt?: string;
   author?: string;
 };
 
-export const SEO = ({ title, description, path, type = "website", jsonLd, image, author }: SEOProps) => {
+export const SEO = ({ title, description, path, type = "website", jsonLd, image, imageAlt, author }: SEOProps) => {
   const url = `${SITE_URL}${path}`;
   const absoluteImage = image
     ? image.startsWith("http")
@@ -38,6 +39,7 @@ export const SEO = ({ title, description, path, type = "website", jsonLd, image,
       {absoluteImage && <meta property="og:image" content={absoluteImage} />}
       {absoluteImage && <meta property="og:image:width" content="1200" />}
       {absoluteImage && <meta property="og:image:height" content="630" />}
+      {absoluteImage && <meta property="og:image:alt" content={imageAlt ?? title} />}
       {absoluteImage && <meta name="twitter:image" content={absoluteImage} />}
       {schemas.map((s, i) => (
         <script key={i} type="application/ld+json">{JSON.stringify(s)}</script>

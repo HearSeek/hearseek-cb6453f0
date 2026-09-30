@@ -29,7 +29,8 @@ export default function SearchVideosPage() {
         description="Search your videos and podcasts by meaning and jump to the exact moment. Try it free."
         path="/search-videos"
         author="HearSeek"
-        image="/og/search-videos.png"
+        image="/og/search-videos-og-v2.png"
+        imageAlt="HearSeek: Find Anything Inside Your Videos"
       />
 
       <Hero />

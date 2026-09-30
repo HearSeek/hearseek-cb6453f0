@@ -1,3 +1,4 @@
 - [x] Add three cloned persona pages for research, editor, and educator with only requested copy/persona changes.
 - [x] Stape fixes: stored-choice consent default in index.html (try/catch fallback), preconnect sst + load.sst, async font; regenerated 22 static copies via script; verified both consent paths + hs_page_view to sst.
-- [x] Signup capture wired to Formspree mrpbrydg. Open: notification email placeholder in signup-capture.ts.
+- [x] Signup capture wired to Formspree mrpbrydg; notification email is inquiries@hearseek.com.
+- [x] Add distinct 1200×630 link-preview images and metadata for all four persona pages.
