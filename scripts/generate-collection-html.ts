@@ -60,8 +60,9 @@ function renderHtml(opts: {
   description: string;
   url: string;
   image: string;
+  imageAlt?: string;
 }) {
-  const { template, title, description, url, image } = opts;
+  const { template, title, description, url, image, imageAlt = title } = opts;
   let html = template;
   // Replace <title>
   html = html.replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`);
@@ -91,6 +92,17 @@ function renderHtml(opts: {
     /<meta property="og:image"[^>]*>/,
     `<meta property="og:image" content="${esc(image)}">`,
   );
+  if (/<meta property="og:image:alt"[^>]*>/.test(html)) {
+    html = html.replace(
+      /<meta property="og:image:alt"[^>]*>/,
+      `<meta property="og:image:alt" content="${esc(imageAlt)}">`,
+    );
+  } else {
+    html = html.replace(
+      /(<meta property="og:image"[^>]*>)/,
+      `$1\n    <meta property="og:image:alt" content="${esc(imageAlt)}">`,
+    );
+  }
   html = html.replace(
     /<meta name="twitter:image"[^>]*>/,
     `<meta name="twitter:image" content="${esc(image)}">`,
@@ -124,24 +136,28 @@ export function generateSearchVideosHtml(outDir: string, templateHtml: string) {
       title: "HearSeek: Find Anything Inside Your Videos",
       description:
         "Search your videos and podcasts by meaning and jump to the exact moment. Try it free.",
+      image: `${SITE}/og/search-videos-og-v2.png`,
     },
     {
       slug: "search-interviews",
       title: "HearSeek: Search Interviews and Recordings",
       description:
         "Locate every discussion of a topic across hours of interviews, news, and documentaries, even when different words were used.",
+      image: `${SITE}/og/search-interviews-og-v2.png`,
     },
     {
       slug: "search-raw",
       title: "HearSeek: Search Raw Footage",
       description:
         "Describe the line or topic you need and land on the source moment, without scrubbing through hours of footage.",
+      image: `${SITE}/og/search-raw-og-v2.png`,
     },
     {
       slug: "search-lectures",
       title: "HearSeek: Search Every Lecture",
       description:
         "Let students search a question or concept and jump straight to where it was explained, across an entire course of recordings.",
+      image: `${SITE}/og/search-lectures-og-v2.png`,
     },
   ];
 
@@ -153,7 +169,8 @@ export function generateSearchVideosHtml(outDir: string, templateHtml: string) {
         title: page.title,
         description: page.description,
         url: `${SITE}/${page.slug}`,
-        image: `${SITE}/og/search-videos.png`,
+        image: page.image,
+        imageAlt: page.title,
       }),
     );
   }
