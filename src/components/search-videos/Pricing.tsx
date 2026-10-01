@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Check } from "lucide-react";
 import { hs, type Persona } from "@/lib/persona-analytics";
 import { cn } from "@/lib/utils";
