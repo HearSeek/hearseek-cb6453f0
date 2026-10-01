@@ -3,7 +3,7 @@
 // (VITE_HEARSEEK_API_BASE) or Basin without touching components.
 // Never log payloads: they contain the visitor's email and pasted URL.
 
-export type SignupStage = "email" | "checkout_attempt";
+export type SignupStage = "email" | "checkout_attempt" | "app_waitlist";
 
 export type SignupPayload = {
   email: string;
@@ -24,6 +24,7 @@ export type SignupPayload = {
   host: string;
   _subject: string;
   _gotcha: string;
+  records?: string;
 };
 
 const sentMemory = new Set<string>();

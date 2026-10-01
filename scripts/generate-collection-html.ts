@@ -159,6 +159,13 @@ export function generateSearchVideosHtml(outDir: string, templateHtml: string) {
         "Let students search a question or concept and jump straight to where it was explained, across an entire course of recordings.",
       image: `${SITE}/og/search-lectures-og-v2.png`,
     },
+    {
+      slug: "app",
+      title: "HearSeek for Android: Search Your Recordings by Meaning",
+      description:
+        "Make voice notes, lectures and meetings searchable. Find the exact moment, across languages. Coming soon to Android.",
+      image: `${SITE}/og/iis.png`,
+    },
   ];
 
   for (const page of pages) {
