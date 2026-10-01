@@ -59,9 +59,13 @@ async function postOnce(endpoint: string, payload: SignupPayload) {
 }
 
 // Notification email set in Formspree dashboard: inquiries@hearseek.com
-export async function submitSignup(payload: SignupPayload): Promise<boolean> {
+export async function submitSignup(
+  payload: SignupPayload,
+  endpointOverride?: string,
+): Promise<boolean> {
   if (alreadySent(payload.session_id, payload.stage)) return true;
-  const endpoint = import.meta.env.VITE_SIGNUP_ENDPOINT as string | undefined;
+  const endpoint =
+    endpointOverride ?? (import.meta.env.VITE_SIGNUP_ENDPOINT as string | undefined);
   if (!endpoint) return false;
   try {
     await postOnce(endpoint, payload);
