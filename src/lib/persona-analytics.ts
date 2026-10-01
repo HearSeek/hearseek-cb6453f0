@@ -2,7 +2,7 @@
 // Front-end only: pushes to window.dataLayer (picked up by the site-wide GTM
 // container). No data is sent anywhere else from this module.
 
-export type Persona = "creator" | "research" | "editor" | "educator";
+export type Persona = "creator" | "research" | "editor" | "educator" | "app";
 
 export const PERSONA: Persona = "creator";
 export const VARIANT = "subscription";
