@@ -59,8 +59,33 @@ export function Pricing({
   onPlan: (p: PlanId) => void;
   persona?: Persona;
 }) {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const firedRef = useRef(false);
+
+  useEffect(() => {
+    const node = sectionRef.current;
+    if (!node || firedRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !firedRef.current) {
+          firedRef.current = true;
+          hs("hs_pricing_view", {}, persona);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <section className="mx-auto w-full max-w-6xl px-6 pb-24 md:pb-32" aria-label="Pricing">
+    <section
+      ref={sectionRef}
+      className="mx-auto w-full max-w-6xl px-6 pb-24 md:pb-32"
+      aria-label="Pricing"
+    >
       <h2 className="text-center text-2xl font-bold tracking-tight md:text-3xl">
         Simple pricing
       </h2>
