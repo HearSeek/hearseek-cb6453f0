@@ -10,6 +10,7 @@ import { SEO } from "@/components/site/SEO";
 import { trackEvent } from "@/lib/analytics";
 import { hs, VARIANT, ACQ_SOURCE, SESSION_ID } from "@/lib/persona-analytics";
 import { submitSignup } from "@/lib/signup-capture";
+import { joinConsumerWaitlist } from "@/lib/hearseek";
 import { consumerWaitlistSchema } from "@/lib/validation";
 
 const PLANS = [
@@ -76,7 +77,20 @@ const AppPage = () => {
       return;
     }
     setSubmitting(true);
-    const ok = await submitSignup({
+    // 1) HearSeek API, exactly as the original form: PUT /consumer/waitlist { email }.
+    //    This decides success. Nothing containing the email is logged.
+    try {
+      await joinConsumerWaitlist(parsed.data.email);
+    } catch {
+      setSubmitting(false);
+      setError("Something went wrong saving your details. Please try again.");
+      return;
+    }
+    // 2) Formspree copy to a separate app-waitlist form. Skipped silently when
+    //    VITE_WAITLIST_ENDPOINT is unset; failures don't affect the result.
+    const waitlistEndpoint = import.meta.env.VITE_WAITLIST_ENDPOINT as string | undefined;
+    if (waitlistEndpoint) {
+      void submitSignup({
       email: parsed.data.email,
       pasted_url: "",
       input_type: "",
@@ -96,12 +110,9 @@ const AppPage = () => {
       _subject: "HearSeek signup: app, Android waitlist",
       _gotcha: "",
       records,
-    });
-    setSubmitting(false);
-    if (!ok) {
-      setError("Something went wrong saving your details. Please try again.");
-      return;
+      }, waitlistEndpoint).catch(() => undefined);
     }
+    setSubmitting(false);
     hs("hs_app_waitlist_submit", { records }, "app");
     setDone(true);
     setEmail("");
