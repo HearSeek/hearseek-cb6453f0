@@ -17,8 +17,9 @@ const Index = () => {
     <>
       <SEO
         title="HearSeek — The World's First AI Search Engine for Audio"
-        description="Search every spoken moment across podcasts, lectures, and voice notes in 160+ languages. Meaning-based audio search for consumers and enterprises."
+        description="Search hours of audio and video by meaning and jump to the exact moment. Try it free."
         path="/"
+        image="https://www.hearseek.com/og/home.png"
       />
       {/* HERO */}
       <section className="relative overflow-hidden">
