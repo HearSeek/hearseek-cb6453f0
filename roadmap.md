@@ -3,4 +3,4 @@
 - [x] Signup capture wired to Formspree mrpbrydg; notification email is inquiries@hearseek.com.
 - [x] Add distinct 1200×630 link-preview images and metadata for all four persona pages.
 - [x] Create homepage share image, update homepage-only metadata, regenerate static pages without changing existing route tags or consent; verify preview and request publishing.
-- [ ] Verify live homepage serves home.png in both image tags; blocked pending deployment (latest live check still serves IIS image).
+- [ ] Verify live homepage serves home.webp in both image tags; blocked pending deployment (latest live check still serves IIS image).

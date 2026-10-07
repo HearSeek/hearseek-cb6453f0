@@ -19,7 +19,7 @@ const Index = () => {
         title="HearSeek — The World's First AI Search Engine for Audio"
         description="Search hours of audio and video by meaning and jump to the exact moment. Try it free."
         path="/"
-        image="https://www.hearseek.com/og/home.png"
+        image="https://www.hearseek.com/og/home.webp"
       />
       {/* HERO */}
       <section className="relative overflow-hidden">
