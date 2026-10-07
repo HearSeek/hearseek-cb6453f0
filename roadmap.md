@@ -2,4 +2,5 @@
 - [x] Stape fixes: stored-choice consent default in index.html (try/catch fallback), preconnect sst + load.sst, async font; regenerated 22 static copies via script; verified both consent paths + hs_page_view to sst.
 - [x] Signup capture wired to Formspree mrpbrydg; notification email is inquiries@hearseek.com.
 - [x] Add distinct 1200×630 link-preview images and metadata for all four persona pages.
-- [ ] Create homepage share image, update homepage-only metadata, regenerate static pages, publish and verify live HTML.
+- [x] Create homepage share image, update homepage-only metadata, regenerate static pages without changing existing route tags or consent; verify preview and request publishing.
+- [ ] Verify live homepage serves home.png in both image tags; blocked pending deployment (latest live check still serves IIS image).
