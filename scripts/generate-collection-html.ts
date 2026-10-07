@@ -61,8 +61,9 @@ function renderHtml(opts: {
   url: string;
   image: string;
   imageAlt?: string;
+  includeImageAlt?: boolean;
 }) {
-  const { template, title, description, url, image, imageAlt = title } = opts;
+  const { template, title, description, url, image, imageAlt = title, includeImageAlt = true } = opts;
   let html = template;
   // Replace <title>
   html = html.replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`);
@@ -97,7 +98,7 @@ function renderHtml(opts: {
       /<meta property="og:image:alt"[^>]*>/,
       `<meta property="og:image:alt" content="${esc(imageAlt)}">`,
     );
-  } else {
+  } else if (includeImageAlt) {
     html = html.replace(
       /(<meta property="og:image"[^>]*>)/,
       `$1\n    <meta property="og:image:alt" content="${esc(imageAlt)}">`,
@@ -202,6 +203,7 @@ export function generateCollectionHtml(outDir: string, templateHtml: string) {
         description: c.description,
         url,
         image,
+        includeImageAlt: false,
       }),
     );
     writeAt(
@@ -212,6 +214,7 @@ export function generateCollectionHtml(outDir: string, templateHtml: string) {
         description: c.description,
         url: `${SITE}/collections/${c.key}/results`,
         image,
+        includeImageAlt: false,
       }),
     );
     count += 2;
