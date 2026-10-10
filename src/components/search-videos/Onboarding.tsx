@@ -55,21 +55,16 @@ export function Onboarding({
   const [gotcha, setGotcha] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [skipped, setSkipped] = useState(false);
   const [sending, setSending] = useState(false);
-
-  const urlSubmitFired = useRef<string | null>(null);
+  // True once Formspree accepted the stage "email" submission.
+  const [emailSaved, setEmailSaved] = useState(false);
+  // Plan chosen in step 2; starts from the pricing-section plan (carried
+  // silently, no hs_plan_select) and only fires the event on an explicit change.
+  const [stepPlan, setStepPlan] = useState<PlanId>(plan);
 
   const p = persona ?? PERSONA;
-  const selected = PLANS.find((pl) => pl.id === plan);
-
-  const fireUrlSubmit = (value: string) => {
-    if (!value || urlSubmitFired.current === value) return;
-    urlSubmitFired.current = value;
-    hs("hs_url_submit", { input_type: inferInputType(value) }, persona);
-  };
-
-  // "Submitted / pasted" — classify the URL as soon as it's pasted in.
-  const onUrlPaste = () => fireUrlSubmit(url.trim());
+  const planFor = (id: PlanId) => PLANS.find((pl) => pl.id === id);
 
   const basePayload = () => ({
     persona: p,
@@ -86,7 +81,7 @@ export function Onboarding({
   });
 
   // Step 1: capture the email on its own so the lead is kept even if the
-  // visitor leaves before the checkout step.
+  // visitor leaves before step 2. Up to 3 attempts, a few seconds apart.
   const onEmailSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (sending) return;
@@ -96,52 +91,58 @@ export function Onboarding({
       return;
     }
     setError(null);
+    setStepPlan(plan);
 
-    if (!eventFired("hs_email_submit")) {
-      markEventFired("hs_email_submit");
-      hs("hs_email_submit", {}, persona);
-    }
-
-    // Honeypot filled: pretend success, send nothing.
+    // Honeypot filled: pretend success, send nothing, fire nothing.
     if (gotcha) {
+      setEmailSaved(true);
       setStep(2);
       return;
     }
 
+    const sel = planFor(plan);
     setSending(true);
-    // A failed send must not block the visitor: the checkout step sends
-    // everything again under its own stage.
-    await submitSignup({
-      ...basePayload(),
-      email: trimmedEmail,
-      pasted_url: "",
-      input_type: "",
-      plan: "",
-      price_point: "",
-      stage: "email",
-      _subject: `HearSeek signup: ${p}, no plan`,
-    });
+    const ok = await submitSignup(
+      {
+        ...basePayload(),
+        email: trimmedEmail,
+        pasted_url: "",
+        input_type: "",
+        plan: plan ?? "",
+        price_point: sel?.pricePoint ?? "",
+        stage: "email",
+        _subject: `HearSeek signup: ${p}, ${plan || "no plan"}`,
+      },
+      undefined,
+      { attempts: 3, delayMs: 2500 },
+    );
     setSending(false);
+    if (ok && !eventFired("hs_email_submit")) {
+      markEventFired("hs_email_submit");
+      hs("hs_email_submit", {}, persona);
+    }
+    // On failure the email stays in memory and step 2's Send resends it.
+    setEmailSaved(ok);
     setStep(2);
   };
 
-  // Step 2: link + plan, the simulated checkout attempt.
+  // Step 2 (optional): link + plan.
   const onCheckoutSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (sending) return;
     const trimmedUrl = url.trim();
+    const sel = planFor(stepPlan);
     setError(null);
 
     if (!eventFired("hs_checkout_attempt")) {
       markEventFired("hs_checkout_attempt");
-      fireUrlSubmit(trimmedUrl);
+      if (trimmedUrl) hs("hs_url_submit", { input_type: inferInputType(trimmedUrl) }, persona);
       hs("hs_checkout_attempt", {
-        plan: plan,
-        price_point: selected?.pricePoint ?? "0",
+        plan: stepPlan,
+        price_point: sel?.pricePoint ?? "0",
       }, persona);
     }
 
-    // Honeypot filled: pretend success, send nothing.
     if (gotcha) {
       setSubmitted(true);
       return;
@@ -152,33 +153,125 @@ export function Onboarding({
       ...basePayload(),
       email: email.trim(),
       pasted_url: trimmedUrl,
-      input_type: inferInputType(trimmedUrl),
-      plan: plan ?? "",
-      price_point: selected?.pricePoint ?? "",
+      input_type: trimmedUrl ? inferInputType(trimmedUrl) : "",
+      plan: stepPlan ?? "",
+      price_point: sel?.pricePoint ?? "",
       stage: "checkout_attempt",
-      _subject: `HearSeek signup: ${p}, ${plan || "no plan"}`,
+      _subject: `HearSeek signup: ${p}, ${stepPlan || "no plan"}`,
     });
     setSending(false);
     if (ok) setSubmitted(true);
     else setError("Something went wrong saving your details. Please try again.");
   };
 
-  if (submitted) {
-    return (
-      <section data-section="signup_form" id="sv-onboarding" className="mx-auto w-full max-w-2xl px-6 pb-24 md:pb-32 scroll-mt-8" aria-label="Onboarding">
-        <div className="animate-fade-in-up rounded-3xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface))] p-10 text-center shadow-[0_24px_60px_-24px_hsl(228_49%_4%/0.8)] md:p-14">
-          <div className="mx-auto mb-6 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[hsl(var(--sv-cyan)/0.15)]">
-            <CheckCircle2 className="h-7 w-7 text-[hsl(var(--sv-cyan))]" aria-hidden />
-          </div>
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-            You're early.
-          </h2>
-          <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-[hsl(var(--sv-muted))]">
-            We're opening the next batch shortly. We'll email you and give you
-            your first 3 searchable hours free.
-          </p>
+  const shell = (children: React.ReactNode) => (
+    <section data-section="signup_form" id="sv-onboarding" className="mx-auto w-full max-w-2xl px-6 pb-24 md:pb-32 scroll-mt-8" aria-label="Onboarding">
+      {children}
+    </section>
+  );
+
+  if (submitted || skipped) {
+    return shell(
+      <div className="animate-fade-in-up rounded-3xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface))] p-10 text-center shadow-[0_24px_60px_-24px_hsl(228_49%_4%/0.8)] md:p-14">
+        <div className="mx-auto mb-6 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[hsl(var(--sv-cyan)/0.15)]">
+          <CheckCircle2 className="h-7 w-7 text-[hsl(var(--sv-cyan))]" aria-hidden />
         </div>
-      </section>
+        <h2 className="text-2xl font-bold tracking-tight md:text-3xl">You're on the list.</h2>
+        <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-[hsl(var(--sv-muted))]">
+          We'll email you when your free 3 hours are ready.
+        </p>
+      </div>,
+    );
+  }
+
+  if (step === 2) {
+    return shell(
+      <>
+        {emailSaved ? (
+          <div className="animate-fade-in-up text-center">
+            <div className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-[hsl(var(--sv-cyan)/0.15)]">
+              <CheckCircle2 className="h-6 w-6 text-[hsl(var(--sv-cyan))]" aria-hidden />
+            </div>
+            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">You're on the list.</h2>
+            <p className="mt-3 text-base text-[hsl(var(--sv-muted))]">
+              We'll email you when your free 3 hours are ready.
+            </p>
+          </div>
+        ) : (
+          <h2 className="text-center text-2xl font-bold tracking-tight md:text-3xl">Almost there</h2>
+        )}
+        <form
+          onSubmit={onCheckoutSubmit}
+          className="mt-8 rounded-3xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface))] p-6 shadow-[0_24px_60px_-24px_hsl(228_49%_4%/0.8)] md:p-8"
+        >
+          <p className="mb-4 text-base text-[hsl(var(--sv-muted))]">Optional: tell us a bit more.</p>
+          <label htmlFor="sv-url" className="mb-2 block text-base font-medium">
+            Link to your content (optional)
+          </label>
+          <div className="flex items-center gap-3 rounded-xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface-2))] px-4">
+            <Link2 className="h-4 w-4 shrink-0 text-[hsl(var(--sv-muted))]" aria-hidden />
+            <input
+              id="sv-url"
+              type="url"
+              inputMode="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="https://youtube.com/@yourchannel"
+              className="w-full bg-transparent py-3.5 text-base outline-none placeholder:text-[hsl(var(--sv-muted))]"
+            />
+          </div>
+
+          <fieldset className="mt-5">
+            <legend className="mb-2 block text-base font-medium">Plan</legend>
+            <div className="grid grid-cols-3 gap-2">
+              {PLANS.map((pl) => {
+                const active = pl.id === stepPlan;
+                return (
+                  <button
+                    key={pl.id}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => {
+                      if (pl.id === stepPlan) return;
+                      setStepPlan(pl.id);
+                      hs("hs_plan_select", { plan: pl.id, price_point: pl.pricePoint }, persona);
+                    }}
+                    className={`rounded-xl border px-3 py-3 text-base transition-colors ${
+                      active
+                        ? "border-[hsl(var(--sv-cyan))] bg-[hsl(var(--sv-cyan)/0.12)] text-[hsl(var(--sv-fg))]"
+                        : "border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface-2))] text-[hsl(var(--sv-muted))]"
+                    }`}
+                  >
+                    <span className="block font-medium">{pl.name}</span>
+                    <span className="block text-sm">${pl.pricePoint}{pl.pricePoint !== "0" && "/mo"}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+
+          {error && (
+            <p role="alert" className="mt-4 text-base text-[hsl(0_84%_68%)]">{error}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={sending}
+            className="sv-grad-btn sv-glow mt-6 w-full rounded-full px-8 py-4 text-base font-semibold text-[hsl(228_49%_8%)] transition-all duration-200 hover:scale-[1.01] hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+          >
+            {sending ? "Sending…" : "Send"}
+          </button>
+          {emailSaved && (
+            <button
+              type="button"
+              onClick={() => setSkipped(true)}
+              className="mt-3 w-full text-center text-base text-[hsl(var(--sv-muted))] underline-offset-4 hover:text-[hsl(var(--sv-fg))] hover:underline"
+            >
+              Skip
+            </button>
+          )}
+        </form>
+      </>,
     );
   }
 
