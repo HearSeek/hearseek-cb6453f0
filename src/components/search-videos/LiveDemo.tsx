@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { hs, type Persona } from "@/lib/persona-analytics";
 
 const DEMO_EVENT_KEY = "hs_demo_interact_video_demo_fired";
@@ -46,14 +46,18 @@ function loadYouTubeApi(): Promise<void> {
 export function LiveDemo({
   persona,
   videoId = DEFAULT_VIDEO_ID,
+  facade = false,
 }: {
   persona?: Persona;
   videoId?: string;
+  facade?: boolean;
 }) {
+  const [active, setActive] = useState(!facade);
   const playerHostRef = useRef<HTMLDivElement | null>(null);
   const firedRef = useRef(false);
 
   useEffect(() => {
+    if (!active) return;
     let cancelled = false;
     let player: { destroy?: () => void } | null = null;
     let completeFired = false;
@@ -90,6 +94,7 @@ export function LiveDemo({
           rel: 0,
           modestbranding: 1,
           playsinline: 1,
+          ...(facade ? { autoplay: 1 } : {}),
         },
         events: {
           onStateChange: (event) => {
@@ -111,7 +116,7 @@ export function LiveDemo({
         // Player may already be gone on unmount.
       }
     };
-  }, [persona, videoId]);
+  }, [persona, videoId, active, facade]);
 
   return (
     <section
@@ -120,7 +125,27 @@ export function LiveDemo({
       aria-label="HearSeek search demo"
     >
       <div className="aspect-video w-full overflow-hidden rounded-2xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-bg))] shadow-[0_24px_60px_-24px_hsl(228_49%_4%/0.8)]">
-        <div ref={playerHostRef} className="h-full w-full" />
+        {active ? (
+          <div ref={playerHostRef} className="h-full w-full" />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setActive(true)}
+            aria-label="Play demo video"
+            className="group relative h-full w-full"
+          >
+            <img
+              src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover opacity-80"
+            />
+            <span className="sv-grad-btn absolute left-1/2 top-1/2 inline-flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full shadow-lg">
+              <svg viewBox="0 0 24 24" className="ml-1 h-7 w-7 fill-[hsl(228_49%_8%)]" aria-hidden><path d="M8 5v14l11-7z" /></svg>
+            </span>
+          </button>
+        )}
       </div>
 
       <p className="mt-8 text-center text-sm text-[hsl(var(--sv-muted))]">
