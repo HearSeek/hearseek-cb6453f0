@@ -62,7 +62,7 @@ const pages = {
     path: "/search-raw",
     title: "HearSeek: Search Raw Footage",
     description:
-      "Search raw footage by topic. Find the source clip.",
+      "Describe the line or topic you need and land on the source moment, without scrubbing through hours of footage.",
     demo: {
       query: "the line about starting over",
       title: "Raw footage",
@@ -74,7 +74,7 @@ const pages = {
     eyebrow: "FOR VIDEO EDITORS",
     headline: "Find Any Moment in Your Raw Footage",
     subhead:
-      "Describe the line or topic you need and land on the source moment, without scrubbing through hours of footage.",
+      "Search raw footage by topic. Find the source clip.",
     ctaLabel: "Make my footage searchable",
     howItWorks: {
       step1Title: "Step 1: Add your footage",
@@ -88,7 +88,7 @@ const pages = {
     path: "/search-lectures",
     title: "HearSeek: Search Every Lecture",
     description:
-      "Search lectures by concept. Find the explanation.",
+      "Let students search a question or concept and jump straight to where it was explained, across an entire course of recordings.",
     demo: {
       query: "how does active recall work?",
       title: "Lecture recording",
@@ -100,7 +100,7 @@ const pages = {
     eyebrow: "FOR EDUCATORS",
     headline: "Make Every Lecture Searchable",
     subhead:
-      "Let students search a question or concept and jump straight to where it was explained, across an entire course of recordings.",
+      "Search lectures by concept. Find the explanation.",
     ctaLabel: "Make my lectures searchable",
     howItWorks: {
       step1Title: "Step 1: Add your lecture recordings",

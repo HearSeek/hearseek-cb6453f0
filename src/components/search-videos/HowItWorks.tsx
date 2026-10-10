@@ -55,7 +55,7 @@ export function HowItWorks({ copy = {} }: { copy?: HowItWorksCopy }) {
               <s.icon className="h-5 w-5 text-[hsl(var(--sv-violet))]" aria-hidden />
             </div>
             <h3 className="font-semibold">{s.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-[hsl(var(--sv-muted))]">
+            <p className="mt-2 text-base leading-relaxed text-[hsl(var(--sv-muted))]">
               {s.body}
             </p>
           </div>
