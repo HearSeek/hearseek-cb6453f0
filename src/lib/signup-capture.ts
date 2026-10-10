@@ -1,3 +1,4 @@
+import { pageExtras } from "@/lib/persona-analytics";
 // Signup capture for the persona landing pages.
 // Kept in one module so the destination can later move to the HearSeek API
 // (VITE_HEARSEEK_API_BASE) or Basin without touching components.
@@ -26,6 +27,7 @@ export type SignupPayload = {
   _subject: string;
   _gotcha: string;
   records?: string;
+  hero_variant?: string;
 };
 
 const sentMemory = new Set<string>();
@@ -54,7 +56,7 @@ async function postOnce(endpoint: string, payload: SignupPayload) {
   const res = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(payload.stage === "app_waitlist" ? payload : { ...payload, ...pageExtras }),
   });
   if (!res.ok) throw new Error(`status ${res.status}`);
 }

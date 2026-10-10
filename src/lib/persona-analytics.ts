@@ -16,6 +16,14 @@ export const ACQ_SOURCE =
 export const SESSION_ID =
   window.crypto?.randomUUID?.() || String(Date.now());
 
+// Page-level params added to every hs_ event and Formspree stage on the
+// current page (e.g. hero_variant on /search-lectures). Empty elsewhere.
+export const pageExtras: Record<string, string> = {};
+export function setPageExtras(extras: Record<string, string>) {
+  for (const k of Object.keys(pageExtras)) delete pageExtras[k];
+  Object.assign(pageExtras, extras);
+}
+
 export function hs(
   event: string,
   extra: Record<string, unknown> = {},
@@ -29,6 +37,7 @@ export function hs(
     acq_source: ACQ_SOURCE,
     session_id: SESSION_ID,
     page_persona: persona,
+    ...pageExtras,
     ...extra,
   });
 }
