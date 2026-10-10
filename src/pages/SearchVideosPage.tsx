@@ -38,6 +38,9 @@ export default function SearchVideosPage() {
   const [usecases, setUsecases] = useState<Usecase[]>([]);
   const [sizeBand, setSizeBand] = useState<SizeBand | null>(null);
   const [plan, setPlan] = useState<PlanId>("free");
+  // True once the visitor picked a plan in the pricing section (Free stays
+  // pre-selected, so a plan that was never clicked is still the default).
+  const [planChosen, setPlanChosen] = useState(false);
 
   useEffect(() => {
     hs("hs_page_view");
@@ -61,8 +64,14 @@ export default function SearchVideosPage() {
         demo={DEMO}
       />
       <Benefits items={BENEFITS} />
-      <Pricing plan={plan} onPlan={setPlan} />
-      <Onboarding plan={plan} usecases={usecases} sizeBand={sizeBand} />
+      <Pricing
+        plan={plan}
+        onPlan={(id) => {
+          setPlan(id);
+          setPlanChosen(true);
+        }}
+      />
+      <Onboarding plan={plan} planChosen={planChosen} usecases={usecases} sizeBand={sizeBand} />
       <LiveDemo facade />
       <HowItWorks />
       <div data-section="selectors">

@@ -38,12 +38,16 @@ function markEventFired(name: string) {
 
 export function Onboarding({
   plan,
+  planChosen = false,
   ctaLabel = "Create my searchable library",
   persona,
   usecases = [],
   sizeBand = null,
 }: {
   plan: PlanId;
+  // True once the visitor picked a plan (pricing section or step 2 picker).
+  // False means the plan is still the pre-selected Free default.
+  planChosen?: boolean;
   ctaLabel?: string;
   persona?: Persona;
   usecases?: Usecase[];
@@ -62,6 +66,11 @@ export function Onboarding({
   // Plan chosen in step 2; starts from the pricing-section plan (carried
   // silently, no hs_plan_select) and only fires the event on an explicit change.
   const [stepPlan, setStepPlan] = useState<PlanId>(plan);
+  // True once the visitor changed the plan in the step 2 picker.
+  const [stepPlanChanged, setStepPlanChanged] = useState(false);
+  // "visitor" once the plan was actively picked; "default" while it is still
+  // the pre-selected Free.
+  const planChosenBy = planChosen || stepPlanChanged ? "visitor" : "default";
 
   const p = persona ?? PERSONA;
   const planFor = (id: PlanId) => PLANS.find((pl) => pl.id === id);
@@ -110,6 +119,7 @@ export function Onboarding({
         input_type: "",
         plan: plan ?? "",
         price_point: sel?.pricePoint ?? "",
+        plan_chosen_by: planChosenBy,
         stage: "email",
         _subject: `HearSeek signup: ${p}, ${plan || "no plan"}`,
       },
@@ -140,6 +150,7 @@ export function Onboarding({
       hs("hs_checkout_attempt", {
         plan: stepPlan,
         price_point: sel?.pricePoint ?? "0",
+        plan_chosen_by: planChosenBy,
       }, persona);
     }
 
@@ -156,6 +167,7 @@ export function Onboarding({
       input_type: trimmedUrl ? inferInputType(trimmedUrl) : "",
       plan: stepPlan ?? "",
       price_point: sel?.pricePoint ?? "",
+      plan_chosen_by: planChosenBy,
       stage: "checkout_attempt",
       _subject: `HearSeek signup: ${p}, ${stepPlan || "no plan"}`,
     });
@@ -234,6 +246,7 @@ export function Onboarding({
                     onClick={() => {
                       if (pl.id === stepPlan) return;
                       setStepPlan(pl.id);
+                      setStepPlanChanged(true);
                       hs("hs_plan_select", { plan: pl.id, price_point: pl.pricePoint }, persona);
                     }}
                     className={`rounded-xl border px-3 py-3 text-base transition-colors ${

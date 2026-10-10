@@ -13,6 +13,7 @@ export type SignupPayload = {
   page_persona: string;
   plan: string;
   price_point: string;
+  plan_chosen_by?: string;
   usecases: string;
   size_band: string;
   session_id: string;
