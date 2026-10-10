@@ -1,5 +1,5 @@
 import { useRef, useState, type FormEvent } from "react";
-import { CheckCircle2, Link2, Mail } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Link2, Mail } from "lucide-react";
 import {
   hs,
   inferInputType,
@@ -16,21 +16,21 @@ import type { SizeBand, Usecase } from "./Selectors";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-// Fire the submit analytics only once per session, even across retries.
+// Fire each analytics event only once per session, even across retries.
 const eventsFiredMemory = new Set<string>();
-const eventsKey = () => `hs_signup_events_fired_${SESSION_ID}`;
-function submitEventsFired(): boolean {
-  if (eventsFiredMemory.has(eventsKey())) return true;
+const eventsKey = (name: string) => `hs_signup_event_${name}_${SESSION_ID}`;
+function eventFired(name: string): boolean {
+  if (eventsFiredMemory.has(eventsKey(name))) return true;
   try {
-    return window.sessionStorage.getItem(eventsKey()) === "1";
+    return window.sessionStorage.getItem(eventsKey(name)) === "1";
   } catch {
     return false;
   }
 }
-function markSubmitEventsFired() {
-  eventsFiredMemory.add(eventsKey());
+function markEventFired(name: string) {
+  eventsFiredMemory.add(eventsKey(name));
   try {
-    window.sessionStorage.setItem(eventsKey(), "1");
+    window.sessionStorage.setItem(eventsKey(name), "1");
   } catch {
     /* ignore */
   }
@@ -49,6 +49,7 @@ export function Onboarding({
   usecases?: Usecase[];
   sizeBand?: SizeBand | null;
 }) {
+  const [step, setStep] = useState<1 | 2>(1);
   const [url, setUrl] = useState("");
   const [email, setEmail] = useState("");
   const [gotcha, setGotcha] = useState("");
@@ -58,41 +59,82 @@ export function Onboarding({
 
   const urlSubmitFired = useRef<string | null>(null);
 
-  // "Submitted / pasted" — classify the URL as soon as it's pasted in.
-  const onUrlPaste = () => {
-    const value = url.trim();
-    if (!value) return;
-    if (urlSubmitFired.current === value) return;
+  const p = persona ?? PERSONA;
+  const selected = PLANS.find((pl) => pl.id === plan);
+
+  const fireUrlSubmit = (value: string) => {
+    if (!value || urlSubmitFired.current === value) return;
     urlSubmitFired.current = value;
     hs("hs_url_submit", { input_type: inferInputType(value) }, persona);
   };
 
-  const onSubmit = async (e: FormEvent) => {
+  // "Submitted / pasted" — classify the URL as soon as it's pasted in.
+  const onUrlPaste = () => fireUrlSubmit(url.trim());
+
+  const basePayload = () => ({
+    persona: p,
+    page_persona: p,
+    usecases: usecases.join(" | "),
+    size_band: sizeBand ?? "",
+    session_id: SESSION_ID,
+    variant: VARIANT,
+    acq_source: ACQ_SOURCE,
+    submitted_at: new Date().toISOString(),
+    page_path: window.location.pathname,
+    host: window.location.host,
+    _gotcha: "",
+  });
+
+  // Step 1: capture the email on its own so the lead is kept even if the
+  // visitor leaves before the checkout step.
+  const onEmailSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (sending) return;
-    const trimmedUrl = url.trim();
     const trimmedEmail = email.trim();
-
-    if (!trimmedUrl) {
-      setError("Paste your YouTube, playlist, or video link to continue.");
-      return;
-    }
     if (!EMAIL_RE.test(trimmedEmail)) {
       setError("Please enter a valid email address.");
       return;
     }
     setError(null);
 
-    const selected = PLANS.find((p) => p.id === plan);
-    const p = persona ?? PERSONA;
-
-    if (!submitEventsFired()) {
-      markSubmitEventsFired();
-      if (urlSubmitFired.current !== trimmedUrl) {
-        urlSubmitFired.current = trimmedUrl;
-        hs("hs_url_submit", { input_type: inferInputType(trimmedUrl) }, persona);
-      }
+    if (!eventFired("hs_email_submit")) {
+      markEventFired("hs_email_submit");
       hs("hs_email_submit", {}, persona);
+    }
+
+    // Honeypot filled: pretend success, send nothing.
+    if (gotcha) {
+      setStep(2);
+      return;
+    }
+
+    setSending(true);
+    // A failed send must not block the visitor: the checkout step sends
+    // everything again under its own stage.
+    await submitSignup({
+      ...basePayload(),
+      email: trimmedEmail,
+      pasted_url: "",
+      input_type: "",
+      plan: "",
+      price_point: "",
+      stage: "email",
+      _subject: `HearSeek signup: ${p}, no plan`,
+    });
+    setSending(false);
+    setStep(2);
+  };
+
+  // Step 2: link + plan, the simulated checkout attempt.
+  const onCheckoutSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (sending) return;
+    const trimmedUrl = url.trim();
+    setError(null);
+
+    if (!eventFired("hs_checkout_attempt")) {
+      markEventFired("hs_checkout_attempt");
+      fireUrlSubmit(trimmedUrl);
       hs("hs_checkout_attempt", {
         plan: plan,
         price_point: selected?.pricePoint ?? "0",
@@ -107,24 +149,14 @@ export function Onboarding({
 
     setSending(true);
     const ok = await submitSignup({
-      email: trimmedEmail,
+      ...basePayload(),
+      email: email.trim(),
       pasted_url: trimmedUrl,
       input_type: inferInputType(trimmedUrl),
-      persona: p,
-      page_persona: p,
       plan: plan ?? "",
       price_point: selected?.pricePoint ?? "",
-      usecases: usecases.join(" | "),
-      size_band: sizeBand ?? "",
-      session_id: SESSION_ID,
-      variant: VARIANT,
-      acq_source: ACQ_SOURCE,
       stage: "checkout_attempt",
-      submitted_at: new Date().toISOString(),
-      page_path: window.location.pathname,
-      host: window.location.host,
       _subject: `HearSeek signup: ${p}, ${plan || "no plan"}`,
-      _gotcha: "",
     });
     setSending(false);
     if (ok) setSubmitted(true);
@@ -156,79 +188,117 @@ export function Onboarding({
         Make your archive searchable
       </h2>
       <p className="mt-3 text-center text-base text-[hsl(var(--sv-muted))]">
-        Paste a link. We'll take it from there.
+        {step === 1 ? "Leave your email. We'll save you a spot." : "Paste a link. We'll take it from there."}
       </p>
 
-      <form
-        onSubmit={onSubmit}
-        className="mt-8 rounded-3xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface))] p-6 shadow-[0_24px_60px_-24px_hsl(228_49%_4%/0.8)] md:p-8"
-      >
-        <label htmlFor="sv-url" className="mb-2 block text-base font-medium">
-          YouTube channel, playlist, or video URL
-        </label>
-        <div className="flex items-center gap-3 rounded-xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface-2))] px-4">
-          <Link2 className="h-4 w-4 shrink-0 text-[hsl(var(--sv-muted))]" aria-hidden />
-          <input
-            id="sv-url"
-            type="url"
-            inputMode="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            onPaste={onUrlPaste}
-            placeholder="https://youtube.com/@yourchannel"
-            className="w-full bg-transparent py-3.5 text-base outline-none placeholder:text-[hsl(var(--sv-muted))]"
-          />
-        </div>
-
-        <label htmlFor="sv-email" className="mb-2 mt-5 block text-base font-medium">
-          Email
-        </label>
-        <div className="flex items-center gap-3 rounded-xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface-2))] px-4">
-          <Mail className="h-4 w-4 shrink-0 text-[hsl(var(--sv-muted))]" aria-hidden />
-          <input
-            id="sv-email"
-            type="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className="w-full bg-transparent py-3.5 text-base outline-none placeholder:text-[hsl(var(--sv-muted))]"
-          />
-        </div>
-        <p className="mt-2 text-base text-[hsl(var(--sv-muted))]">
-          We'll only use your email to contact you about HearSeek access.
-        </p>
-
-        <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
-          <label htmlFor="sv-gotcha">Leave this field empty</label>
-          <input
-            id="sv-gotcha"
-            type="text"
-            name="_gotcha"
-            tabIndex={-1}
-            autoComplete="off"
-            value={gotcha}
-            onChange={(e) => setGotcha(e.target.value)}
-          />
-        </div>
-
-        {error && (
-          <p role="alert" className="mt-4 text-base text-[hsl(0_84%_68%)]">
-            {error}
-          </p>
-        )}
-
-        <button
-          type="submit"
-          disabled={sending}
-          className="sv-grad-btn sv-glow mt-6 w-full rounded-full px-8 py-4 text-base font-semibold text-[hsl(228_49%_8%)] transition-all duration-200 hover:scale-[1.01] hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+      {step === 1 ? (
+        <form
+          onSubmit={onEmailSubmit}
+          className="mt-8 rounded-3xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface))] p-6 shadow-[0_24px_60px_-24px_hsl(228_49%_4%/0.8)] md:p-8"
         >
-          {ctaLabel}
-        </button>
-        <p className="mt-3 text-center text-xs text-[hsl(var(--sv-muted))]">
-          Try for free up to 3 hours of video.
-        </p>
-      </form>
+          <label htmlFor="sv-email" className="mb-2 block text-base font-medium">
+            Email
+          </label>
+          <div className="flex items-center gap-3 rounded-xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface-2))] px-4">
+            <Mail className="h-4 w-4 shrink-0 text-[hsl(var(--sv-muted))]" aria-hidden />
+            <input
+              id="sv-email"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full bg-transparent py-3.5 text-base outline-none placeholder:text-[hsl(var(--sv-muted))]"
+            />
+          </div>
+          <p className="mt-2 text-base text-[hsl(var(--sv-muted))]">
+            We'll only use your email to contact you about HearSeek access.
+          </p>
+
+          <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
+            <label htmlFor="sv-gotcha">Leave this field empty</label>
+            <input
+              id="sv-gotcha"
+              type="text"
+              name="_gotcha"
+              tabIndex={-1}
+              autoComplete="off"
+              value={gotcha}
+              onChange={(e) => setGotcha(e.target.value)}
+            />
+          </div>
+
+          {error && (
+            <p role="alert" className="mt-4 text-base text-[hsl(0_84%_68%)]">
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={sending}
+            className="sv-grad-btn sv-glow mt-6 w-full rounded-full px-8 py-4 text-base font-semibold text-[hsl(228_49%_8%)] transition-all duration-200 hover:scale-[1.01] hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+          >
+            Continue
+          </button>
+          <p className="mt-3 text-center text-xs text-[hsl(var(--sv-muted))]">
+            Try for free up to 3 hours of video.
+          </p>
+        </form>
+      ) : (
+        <form
+          onSubmit={onCheckoutSubmit}
+          className="mt-8 rounded-3xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface))] p-6 shadow-[0_24px_60px_-24px_hsl(228_49%_4%/0.8)] md:p-8"
+        >
+          <label htmlFor="sv-url" className="mb-2 block text-base font-medium">
+            YouTube channel, playlist, or video URL
+          </label>
+          <div className="flex items-center gap-3 rounded-xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface-2))] px-4">
+            <Link2 className="h-4 w-4 shrink-0 text-[hsl(var(--sv-muted))]" aria-hidden />
+            <input
+              id="sv-url"
+              type="url"
+              inputMode="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              onPaste={onUrlPaste}
+              placeholder="https://youtube.com/@yourchannel"
+              className="w-full bg-transparent py-3.5 text-base outline-none placeholder:text-[hsl(var(--sv-muted))]"
+            />
+          </div>
+
+          {selected && (
+            <p className="mt-4 text-base text-[hsl(var(--sv-muted))]">
+              Plan: <span className="font-medium text-[hsl(var(--sv-fg))]">{selected.name}</span>
+              {selected.pricePoint !== "0" && (
+                <> · ${selected.pricePoint}/month</> 
+              )}
+            </p>
+          )}
+
+          {error && (
+            <p role="alert" className="mt-4 text-base text-[hsl(0_84%_68%)]">
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={sending}
+            className="sv-grad-btn sv-glow mt-6 w-full rounded-full px-8 py-4 text-base font-semibold text-[hsl(228_49%_8%)] transition-all duration-200 hover:scale-[1.01] hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+          >
+            {ctaLabel}
+          </button>
+          <button
+            type="button"
+            onClick={() => setStep(1)}
+            className="mt-3 flex w-full items-center justify-center gap-1.5 text-sm text-[hsl(var(--sv-muted))] transition-colors hover:text-[hsl(var(--sv-fg))]"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+            Back
+          </button>
+        </form>
+      )}
     </section>
   );
 }
