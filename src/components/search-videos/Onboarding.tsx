@@ -38,12 +38,16 @@ function markEventFired(name: string) {
 
 export function Onboarding({
   plan,
+  planChosen = false,
   ctaLabel = "Create my searchable library",
   persona,
   usecases = [],
   sizeBand = null,
 }: {
   plan: PlanId;
+  // True once the visitor picked a plan (pricing section or step 2 picker).
+  // False means the plan is still the pre-selected Free default.
+  planChosen?: boolean;
   ctaLabel?: string;
   persona?: Persona;
   usecases?: Usecase[];
@@ -62,6 +66,11 @@ export function Onboarding({
   // Plan chosen in step 2; starts from the pricing-section plan (carried
   // silently, no hs_plan_select) and only fires the event on an explicit change.
   const [stepPlan, setStepPlan] = useState<PlanId>(plan);
+  // True once the visitor changed the plan in the step 2 picker.
+  const [stepPlanChanged, setStepPlanChanged] = useState(false);
+  // "visitor" once the plan was actively picked; "default" while it is still
+  // the pre-selected Free.
+  const planChosenBy = planChosen || stepPlanChanged ? "visitor" : "default";
 
   const p = persona ?? PERSONA;
   const planFor = (id: PlanId) => PLANS.find((pl) => pl.id === id);
