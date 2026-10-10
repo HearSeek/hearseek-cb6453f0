@@ -62,21 +62,23 @@ async function postOnce(endpoint: string, payload: SignupPayload) {
 export async function submitSignup(
   payload: SignupPayload,
   endpointOverride?: string,
+  opts: { attempts?: number; delayMs?: number } = {},
 ): Promise<boolean> {
   if (alreadySent(payload.session_id, payload.stage)) return true;
   const endpoint =
     endpointOverride ?? (import.meta.env.VITE_SIGNUP_ENDPOINT as string | undefined);
   if (!endpoint) return false;
-  try {
-    await postOnce(endpoint, payload);
-  } catch {
-    await new Promise((r) => setTimeout(r, 1000));
+  const attempts = opts.attempts ?? 2;
+  const delayMs = opts.delayMs ?? 1000;
+  for (let i = 0; i < attempts; i++) {
+    if (i > 0) await new Promise((r) => setTimeout(r, delayMs));
     try {
       await postOnce(endpoint, payload);
+      markSent(payload.session_id, payload.stage);
+      return true;
     } catch {
-      return false; // not marked sent, so the visitor can retry
+      /* try again */
     }
   }
-  markSent(payload.session_id, payload.stage);
-  return true;
+  return false; // not marked sent, so the visitor can retry
 }
