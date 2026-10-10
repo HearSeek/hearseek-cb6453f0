@@ -13,7 +13,13 @@ import {
 import { Pricing, type PlanId } from "@/components/search-videos/Pricing";
 import { Onboarding } from "@/components/search-videos/Onboarding";
 import { PageFooter } from "@/components/search-videos/PageFooter";
-import { hs, type Persona } from "@/lib/persona-analytics";
+import { hs, setPageExtras, type Persona } from "@/lib/persona-analytics";
+
+// Lectures hero variant: decided once per page load from the landing URL.
+const INITIAL_HERO_VARIANT: "teacher" | "student" =
+  new URLSearchParams(window.location.search).get("utm_content") === "student"
+    ? "student"
+    : "teacher";
 
 type PersonaLandingConfig = {
   persona: Exclude<Persona, "creator">;
@@ -28,6 +34,9 @@ type PersonaLandingConfig = {
   demo: HeroDemoCopy;
   ctaLabel: string;
   howItWorks: HowItWorksCopy;
+  benefits?: string[];
+  extraFaq?: { q: string; a: string }[];
+  studentHero?: { headline: string; subhead: string; demo: HeroDemoCopy };
 };
 
 const pages = {
@@ -90,17 +99,39 @@ const pages = {
     description:
       "Let students search a question or concept and jump straight to where it was explained, across an entire course of recordings.",
     demo: {
-      query: "how does active recall work?",
+      query: "where did I explain the derivative?",
       title: "Lecture recording",
-      snippet: "Retrieving an idea from memory strengthens what you have learned.",
-      timestamp: "21:08",
+      snippet: "...so the derivative is the slope of the curve at a single point...",
+      timestamp: "24:10",
     },
+    studentHero: {
+      headline: "Find Where Your Lecturer Explained It",
+      subhead:
+        "Search your recorded lectures by topic and jump straight to the moment. Revise in minutes, not hours.",
+      demo: {
+        query: "where was the derivative defined?",
+        title: "Lecture recording",
+        snippet: "...so the derivative is the slope of the curve at a single point...",
+        timestamp: "24:10",
+      },
+    },
+    benefits: [
+      "For students: search every recorded lecture before exams.",
+      "For teachers: answer 'where did you cover that?' with a link to the exact moment.",
+      "Search by meaning, not just the exact words.",
+    ],
+    extraFaq: [
+      {
+        q: "Can students use it?",
+        a: "Yes. Add the lectures you have access to and search them by topic, just like a teacher would.",
+      },
+    ],
     image: "/og/search-lectures-og-v2.png",
     demoVideoId: "u6j0IrXpp_o",
     eyebrow: "FOR EDUCATORS",
-    headline: "Make Every Lecture Searchable",
+    headline: "Find the Moment It Was Explained",
     subhead:
-      "Search lectures by concept. Find the explanation.",
+      "Make every lecture searchable, so a question jumps straight to where it was taught.",
     ctaLabel: "Make my lectures searchable",
     howItWorks: {
       step1Title: "Step 1: Add your lecture recordings",
@@ -118,6 +149,17 @@ function PersonaLandingPage({ config }: { config: PersonaLandingConfig }) {
   // True once the visitor picked a plan in the pricing section (Free stays
   // pre-selected, so a plan that was never clicked is still the default).
   const [planChosen, setPlanChosen] = useState(false);
+  // Fixed for the whole visit; set before any child effect fires an event.
+  const [heroVariant] = useState(() => {
+    const v = config.studentHero ? INITIAL_HERO_VARIANT : null;
+    setPageExtras(v ? { hero_variant: v } : {});
+    return v;
+  });
+  useEffect(() => () => setPageExtras({}), []);
+  const hero =
+    heroVariant === "student" && config.studentHero
+      ? config.studentHero
+      : { headline: config.headline, subhead: config.subhead, demo: config.demo };
 
   useEffect(() => {
     hs("hs_page_view", {}, config.persona);
@@ -136,12 +178,12 @@ function PersonaLandingPage({ config }: { config: PersonaLandingConfig }) {
       />
 
       <CompactHero
-        headline={config.headline}
-        subhead={config.subhead}
-        demo={config.demo}
+        headline={hero.headline}
+        subhead={hero.subhead}
+        demo={hero.demo}
         persona={config.persona}
       />
-      <Benefits items={[
+      <Benefits items={config.benefits ?? [
         config.persona === "research" ? "Search interviews by theme." : config.persona === "editor" ? "Search footage by topic." : "Search lectures by concept.",
         "Jump straight to the exact moment.",
         "Works in any language.",
@@ -178,6 +220,7 @@ function PersonaLandingPage({ config }: { config: PersonaLandingConfig }) {
         { q: "Do I need the exact words?", a: "No. Search by meaning. Half-remembered is fine." },
         { q: "Which languages work?", a: "We index every spoken word, in any language." },
         { q: "What does it cost to start?", a: "Nothing. Your first 3 hours are free." },
+        ...(config.extraFaq ?? []),
       ]} />
       <PageFooter ctaLabel={config.ctaLabel} persona={config.persona} />
     </div>
