@@ -1,5 +1,5 @@
-import { useRef, useState, type FormEvent } from "react";
-import { ArrowLeft, CheckCircle2, Link2, Mail } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { CheckCircle2, Link2, Mail } from "lucide-react";
 import {
   hs,
   inferInputType,
@@ -281,10 +281,9 @@ export function Onboarding({
         Make your archive searchable
       </h2>
       <p className="mt-3 text-center text-base text-[hsl(var(--sv-muted))]">
-        {step === 1 ? "Leave your email. We'll save you a spot." : "Paste a link. We'll take it from there."}
+        Leave your email. We'll save you a spot.
       </p>
 
-      {step === 1 ? (
         <form
           onSubmit={onEmailSubmit}
           className="mt-8 rounded-3xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface))] p-6 shadow-[0_24px_60px_-24px_hsl(228_49%_4%/0.8)] md:p-8"
@@ -332,66 +331,12 @@ export function Onboarding({
             disabled={sending}
             className="sv-grad-btn sv-glow mt-6 w-full rounded-full px-8 py-4 text-base font-semibold text-[hsl(228_49%_8%)] transition-all duration-200 hover:scale-[1.01] hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
           >
-            Continue
+            {sending ? "Saving…" : "Continue"}
           </button>
           <p className="mt-3 text-center text-xs text-[hsl(var(--sv-muted))]">
             Try for free up to 3 hours of video.
           </p>
         </form>
-      ) : (
-        <form
-          onSubmit={onCheckoutSubmit}
-          className="mt-8 rounded-3xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface))] p-6 shadow-[0_24px_60px_-24px_hsl(228_49%_4%/0.8)] md:p-8"
-        >
-          <label htmlFor="sv-url" className="mb-2 block text-base font-medium">
-            YouTube channel, playlist, or video URL
-          </label>
-          <div className="flex items-center gap-3 rounded-xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface-2))] px-4">
-            <Link2 className="h-4 w-4 shrink-0 text-[hsl(var(--sv-muted))]" aria-hidden />
-            <input
-              id="sv-url"
-              type="url"
-              inputMode="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              onPaste={onUrlPaste}
-              placeholder="https://youtube.com/@yourchannel"
-              className="w-full bg-transparent py-3.5 text-base outline-none placeholder:text-[hsl(var(--sv-muted))]"
-            />
-          </div>
-
-          {selected && (
-            <p className="mt-4 text-base text-[hsl(var(--sv-muted))]">
-              Plan: <span className="font-medium text-[hsl(var(--sv-fg))]">{selected.name}</span>
-              {selected.pricePoint !== "0" && (
-                <> · ${selected.pricePoint}/month</> 
-              )}
-            </p>
-          )}
-
-          {error && (
-            <p role="alert" className="mt-4 text-base text-[hsl(0_84%_68%)]">
-              {error}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={sending}
-            className="sv-grad-btn sv-glow mt-6 w-full rounded-full px-8 py-4 text-base font-semibold text-[hsl(228_49%_8%)] transition-all duration-200 hover:scale-[1.01] hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
-          >
-            {ctaLabel}
-          </button>
-          <button
-            type="button"
-            onClick={() => setStep(1)}
-            className="mt-3 flex w-full items-center justify-center gap-1.5 text-sm text-[hsl(var(--sv-muted))] transition-colors hover:text-[hsl(var(--sv-fg))]"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
-            Back
-          </button>
-        </form>
-      )}
     </section>
   );
 }
