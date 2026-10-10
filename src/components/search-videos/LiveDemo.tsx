@@ -25,6 +25,7 @@ declare global {
 // YT.PlayerState.PLAYING === 1; declared locally so we don't depend on the
 // global script being loaded at module-evaluation time.
 const PLAYER_STATE_PLAYING = 1;
+const PLAYER_STATE_ENDED = 0;
 
 function loadYouTubeApi(): Promise<void> {
   if (window.YT?.Player) return Promise.resolve();
@@ -55,6 +56,7 @@ export function LiveDemo({
   useEffect(() => {
     let cancelled = false;
     let player: { destroy?: () => void } | null = null;
+    let completeFired = false;
     const eventKey = persona ? `${DEMO_EVENT_KEY}_${persona}` : DEMO_EVENT_KEY;
 
     try {
@@ -92,6 +94,10 @@ export function LiveDemo({
         events: {
           onStateChange: (event) => {
             if (event.data === PLAYER_STATE_PLAYING) onFirstPlay();
+            if (event.data === PLAYER_STATE_ENDED && !completeFired) {
+              completeFired = true;
+              hs("hs_demo_complete", {}, persona);
+            }
           },
         },
       });
@@ -109,6 +115,7 @@ export function LiveDemo({
 
   return (
     <section
+      data-section="demo"
       className="relative mx-auto w-full max-w-4xl px-6 pb-24 md:pb-32"
       aria-label="HearSeek search demo"
     >

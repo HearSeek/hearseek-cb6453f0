@@ -19,7 +19,7 @@ export function Hero({
   persona,
 }: HeroProps) {
   return (
-    <header className="relative overflow-hidden">
+    <header data-section="hero" className="relative overflow-hidden">
       <div className="sv-hero-glow pointer-events-none absolute inset-0" />
 
       <div className="relative mx-auto w-full max-w-6xl px-6">

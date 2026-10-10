@@ -41,7 +41,7 @@ export function HowItWorks({ copy = {} }: { copy?: HowItWorksCopy }) {
   ];
 
   return (
-    <section className="mx-auto w-full max-w-6xl px-6 pb-24 md:pb-32" aria-label="How it works">
+    <section data-section="how_it_works" className="mx-auto w-full max-w-6xl px-6 pb-24 md:pb-32" aria-label="How it works">
       <h2 className="text-center text-2xl font-bold tracking-tight md:text-3xl">
         How it works
       </h2>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useEngagementTracking } from "@/hooks/use-engagement-tracking";
 import { SEO } from "@/components/site/SEO";
 import { Hero } from "@/components/search-videos/Hero";
 import { LiveDemo } from "@/components/search-videos/LiveDemo";
@@ -98,6 +99,7 @@ function PersonaLandingPage({ config }: { config: PersonaLandingConfig }) {
   useEffect(() => {
     hs("hs_page_view", {}, config.persona);
   }, [config.persona]);
+  useEngagementTracking(config.persona);
 
   return (
     <div className="sv-page min-h-screen bg-[hsl(var(--sv-bg))] font-sans text-[hsl(var(--sv-fg))]">
