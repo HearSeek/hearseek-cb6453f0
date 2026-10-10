@@ -119,6 +119,7 @@ export function Onboarding({
         input_type: "",
         plan: plan ?? "",
         price_point: sel?.pricePoint ?? "",
+        plan_chosen_by: planChosenBy,
         stage: "email",
         _subject: `HearSeek signup: ${p}, ${plan || "no plan"}`,
       },
@@ -149,6 +150,7 @@ export function Onboarding({
       hs("hs_checkout_attempt", {
         plan: stepPlan,
         price_point: sel?.pricePoint ?? "0",
+        plan_chosen_by: planChosenBy,
       }, persona);
     }
 
@@ -165,6 +167,7 @@ export function Onboarding({
       input_type: trimmedUrl ? inferInputType(trimmedUrl) : "",
       plan: stepPlan ?? "",
       price_point: sel?.pricePoint ?? "",
+      plan_chosen_by: planChosenBy,
       stage: "checkout_attempt",
       _subject: `HearSeek signup: ${p}, ${stepPlan || "no plan"}`,
     });
@@ -243,6 +246,7 @@ export function Onboarding({
                     onClick={() => {
                       if (pl.id === stepPlan) return;
                       setStepPlan(pl.id);
+                      setStepPlanChanged(true);
                       hs("hs_plan_select", { plan: pl.id, price_point: pl.pricePoint }, persona);
                     }}
                     className={`rounded-xl border px-3 py-3 text-base transition-colors ${
