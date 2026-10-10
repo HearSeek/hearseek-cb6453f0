@@ -115,6 +115,9 @@ function PersonaLandingPage({ config }: { config: PersonaLandingConfig }) {
   const [usecases, setUsecases] = useState<Usecase[]>([]);
   const [sizeBand, setSizeBand] = useState<SizeBand | null>(null);
   const [plan, setPlan] = useState<PlanId>("free");
+  // True once the visitor picked a plan in the pricing section (Free stays
+  // pre-selected, so a plan that was never clicked is still the default).
+  const [planChosen, setPlanChosen] = useState(false);
 
   useEffect(() => {
     hs("hs_page_view", {}, config.persona);
@@ -143,9 +146,17 @@ function PersonaLandingPage({ config }: { config: PersonaLandingConfig }) {
         "Jump straight to the exact moment.",
         "Works in any language.",
       ]} />
-      <Pricing plan={plan} onPlan={setPlan} persona={config.persona} />
+      <Pricing
+        plan={plan}
+        onPlan={(id) => {
+          setPlan(id);
+          setPlanChosen(true);
+        }}
+        persona={config.persona}
+      />
       <Onboarding
         plan={plan}
+        planChosen={planChosen}
         ctaLabel={config.ctaLabel}
         persona={config.persona}
         usecases={usecases}
