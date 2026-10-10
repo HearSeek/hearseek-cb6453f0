@@ -133,7 +133,7 @@ export function Onboarding({
 
   if (submitted) {
     return (
-      <section id="sv-onboarding" className="mx-auto w-full max-w-2xl px-6 pb-24 md:pb-32 scroll-mt-8" aria-label="Onboarding">
+      <section data-section="signup_form" id="sv-onboarding" className="mx-auto w-full max-w-2xl px-6 pb-24 md:pb-32 scroll-mt-8" aria-label="Onboarding">
         <div className="animate-fade-in-up rounded-3xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface))] p-10 text-center shadow-[0_24px_60px_-24px_hsl(228_49%_4%/0.8)] md:p-14">
           <div className="mx-auto mb-6 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[hsl(var(--sv-cyan)/0.15)]">
             <CheckCircle2 className="h-7 w-7 text-[hsl(var(--sv-cyan))]" aria-hidden />
@@ -151,7 +151,7 @@ export function Onboarding({
   }
 
   return (
-    <section id="sv-onboarding" className="mx-auto w-full max-w-2xl px-6 pb-24 md:pb-32 scroll-mt-8" aria-label="Create your searchable library">
+    <section data-section="signup_form" id="sv-onboarding" className="mx-auto w-full max-w-2xl px-6 pb-24 md:pb-32 scroll-mt-8" aria-label="Create your searchable library">
       <h2 className="text-center text-2xl font-bold tracking-tight md:text-3xl">
         Make your archive searchable
       </h2>

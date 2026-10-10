@@ -83,6 +83,7 @@ export function Pricing({
   return (
     <section
       ref={sectionRef}
+      data-section="pricing"
       className="mx-auto w-full max-w-6xl px-6 pb-24 md:pb-32"
       aria-label="Pricing"
     >

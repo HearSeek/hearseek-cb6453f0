@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useEngagementTracking } from "@/hooks/use-engagement-tracking";
 import { SEO } from "@/components/site/SEO";
 import { hs } from "@/lib/persona-analytics";
 import { Hero } from "@/components/search-videos/Hero";
@@ -21,6 +22,7 @@ export default function SearchVideosPage() {
   useEffect(() => {
     hs("hs_page_view");
   }, []);
+  useEngagementTracking();
 
   return (
     <div className="sv-page min-h-screen bg-[hsl(var(--sv-bg))] font-sans text-[hsl(var(--sv-fg))]">
