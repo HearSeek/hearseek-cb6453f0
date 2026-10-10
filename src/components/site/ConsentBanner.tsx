@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -22,6 +23,8 @@ const save = (c: Choice) => {
 };
 
 export const ConsentBanner = () => {
+  const { pathname } = useLocation();
+  const compact = ["/search-videos", "/search-interviews", "/search-raw", "/search-lectures"].includes(pathname.replace(/\/+$/, "").toLowerCase());
   const [visible, setVisible] = useState(false);
   const [customizing, setCustomizing] = useState(false);
   const [analytics, setAnalytics] = useState(true);
@@ -48,16 +51,16 @@ export const ConsentBanner = () => {
 
   return (
     <>
-      <div className="fixed inset-x-0 bottom-0 z-50 px-4 pb-4 md:px-6 md:pb-6">
-        <div className="mx-auto flex max-w-4xl flex-col gap-4 rounded-2xl border border-border/60 bg-card/95 p-5 shadow-elegant backdrop-blur-xl md:flex-row md:items-center md:justify-between">
+      <div data-cookie-bar className={compact ? "fixed inset-x-0 bottom-0 z-50 md:px-6 md:pb-6" : "fixed inset-x-0 bottom-0 z-50 px-4 pb-4 md:px-6 md:pb-6"}>
+        <div className={compact ? "mx-auto flex max-w-4xl flex-col gap-2 border border-border/60 bg-card/95 px-4 py-3 shadow-elegant backdrop-blur-xl md:flex-row md:items-center md:justify-between md:rounded-2xl" : "mx-auto flex max-w-4xl flex-col gap-4 rounded-2xl border border-border/60 bg-card/95 p-5 shadow-elegant backdrop-blur-xl md:flex-row md:items-center md:justify-between"}>
           <div className="text-sm text-muted-foreground">
-            <p className="font-medium text-foreground">We use cookies</p>
-            <p className="mt-1">
+            {!compact && <p className="font-medium text-foreground">We use cookies</p>}
+            {compact ? <p>Cookies for analytics and a better experience.</p> : <p className="mt-1">
               We use cookies for analytics and to improve your experience. You can accept all,
               reject non-essential, or customize your choice.
-            </p>
+            </p>}
           </div>
-          <div className="flex flex-wrap gap-2 md:shrink-0">
+          <div className={compact ? "flex justify-between gap-2 md:shrink-0" : "flex flex-wrap gap-2 md:shrink-0"}>
             <Button variant="ghost" size="sm" onClick={() => apply(false, false)}>
               Reject all
             </Button>

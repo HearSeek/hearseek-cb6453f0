@@ -29,7 +29,7 @@ const BANDS: { label: string; value: SizeBand }[] = [
 
 const chipClass = (active: boolean) =>
   cn(
-    "rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-200",
+    "rounded-full border px-5 py-2.5 text-base font-medium transition-all duration-200",
     active
       ? "sv-grad-btn border-transparent text-[hsl(228_49%_8%)] shadow-[0_8px_24px_-8px_hsl(256_100%_65%/0.6)]"
       : "border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface))] text-[hsl(var(--sv-muted))] hover:border-[hsl(var(--sv-violet)/0.5)] hover:text-[hsl(var(--sv-fg))]",

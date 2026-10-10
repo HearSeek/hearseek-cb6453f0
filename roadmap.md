@@ -4,3 +4,4 @@
 - [x] Add distinct 1200×630 link-preview images and metadata for all four persona pages.
 - [x] Create homepage share image, update homepage-only metadata, regenerate static pages without changing existing route tags or consent; verify preview and request publishing.
 - [ ] Verify live homepage serves home.webp in both image tags; blocked pending deployment (latest live check still serves IIS image).
+- [ ] Roll out the compact layout to four persona pages, add the free line and moment wording, compact the cookie bar without changing consent, and verify at 390×667.

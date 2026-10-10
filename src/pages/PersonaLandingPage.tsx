@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useEngagementTracking } from "@/hooks/use-engagement-tracking";
 import { SEO } from "@/components/site/SEO";
-import { Hero } from "@/components/search-videos/Hero";
+import { CompactHero, Benefits, Faq } from "@/components/search-videos/CompactHero";
+import type { HeroDemoCopy } from "@/components/search-videos/HeroDemo";
 import { LiveDemo } from "@/components/search-videos/LiveDemo";
 import { HowItWorks, type HowItWorksCopy } from "@/components/search-videos/HowItWorks";
 import {
@@ -24,6 +25,7 @@ type PersonaLandingConfig = {
   eyebrow: string;
   headline: string;
   subhead: string;
+  demo: HeroDemoCopy;
   ctaLabel: string;
   howItWorks: HowItWorksCopy;
 };
@@ -40,7 +42,13 @@ const pages = {
     eyebrow: "FOR RESEARCHERS & JOURNALISTS",
     headline: "Find Any Theme Across Your Interviews and Recordings",
     subhead:
-      "Locate every discussion of a topic across hours of interviews, news, and documentaries, even when different words were used. Exact source and timestamp, every time.",
+      "Search interviews by theme. Find the source moment.",
+    demo: {
+      query: "what did they say about trust?",
+      title: "Interview recording",
+      snippet: "It took time to feel comfortable sharing what really happened.",
+      timestamp: "12:34",
+    },
     ctaLabel: "Make my recordings searchable",
     howItWorks: {
       step1Title: "Step 1: Add your recordings or URLs",
@@ -54,7 +62,13 @@ const pages = {
     path: "/search-raw",
     title: "HearSeek: Search Raw Footage",
     description:
-      "Describe the line or topic you need and land on the source moment, without scrubbing through hours of footage.",
+      "Search raw footage by topic. Find the source clip.",
+    demo: {
+      query: "the line about starting over",
+      title: "Raw footage",
+      snippet: "We decided to begin again and try a different approach.",
+      timestamp: "08:16",
+    },
     image: "/og/search-raw-og-v2.png",
     demoVideoId: "Z-UCbmzzvm4",
     eyebrow: "FOR VIDEO EDITORS",
@@ -74,7 +88,13 @@ const pages = {
     path: "/search-lectures",
     title: "HearSeek: Search Every Lecture",
     description:
-      "Let students search a question or concept and jump straight to where it was explained, across an entire course of recordings.",
+      "Search lectures by concept. Find the explanation.",
+    demo: {
+      query: "how does active recall work?",
+      title: "Lecture recording",
+      snippet: "Retrieving an idea from memory strengthens what you have learned.",
+      timestamp: "21:08",
+    },
     image: "/og/search-lectures-og-v2.png",
     demoVideoId: "u6j0IrXpp_o",
     eyebrow: "FOR EDUCATORS",
@@ -112,22 +132,17 @@ function PersonaLandingPage({ config }: { config: PersonaLandingConfig }) {
         imageAlt={config.title}
       />
 
-      <Hero
-        eyebrow={config.eyebrow}
+      <CompactHero
         headline={config.headline}
         subhead={config.subhead}
-        ctaLabel={config.ctaLabel}
+        demo={config.demo}
         persona={config.persona}
       />
-      <LiveDemo persona={config.persona} videoId={config.demoVideoId} />
-      <HowItWorks copy={config.howItWorks} />
-      <Selectors
-        usecases={usecases}
-        onUsecases={setUsecases}
-        sizeBand={sizeBand}
-        onSizeBand={setSizeBand}
-        persona={config.persona}
-      />
+      <Benefits items={[
+        config.persona === "research" ? "Search interviews by theme." : config.persona === "editor" ? "Search footage by topic." : "Search lectures by concept.",
+        "Jump straight to the exact moment.",
+        "Works in any language.",
+      ]} />
       <Pricing plan={plan} onPlan={setPlan} persona={config.persona} />
       <Onboarding
         plan={plan}
@@ -136,6 +151,23 @@ function PersonaLandingPage({ config }: { config: PersonaLandingConfig }) {
         usecases={usecases}
         sizeBand={sizeBand}
       />
+      <LiveDemo facade persona={config.persona} videoId={config.demoVideoId} />
+      <HowItWorks copy={config.howItWorks} />
+      <div data-section="selectors">
+        <Selectors
+          usecases={usecases}
+          onUsecases={setUsecases}
+          sizeBand={sizeBand}
+          onSizeBand={setSizeBand}
+          persona={config.persona}
+        />
+      </div>
+      <Faq items={[
+        { q: "What can I search?", a: config.persona === "research" ? "Your interviews, recordings and audio or video links." : config.persona === "editor" ? "Your raw footage and audio or video links." : "Your lecture recordings and audio or video links." },
+        { q: "Do I need the exact words?", a: "No. Search by meaning. Half-remembered is fine." },
+        { q: "Which languages work?", a: "We index every spoken word, in any language." },
+        { q: "What does it cost to start?", a: "Nothing. Your first 3 hours are free." },
+      ]} />
       <PageFooter ctaLabel={config.ctaLabel} persona={config.persona} />
     </div>
   );
