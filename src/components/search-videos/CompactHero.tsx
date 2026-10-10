@@ -1,4 +1,5 @@
 import logoMark from "@/assets/hearseek-logo-mark.png";
+import { Button } from "@/components/ui/button";
 import type { Persona } from "@/lib/persona-analytics";
 import { scrollToOnboarding } from "./CtaButton";
 import { HeroDemo, type HeroDemoCopy } from "./HeroDemo";
@@ -17,37 +18,40 @@ export function CompactHero({
   return (
     <header data-section="hero" className="relative overflow-hidden">
       <div className="sv-hero-glow pointer-events-none absolute inset-0" />
-      <div className="relative mx-auto w-full max-w-3xl px-5 pb-10 pt-4 text-center md:pt-10">
+      <div className="relative mx-auto w-full max-w-3xl px-5 pb-8 pt-3 text-center md:pt-10">
         <div className="flex items-center justify-center gap-2 md:justify-start">
           <img src={logoMark} alt="HearSeek logo" width={24} height={24} className="h-6 w-6" />
           <span className="text-base font-bold tracking-tight">HearSeek</span>
         </div>
-        <h1 className="mt-5 text-balance text-[1.75rem] font-bold leading-[1.15] tracking-tight md:text-5xl">
+        <h1 className="mt-3 text-balance text-[1.75rem] font-bold leading-[1.1] tracking-normal md:mt-5 md:text-5xl">
           {headline}
         </h1>
-        <p className="mx-auto mt-3 max-w-md text-base leading-snug text-[hsl(var(--sv-fg)/0.8)]">
+        <p className="mx-auto mt-2 max-w-md text-base leading-snug text-[hsl(var(--sv-fg)/0.8)]">
           {subhead}
         </p>
-        <div className="mt-5">
+        <div className="mt-3 md:mt-5">
           <HeroDemo demo={demo} />
         </div>
-        <div className="mt-5 flex flex-col items-center gap-3">
-          <button
+        <div className="mt-3 flex flex-col items-center gap-1.5 md:mt-5">
+          <Button
+            variant="ghost"
             type="button"
             onClick={() => scrollToOnboarding("hero", persona)}
-            className="sv-grad-btn sv-glow w-full max-w-md rounded-full px-8 py-3.5 text-base font-semibold text-[hsl(228_49%_8%)] active:scale-[0.99]"
+            className="sv-grad-btn sv-glow h-12 w-full max-w-md rounded-full px-8 text-base font-semibold text-[hsl(var(--sv-bg))] active:scale-[0.99]"
           >
             Try it free
-          </button>
-          <button
+          </Button>
+          <p className="text-sm leading-5 text-[hsl(var(--sv-fg)/0.85)]">Free on up to 3 hours.</p>
+          <Button
+            variant="link"
             type="button"
             onClick={() =>
               document.getElementById("sv-pricing")?.scrollIntoView({ behavior: "smooth", block: "start" })
             }
-            className="text-base text-[hsl(var(--sv-fg)/0.85)] underline underline-offset-4"
+            className="h-7 p-0 text-base text-[hsl(var(--sv-fg)/0.85)] underline underline-offset-4"
           >
             See pricing
-          </button>
+          </Button>
         </div>
       </div>
     </header>

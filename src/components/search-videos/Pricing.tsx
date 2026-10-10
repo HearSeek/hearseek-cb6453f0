@@ -91,7 +91,7 @@ export function Pricing({
       <h2 className="text-center text-2xl font-bold tracking-tight md:text-3xl">
         Simple pricing
       </h2>
-      <p className="mt-3 text-center text-sm text-[hsl(var(--sv-muted))]">
+      <p className="mt-3 text-center text-base text-[hsl(var(--sv-muted))]">
         Pick a plan. You can change it later.
       </p>
 
@@ -119,16 +119,16 @@ export function Pricing({
                   Most popular
                 </span>
               )}
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-[hsl(var(--sv-muted))]">
+              <h3 className="text-base font-semibold uppercase tracking-wider text-[hsl(var(--sv-muted))]">
                 {p.name}
               </h3>
               <p className="mt-3 flex items-baseline gap-1">
                 <span className="text-3xl font-bold tracking-tight">{p.price}</span>
                 {p.period && (
-                  <span className="text-sm text-[hsl(var(--sv-muted))]">{p.period}</span>
+                  <span className="text-base text-[hsl(var(--sv-muted))]">{p.period}</span>
                 )}
               </p>
-              <ul className="mt-4 space-y-2 text-sm">
+              <ul className="mt-4 space-y-2 text-base">
                 <li className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-[hsl(var(--sv-cyan))]" aria-hidden />
                   {p.hours} searchable

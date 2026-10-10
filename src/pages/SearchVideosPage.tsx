@@ -23,7 +23,7 @@ const DEMO = {
 
 const BENEFITS = [
   "Search every video by topic, not just titles.",
-  "Jump straight to the exact second.",
+  "Jump straight to the exact moment.",
   "Works in any language.",
 ];
 

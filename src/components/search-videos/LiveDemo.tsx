@@ -148,7 +148,7 @@ export function LiveDemo({
         )}
       </div>
 
-      <p className="mt-8 text-center text-sm text-[hsl(var(--sv-muted))]">
+      <p className="mt-8 text-center text-base text-[hsl(var(--sv-muted))]">
         Search by meaning. Land on the exact moment it was said.
       </p>
     </section>

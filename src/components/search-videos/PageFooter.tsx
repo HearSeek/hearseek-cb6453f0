@@ -17,12 +17,12 @@ export function PageFooter({
             <img src={logoMark} alt="HearSeek logo" className="h-6 w-6" />
             <span className="text-base font-bold tracking-tight">HearSeek</span>
           </div>
-          <p className="mt-2 text-sm text-[hsl(var(--sv-muted))]">
+          <p className="mt-2 text-base text-[hsl(var(--sv-muted))]">
             Making the spoken word searchable.
           </p>
           <a
             href="mailto:inquiries@hearseek.com"
-            className="mt-1 inline-block text-sm text-[hsl(var(--sv-muted))] underline-offset-4 hover:text-[hsl(var(--sv-fg))] hover:underline"
+            className="mt-1 inline-block text-base text-[hsl(var(--sv-muted))] underline-offset-4 hover:text-[hsl(var(--sv-fg))] hover:underline"
           >
             inquiries@hearseek.com
           </a>

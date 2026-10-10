@@ -155,7 +155,7 @@ export function Onboarding({
       <h2 className="text-center text-2xl font-bold tracking-tight md:text-3xl">
         Make your archive searchable
       </h2>
-      <p className="mt-3 text-center text-sm text-[hsl(var(--sv-muted))]">
+      <p className="mt-3 text-center text-base text-[hsl(var(--sv-muted))]">
         Paste a link. We'll take it from there.
       </p>
 
@@ -163,7 +163,7 @@ export function Onboarding({
         onSubmit={onSubmit}
         className="mt-8 rounded-3xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface))] p-6 shadow-[0_24px_60px_-24px_hsl(228_49%_4%/0.8)] md:p-8"
       >
-        <label htmlFor="sv-url" className="mb-2 block text-sm font-medium">
+        <label htmlFor="sv-url" className="mb-2 block text-base font-medium">
           YouTube channel, playlist, or video URL
         </label>
         <div className="flex items-center gap-3 rounded-xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface-2))] px-4">
@@ -176,11 +176,11 @@ export function Onboarding({
             onChange={(e) => setUrl(e.target.value)}
             onPaste={onUrlPaste}
             placeholder="https://youtube.com/@yourchannel"
-            className="w-full bg-transparent py-3.5 text-sm outline-none placeholder:text-[hsl(var(--sv-muted))]"
+            className="w-full bg-transparent py-3.5 text-base outline-none placeholder:text-[hsl(var(--sv-muted))]"
           />
         </div>
 
-        <label htmlFor="sv-email" className="mb-2 mt-5 block text-sm font-medium">
+        <label htmlFor="sv-email" className="mb-2 mt-5 block text-base font-medium">
           Email
         </label>
         <div className="flex items-center gap-3 rounded-xl border border-[hsl(var(--sv-border))] bg-[hsl(var(--sv-surface-2))] px-4">
@@ -192,10 +192,10 @@ export function Onboarding({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full bg-transparent py-3.5 text-sm outline-none placeholder:text-[hsl(var(--sv-muted))]"
+            className="w-full bg-transparent py-3.5 text-base outline-none placeholder:text-[hsl(var(--sv-muted))]"
           />
         </div>
-        <p className="mt-2 text-xs text-[hsl(var(--sv-muted))]">
+        <p className="mt-2 text-base text-[hsl(var(--sv-muted))]">
           We'll only use your email to contact you about HearSeek access.
         </p>
 
@@ -213,7 +213,7 @@ export function Onboarding({
         </div>
 
         {error && (
-          <p role="alert" className="mt-4 text-sm text-[hsl(0_84%_68%)]">
+          <p role="alert" className="mt-4 text-base text-[hsl(0_84%_68%)]">
             {error}
           </p>
         )}
