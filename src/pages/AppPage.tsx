@@ -9,8 +9,7 @@ import appScreen from "@/assets/hearseek-app-single-v2.jpg";
 import { SEO } from "@/components/site/SEO";
 import { trackEvent } from "@/lib/analytics";
 import { hs, VARIANT, ACQ_SOURCE, SESSION_ID } from "@/lib/persona-analytics";
-import { submitSignup } from "@/lib/signup-capture";
-import { joinConsumerWaitlist } from "@/lib/hearseek";
+import { submitLead } from "@/lib/signup-capture";
 import { consumerWaitlistSchema } from "@/lib/validation";
 
 const PLANS = [
@@ -77,40 +76,17 @@ const AppPage = () => {
       return;
     }
     setSubmitting(true);
-    // 1) HearSeek API, exactly as the original form: PUT /consumer/waitlist { email }.
-    //    This decides success. Nothing containing the email is logged.
-    try {
-      await joinConsumerWaitlist(parsed.data.email);
-    } catch {
+    // POST /marketing/leads (form_type consumer). Nothing with the email is logged.
+    const ok = await submitLead({
+      form_type: "consumer",
+      email: parsed.data.email,
+      acq_source: ACQ_SOURCE,
+      consumer: { records: records ? [records] : [], session_id: SESSION_ID, variant: VARIANT },
+    });
+    if (!ok) {
       setSubmitting(false);
       setError("Something went wrong saving your details. Please try again.");
       return;
-    }
-    // 2) Formspree copy to a separate app-waitlist form. Skipped silently when
-    //    VITE_WAITLIST_ENDPOINT is unset; failures don't affect the result.
-    const waitlistEndpoint = import.meta.env.VITE_WAITLIST_ENDPOINT as string | undefined;
-    if (waitlistEndpoint) {
-      void submitSignup({
-      email: parsed.data.email,
-      pasted_url: "",
-      input_type: "",
-      persona: "app",
-      page_persona: "app",
-      plan: "",
-      price_point: "",
-      usecases: "",
-      size_band: "",
-      session_id: SESSION_ID,
-      variant: VARIANT,
-      acq_source: ACQ_SOURCE,
-      stage: "app_waitlist",
-      submitted_at: new Date().toISOString(),
-      page_path: window.location.pathname,
-      host: window.location.host,
-      _subject: "HearSeek signup: app, Android waitlist",
-      _gotcha: "",
-      records,
-      }, waitlistEndpoint).catch(() => undefined);
     }
     setSubmitting(false);
     hs("hs_app_waitlist_submit", { records }, "app");
