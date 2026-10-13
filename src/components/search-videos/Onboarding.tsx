@@ -61,7 +61,7 @@ export function Onboarding({
   const [submitted, setSubmitted] = useState(false);
   const [skipped, setSkipped] = useState(false);
   const [sending, setSending] = useState(false);
-  // True once Formspree accepted the stage "email" submission.
+  // True once the leads API accepted the stage "email" submission.
   const [emailSaved, setEmailSaved] = useState(false);
   // Plan chosen in step 2; starts from the pricing-section plan (carried
   // silently, no hs_plan_select) and only fires the event on an explicit change.
@@ -121,10 +121,8 @@ export function Onboarding({
         price_point: sel?.pricePoint ?? "",
         plan_chosen_by: planChosenBy,
         stage: "email",
-        _subject: `HearSeek signup: ${p}, ${plan || "no plan"}`,
       },
-      undefined,
-      { attempts: 3, delayMs: 2500 },
+      { delays: [2500, 2500] },
     );
     setSending(false);
     if (ok && !eventFired("hs_email_submit")) {
@@ -169,7 +167,6 @@ export function Onboarding({
       price_point: sel?.pricePoint ?? "",
       plan_chosen_by: planChosenBy,
       stage: "checkout_attempt",
-      _subject: `HearSeek signup: ${p}, ${stepPlan || "no plan"}`,
     });
     setSending(false);
     if (ok) setSubmitted(true);

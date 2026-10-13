@@ -11,7 +11,8 @@ import { FeatureCard } from "@/components/site/FeatureCard";
 import { StatCard } from "@/components/site/StatCard";
 import { toast } from "@/hooks/use-toast";
 import { SEO } from "@/components/site/SEO";
-import { requestEnterpriseDemo } from "@/lib/hearseek";
+import { submitLead } from "@/lib/signup-capture";
+import { ACQ_SOURCE } from "@/lib/persona-analytics";
 import { enterpriseWaitlistSchema } from "@/lib/validation";
 import { trackEvent } from "@/lib/analytics";
 
@@ -59,7 +60,13 @@ const EnterprisePage = () => {
         enterprise_name: parsed.data.enterprise_name,
         details: parsed.data.details ?? "",
       };
-      await requestEnterpriseDemo(payload);
+      const ok = await submitLead({
+        form_type: "enterprise",
+        email: payload.email,
+        acq_source: ACQ_SOURCE,
+        enterprise: { name: payload.name, company: payload.enterprise_name, message: payload.details || null },
+      });
+      if (!ok) throw new Error("lead not saved");
       trackEvent("demo_request", {
         email_domain: payload.email.split("@")[1]?.toLowerCase() ?? "",
         source: "enterprise_page",
